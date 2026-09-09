@@ -9,6 +9,8 @@ costs tens of thousands of dollars. No affordable version exists.
 
 This project builds the mathematics for one, and then the hardware.
 
+**[Full explanation of the project and the maths](EXPLAINER.md)**
+
 ![Accuracy against wing loading and wind speed](figures/design_chart.png)
 
 ---
