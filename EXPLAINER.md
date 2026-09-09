@@ -8,10 +8,11 @@ quadratic and you know what sine and cosine mean, you have enough. Everything el
 ## The one-paragraph version
 
 When floods cut villages off, relief supplies are dropped from helicopters that cannot land. The
-packages drift with the wind and miss. Militaries fixed this decades ago with GPS-guided parachutes
-that steer themselves to a target, but each one costs tens of thousands of dollars. This project
-builds the mathematics for a version costing about ₹4,000: a parafoil that works out the wind by
-itself on the way down, plans a route to the target, and flies it.
+packages drift with the wind and miss. Guided parafoils fix this — militaries have used them for
+decades, and open-source hobbyist projects have already built cheap ones. **This project is not the
+first.** What it does is derive the whole system from first principles and then work out something
+the existing projects do not publish: **how accurately such a thing can possibly land, and what
+decides that.** The answer comes down to one design number and a clean scaling law.
 
 ---
 
@@ -28,10 +29,48 @@ need them. Food is ruined, medicine is lost, and someone has to wade out and ris
 retrieving it.
 
 The military answer is **JPADS** — a parachute with a GPS and motors that steer it to a target. It
-works well and it costs tens of thousands of dollars per unit, because it was designed for armies
-rather than for disaster relief in developing countries.
+works well and costs tens of thousands of dollars per unit, because it was built for armies.
 
-**There is no cheap version.** That is the gap this project aims at.
+## What this project is not
+
+It would be tidy to write "and there is no cheap version, so I built one". **That would be false, and
+I checked before publishing it.**
+
+Cheap guided parafoils exist and are open source:
+
+- **[ParaDrone](https://hackaday.io/project/176779-paradrone-autopilot-for-parachutes)** pulls the
+  brake toggles with servos, runs on an Arduino-class chip, and plans with **Dubins paths** — the
+  same mechanical and algorithmic approach used here, arrived at independently.
+- **[R2Home](https://hackaday.com/2021/01/07/gps-guided-parachutes-for-high-altitude-balloons/)**
+  does the same for returning high-altitude balloon payloads.
+- **[NPS Snowflake](https://nps.edu/web/adsc/snowflake)** is the research platform, landing within
+  3 m of target from 3,000 ft.
+
+So the hardware idea, the algorithm and the application are all taken.
+
+## What it is
+
+Those projects are **devices that fly**. None of them publishes an answer to the question a designer
+actually has to ask first:
+
+> **Given a canopy this size, a payload this heavy, and this much wind — how close can it possibly
+> land, and why?**
+
+That is what this project works out. It derives the flight physics, the guidance and the wind
+estimation from scratch, and then maps accuracy across the whole design space. The result is a
+scaling law:
+
+```
+best achievable accuracy  ∝  (design wind speed)²
+```
+
+which says something about the *class* of systems rather than about one more instance of one. It also
+says something useful and slightly counterintuitive: building for more wind than you will actually
+meet makes every drop worse.
+
+Being clear about this matters. A project that claims to be first and is not gets dismantled by the
+first person who has heard of ParaDrone. A project that says "here is the prior art, and here is the
+question it leaves open" does not.
 
 ---
 

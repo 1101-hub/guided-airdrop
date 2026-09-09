@@ -4,10 +4,18 @@
 
 During monsoon floods, relief supplies are dropped from helicopters that cannot land. The packages
 drift with the wind and frequently miss — landing in water, in trees, or on the wrong side of a river
-from the people waiting for them. Militaries solved this with GPS-guided parafoils, but a single unit
-costs tens of thousands of dollars. No affordable version exists.
+from the people waiting for them.
 
-This project builds the mathematics for one, and then the hardware.
+Guided parafoils solve this. Military systems do it at tens of thousands of dollars per unit, and
+**open-source hobbyist projects have already shown it can be done for far less** — see
+[Prior art](#prior-art). **This is not the first cheap guided parafoil.**
+
+What this project does is derive the whole system from first principles and then ask a question the
+existing projects do not: **how accurately can such a thing possibly work, and what decides that?**
+The answer turns out to be a single design number, and it obeys a clean scaling law.
+
+The existing projects are devices that fly. This is an analysis of what determines whether they fly
+*accurately*.
 
 **[Full explanation of the project and the maths](EXPLAINER.md)**
 
@@ -148,6 +156,23 @@ model/
 pip install numpy scipy matplotlib
 cd model && python design.py
 ```
+
+## Prior art
+
+Guided parafoils are a solved problem at several price points. Anyone building one should know this
+list, and this project makes no claim to be first.
+
+| | What it is |
+|---|---|
+| **[ParaDrone](https://hackaday.io/project/176779-paradrone-autopilot-for-parachutes)** | Open-source autopilot for parachutes and paragliders. Servos pull the left and right brake toggles, runs on an Arduino-class microcontroller, and **plans with Dubins paths** — the same mechanical and algorithmic approach used here. [Flight manual](https://paradr.one/ParaDrone.pdf). |
+| **[R2Home](https://hackaday.com/2021/01/07/gps-guided-parachutes-for-high-altitude-balloons/)** | Open-source GPS-guided parachute for returning high-altitude balloon payloads. Teensy 4.1, GPS, digital compass. |
+| **[NPS Snowflake](https://nps.edu/web/adsc/snowflake)** | Naval Postgraduate School research platform for miniature precision airdrop. Landed within 3 m of target from 3,000 ft. |
+| **JPADS** | The military systems, at tens of thousands of dollars per unit. |
+
+The mechanical architecture (two servos on the brake lines), Dubins path planning, and the disaster
+relief application are all established. What this project adds is the **design analysis** — the map of
+how accuracy depends on wing loading and wind speed, and the resulting scaling law. That is a
+statement about the class of systems rather than another instance of one.
 
 ## Status
 
