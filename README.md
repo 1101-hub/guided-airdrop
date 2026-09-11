@@ -2,9 +2,16 @@
 
 ### Guiding Supply Packages to a Target in Unknown Wind
 
-A mathematical model of a self-steering parachute that works out the wind with no wind sensor — and the scaling law that decides how accurately any such system can land.
+## ▶ [**Try it: 1101-hub.github.io/guided-airdrop**](https://1101-hub.github.io/guided-airdrop/)
 
-**A self-steering parachute that lands relief supplies on a target, built from about ₹4,000 of parts.**
+Drop a package yourself — set the wind, the height and the weight, and watch it steer itself down.
+No install, works on a phone.
+
+📄 [**Read the paper (PDF)**](synopsis.pdf) · 1,000 words, IMRaD
+
+---
+
+A mathematical model of a self-steering parachute that works out the wind with no wind sensor — and the scaling law that decides how accurately any such system can land.
 
 During monsoon floods, relief supplies are dropped from helicopters that cannot land. The packages
 drift with the wind and frequently miss — landing in water, in trees, or on the wrong side of a river

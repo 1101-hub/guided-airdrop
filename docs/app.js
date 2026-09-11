@@ -7,11 +7,11 @@
 import {
   glideState, turnRadius, minLoading, dubinsSolve, dubinsAll, dubinsSample,
   simulate, median, rng,
-} from './physics.js?v=6';
+} from './physics.js?v=7';
 import {
   ctx2d, clear, mapper, line, dot, cross, label, arrow,
   drawDrop, INK, INK3, LINE, PINK, BLUE, GRN, YEL,
-} from './draw.js?v=6';
+} from './draw.js?v=7';
 
 const CL = 0.80, CD = 0.27, BANK = 20, TARGET = [20, 10];
 const $ = id => document.getElementById(id);

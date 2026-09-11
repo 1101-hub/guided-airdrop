@@ -2,6 +2,10 @@
 
 Keep this on your phone. The slides show pictures — **you say the words.**
 
+> **Hand them the link.** If a judge wants to touch it themselves:
+> **1101-hub.github.io/guided-airdrop** — it works on their phone, no install.
+> Letting them move a slider is worth more than anything you can say.
+
 **Pacing:** ~30 s a slide is about 6 minutes. Slides 1 and 9 are the animations — let them play,
 don't talk over them.
 
@@ -359,3 +363,12 @@ small corrections."*
 1. **"A box of food gets dropped and misses by forty-seven metres."**
 2. **"It works out the wind itself — and to do that it has to turn, which it's already doing."**
 3. **"Double the wind you build for, and the landing gets four times worse."**
+
+---
+
+## IF THEY WANT TO PLAY WITH IT
+
+**1101-hub.github.io/guided-airdrop**
+
+Set it to **wind 2.0, height 30 m, 1.20 kg/m², compass +10°**, then switch between
+*Nothing at all* and *Works the wind out itself*: **7.3 m → 3.6 m**, live, in front of them.

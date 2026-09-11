@@ -109,6 +109,7 @@
 - Slow down on *"it missed by forty-seven metres"* and *"forty-seven metres, down to two."*
 - The line to land hardest: **"the move that fixes the timing is the same one that finds the wind."**
 - Say **"I'm not first"** plainly. It buys credibility for everything after it.
+- End on the link, on screen and out loud: **1101-hub.github.io/guided-airdrop**
 
 ---
 

@@ -99,3 +99,11 @@ Glance-only. One line triggers the rest.
 - don't say "nobody has done this"
 - don't say the project is incomplete — **phase one is done**
 - don't talk over the two animations
+
+---
+
+## DO
+
+- **hand them the link** → `1101-hub.github.io/guided-airdrop`
+- let them drag a slider themselves — it lands better than any sentence
+- demo: wind 2.0 · height 30 · 1.20 kg/m² · compass +10° → flip the top option → **7.3 → 3.6 m**
