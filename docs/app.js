@@ -27,18 +27,83 @@ function ctx2d(cv) {
 }
 function clear(g) { g.clearRect(0, 0, g.W, g.H); }
 
-/* Equal-aspect map from world metres to canvas pixels. */
-function mapper(g, xs, ys, pad = 46) {
+/* Equal-aspect map from world metres to canvas pixels, optionally into a
+   sub-rectangle of the canvas so one canvas can hold two panels. */
+function mapper(g, xs, ys, pad = 46, rect = null) {
+  const R = rect || { x: 0, y: 0, w: g.W, h: g.H };
   let x0 = Math.min(...xs), x1 = Math.max(...xs);
   let y0 = Math.min(...ys), y1 = Math.max(...ys);
   const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
   let sx = (x1 - x0) || 1, sy = (y1 - y0) || 1;
-  const s = Math.min((g.W - 2 * pad) / sx, (g.H - 2 * pad) / sy);
+  const s = Math.min((R.w - 2 * pad) / sx, (R.h - 2 * pad) / sy);
   return {
     s,
-    x: v => g.W / 2 + (v - cx) * s,
-    y: v => g.H / 2 - (v - cy) * s,
+    x: v => R.x + R.w / 2 + (v - cx) * s,
+    y: v => R.y + R.h / 2 - (v - cy) * s,
   };
+}
+
+/* ------------------------------------------------------------------ icons */
+
+/* The helicopter that drops the package. */
+function helicopter(g, x, y, s = 1, color = INK) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  g.strokeStyle = color; g.fillStyle = color;
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath(); g.ellipse(0, 0, 13, 8.5, 0, 0, 7); g.fill();       // cabin
+  g.lineWidth = 4.5;
+  g.beginPath(); g.moveTo(9, -2.5); g.lineTo(30, -5.5); g.stroke(); // tail boom
+  g.lineWidth = 3;
+  g.beginPath(); g.moveTo(29, -5.5); g.lineTo(34.5, -13); g.stroke();  // fin
+  g.beginPath(); g.moveTo(0, -8.5); g.lineTo(0, -13.5); g.stroke();    // mast
+  g.lineWidth = 3.4;
+  g.beginPath(); g.moveTo(-21, -13.5); g.lineTo(21, -13.5); g.stroke(); // rotor
+  g.lineWidth = 2.2;
+  g.beginPath(); g.moveTo(-11, 10.5); g.lineTo(12, 10.5); g.stroke();   // skid
+  g.beginPath();
+  g.moveTo(-6, 8); g.lineTo(-7.5, 10.5); g.moveTo(6, 8); g.lineTo(7.5, 10.5);
+  g.stroke();
+  g.restore();
+}
+
+/* The parafoil, seen from the side: canopy, lines, box of supplies. */
+function parafoilSide(g, x, y, s = 1, color = PINK) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  g.strokeStyle = color; g.fillStyle = color;
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.lineWidth = 4.5;
+  g.beginPath(); g.arc(0, 0, 13, Math.PI * 1.13, Math.PI * 1.87); g.stroke();
+  g.lineWidth = 1.5;
+  g.beginPath();
+  g.moveTo(-11.4, -5.2); g.lineTo(-2.5, 7.5);
+  g.moveTo(11.4, -5.2); g.lineTo(2.5, 7.5);
+  g.stroke();
+  g.fillRect(-4, 7.5, 8, 6.5);                                    // payload
+  g.restore();
+}
+
+/* The parafoil from above: a wing across the direction of travel. */
+function parafoilTop(g, x, y, heading, s = 1, color = PINK) {
+  g.save(); g.translate(x, y); g.rotate(-heading); g.scale(s, s);
+  g.strokeStyle = color; g.fillStyle = color;
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.lineWidth = 8;
+  g.beginPath(); g.moveTo(-1, -8.5); g.lineTo(-1, 8.5); g.stroke();  // canopy
+  g.lineWidth = 2;
+  g.beginPath(); g.moveTo(-1, 0); g.lineTo(7, 0); g.stroke();        // payload
+  g.beginPath(); g.moveTo(13, 0); g.lineTo(6, -3.6); g.lineTo(6, 3.6);
+  g.closePath(); g.fill();                                           // nose
+  g.restore();
+}
+
+/* Hatched ground line for the side view. */
+function ground(g, x0, x1, y) {
+  line(g, [[x0, y], [x1, y]], INK, 3);
+  g.save(); g.strokeStyle = '#C9C2AF'; g.lineWidth = 2; g.lineCap = 'round';
+  for (let x = x0; x < x1; x += 11) {
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x - 7, y + 9); g.stroke();
+  }
+  g.restore();
 }
 function line(g, pts, color, width = 3, dash = null) {
   if (pts.length < 2) return;
@@ -106,26 +171,47 @@ function runDrop(mode, seed = 7) {
   });
 }
 
+/* Cumulative distance flown along a track, for the side view. */
+function pathDistance(track) {
+  const out = [0];
+  for (let i = 1; i < track.length; i++)
+    out.push(out[i - 1] + Math.hypot(track[i][1] - track[i - 1][1],
+                                     track[i][2] - track[i - 1][2]));
+  return out;
+}
+
+const TOP_RECT = g => ({ x: 0, y: 30, w: g.W, h: 462 });
+const SIDE_RECT = g => ({ x: 0, y: 536, w: g.W, h: 276 });
+
 function drawDrop(runs, frac = 1) {
   const g = gDrop; clear(g);
+  const TOP = TOP_RECT(g), SIDE = SIDE_RECT(g);
+
+  /* ---------------------------------------------- panel 1: looking down */
   const xs = [0, TARGET[0]], ys = [0, TARGET[1]];
   for (const r of runs) for (const p of r.res.track) { xs.push(p[1]); ys.push(p[2]); }
-  const m = mapper(g, xs, ys);
+  const m = mapper(g, xs, ys, 52, TOP);
 
-  // grid every 10 m
-  g.save(); g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
+  g.save();
+  g.beginPath(); g.rect(TOP.x, TOP.y, TOP.w, TOP.h); g.clip();   // keep it in this panel
+  g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
   const lo = Math.floor(Math.min(...xs) / 10) * 10, hi = Math.ceil(Math.max(...xs) / 10) * 10;
   const lo2 = Math.floor(Math.min(...ys) / 10) * 10, hi2 = Math.ceil(Math.max(...ys) / 10) * 10;
-  for (let v = lo; v <= hi; v += 10) { g.beginPath(); g.moveTo(m.x(v), 0); g.lineTo(m.x(v), g.H); g.stroke(); }
-  for (let v = lo2; v <= hi2; v += 10) { g.beginPath(); g.moveTo(0, m.y(v)); g.lineTo(g.W, m.y(v)); g.stroke(); }
+  for (let v = lo; v <= hi; v += 10) {
+    g.beginPath(); g.moveTo(m.x(v), TOP.y); g.lineTo(m.x(v), TOP.y + TOP.h); g.stroke();
+  }
+  for (let v = lo2; v <= hi2; v += 10) {
+    g.beginPath(); g.moveTo(0, m.y(v)); g.lineTo(g.W, m.y(v)); g.stroke();
+  }
   g.restore();
 
-  // wind arrow
+  label(g, 'LOOKING STRAIGHT DOWN  ·  where it goes', 16, 20, INK3);
+
   const w = windVec();
   if (S.wind > 0.05) {
-    const px = 78, py = 52, sc = 26;
+    const px = 92, py = TOP.y + 34, sc = 27;
     arrow(g, px, py, w[0] / S.wind * sc, -w[1] / S.wind * sc, INK3, 3);
-    label(g, `wind ${fmt(S.wind, 1)} m/s`, px - 26, py + 30, INK3);
+    label(g, `wind ${fmt(S.wind, 1)} m/s`, px - 34, py + 32, INK3);
   }
 
   cross(g, m.x(TARGET[0]), m.y(TARGET[1]), 9, INK);
@@ -133,31 +219,80 @@ function drawDrop(runs, frac = 1) {
 
   for (const r of runs) {
     const t = r.res.track, n = Math.max(2, Math.floor(t.length * frac));
-    const pts = t.slice(0, n).map(p => [m.x(p[1]), m.y(p[2])]);
-    line(g, pts, r.color, 2.6);
-    if (frac >= 1) {
-      const L = r.res.landing;
-      dot(g, m.x(L[0]), m.y(L[1]), 6, r.color);
-    } else if (pts.length) {
-      const p = pts[pts.length - 1];
-      dot(g, p[0], p[1], 5.5, r.color);
+    // whole route as a ghost, so the trajectory is readable even mid-flight
+    if (frac < 1) line(g, t.map(p => [m.x(p[1]), m.y(p[2])]), r.color + '2E', 2.4);
+    line(g, t.slice(0, n).map(p => [m.x(p[1]), m.y(p[2])]), r.color, 2.8);
+    if (frac >= 1) dot(g, m.x(r.res.landing[0]), m.y(r.res.landing[1]), 6, r.color);
+    else {
+      const p = t[n - 1];
+      parafoilTop(g, m.x(p[1]), m.y(p[2]), p[4], 1.15, r.color);
     }
   }
-  dot(g, m.x(0), m.y(0), 5, INK, null);
-  label(g, 'RELEASE', m.x(0) + 12, m.y(0) - 10, INK);
+  helicopter(g, m.x(0), m.y(0), 1.0);
+  label(g, 'DROPPED HERE', m.x(0) - 18, m.y(0) + 32, INK);
 
-  // scale bar
-  const barM = 20, px0 = g.W - 40 - barM * m.s, py0 = g.H - 26;
+  const barM = 20, px0 = g.W - 42 - barM * m.s, py0 = TOP.y + TOP.h - 12;
   line(g, [[px0, py0], [px0 + barM * m.s, py0]], INK3, 2.5);
   label(g, `${barM} m`, px0 + barM * m.s / 2, py0 - 8, INK3, 'center');
+
+  /* ------------------------------------------------ panel 2: from the side */
+  g.save(); g.strokeStyle = LINE; g.lineWidth = 2; g.setLineDash([6, 6]);
+  g.beginPath(); g.moveTo(20, SIDE.y - 16); g.lineTo(g.W - 20, SIDE.y - 16); g.stroke();
+  g.restore();
+  label(g, 'FROM THE SIDE  ·  it glides forward while it comes down',
+    16, SIDE.y - 26, INK3);
+
+  const pad = 52, gy = SIDE.y + SIDE.h - 40;
+  const maxD = Math.max(...runs.map(r => {
+    const d = pathDistance(r.res.track); return d[d.length - 1];
+  }), 1);
+  const X = d => pad + d / maxD * (g.W - pad - 54);
+  const Y = z => gy - z / Math.max(S.height, 1) * (SIDE.h - 84);
+
+  // height gridlines, so the drop reads as a real altitude
+  g.save(); g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
+  for (let k = 1; k <= 4; k++) {
+    const z = S.height * k / 4;
+    g.beginPath(); g.moveTo(pad, Y(z)); g.lineTo(g.W - 30, Y(z)); g.stroke();
+  }
+  g.restore();
+  for (let k = 1; k <= 4; k++) {
+    const z = S.height * k / 4;
+    label(g, `${Math.round(z)}`, pad - 10, Y(z) + 4, INK3, 'right');
+  }
+
+  ground(g, pad - 22, g.W - 24, gy);
+  label(g, '0', pad - 10, gy + 4, INK3, 'right');
+  label(g, 'HEIGHT  m', pad + 4, Y(S.height) - 16, INK3, 'left');
+  label(g, 'DISTANCE FLOWN THROUGH THE AIR  m', (g.W) / 2, SIDE.y + SIDE.h - 6,
+    INK3, 'center');
+  label(g, `${Math.round(maxD)} m`, X(maxD), SIDE.y + SIDE.h - 20, INK3, 'center');
+
+  for (const r of runs) {
+    const t = r.res.track, d = pathDistance(t);
+    const n = Math.max(2, Math.floor(t.length * frac));
+    if (frac < 1) line(g, t.map((p, i) => [X(d[i]), Y(p[3])]), r.color + '2E', 2.4);
+    line(g, t.slice(0, n).map((p, i) => [X(d[i]), Y(p[3])]), r.color, 2.8);
+    if (frac < 1) {
+      const i = n - 1;
+      parafoilSide(g, X(d[i]), Y(t[i][3]) - 9, 1.15, r.color);
+    } else {
+      dot(g, X(d[d.length - 1]), Y(0), 5.5, r.color);
+    }
+  }
+  helicopter(g, X(0), Y(S.height) - 11, 0.95);
 }
 
 const MODE_COLOR = { none: PINK, ekf: BLUE, true: GRN };
 const MODE_NAME = { none: 'no estimate', ekf: 'EKF', true: 'true wind' };
 
+const EXPLAIN = '<strong>Top:</strong> looking straight down, like a map. ' +
+  '<strong>Bottom:</strong> from the side, so you can watch it glide forward as it ' +
+  'comes down. ';
+
 function animateDrop(runs) {
   if (anim) cancelAnimationFrame(anim);
-  const t0 = performance.now(), dur = 1500;
+  const t0 = performance.now(), dur = 2600;
   const step = now => {
     const f = Math.min(1, (now - t0) / dur);
     drawDrop(runs, f);
@@ -176,9 +311,9 @@ function doDrop() {
   $('roAir').textContent = `${fmt(d.vh, 1)} m/s`;
   $('roTurn').textContent = `${fmt(d.R, 1)} m`;
   $('roTime').textContent = `${fmt(S.height / d.vz, 0)} s`;
-  $('noteDrop').textContent =
-    `Flying with ${MODE_NAME[S.mode]}. The compass is ${S.bias > 0 ? '+' : ''}${S.bias}° out, ` +
-    `which the filter has to work out too.`;
+  $('noteDrop').innerHTML = EXPLAIN +
+    `Flying with <strong>${MODE_NAME[S.mode]}</strong>; the compass is ` +
+    `${S.bias > 0 ? '+' : ''}${S.bias}° out, which the filter has to work out too.`;
   checkPenetration(d);
 }
 
@@ -192,10 +327,11 @@ function doRace() {
   $('roAir').textContent = `${fmt(d.vh, 1)} m/s`;
   $('roTurn').textContent = `${fmt(d.R, 1)} m`;
   $('roTime').textContent = `${fmt(S.height / d.vz, 0)} s`;
-  $('noteDrop').innerHTML =
-    `<span style="color:${PINK}">pink</span> no estimate &middot; ` +
-    `<span style="color:${BLUE}">blue</span> EKF &middot; ` +
-    `<span style="color:${GRN}">green</span> true wind supplied &mdash; same conditions, same seed.`;
+  $('noteDrop').innerHTML = EXPLAIN +
+    `Three packages, identical conditions: ` +
+    `<span style="color:${PINK}"><strong>pink</strong> knows nothing</span>, ` +
+    `<span style="color:${BLUE}"><strong>blue</strong> estimates the wind</span>, ` +
+    `<span style="color:${GRN}"><strong>green</strong> is simply told the wind</span>.`;
   checkPenetration(d);
 }
 
@@ -253,18 +389,23 @@ function drawLoad() {
   // axes
   line(g, [[pad, pad - 14], [pad, g.H - pad], [g.W - 50, g.H - pad]], LINE, 2);
 
-  // infeasible band: airspeed below the current wind
+  // Everything left of this loading is too slow to fly in the current wind.
   const band = [];
   for (let L = L0; L <= L1; L += 0.01) band.push([X(L), Yv(glideState(L, 1, CL, CD).vh)]);
-  g.save();
-  g.beginPath(); g.moveTo(X(L0), g.H - pad);
-  for (const [x, y] of band) g.lineTo(x, Math.min(y, Yv(S.wind)));
-  g.lineTo(X(L1), g.H - pad); g.closePath();
-  g.fillStyle = 'rgba(255,46,147,.10)'; g.fill(); g.restore();
+  const Lcrit = minLoading(S.wind);
+  if (Lcrit > L0) {
+    const xEnd = X(Math.min(Lcrit, L1));
+    g.save();
+    g.fillStyle = 'rgba(255,46,147,.13)';
+    g.fillRect(X(L0), pad - 14, xEnd - X(L0), g.H - pad - (pad - 14));
+    g.restore();
+    line(g, [[xEnd, pad - 14], [xEnd, g.H - pad]], PINK, 2.5, [6, 5]);
+    if (xEnd - X(L0) > 78)
+      label(g, 'TOO SLOW TO FLY', (X(L0) + xEnd) / 2, pad + 4, PINK, 'center');
+  }
 
-  line(g, [[pad, Yv(S.wind)], [g.W - 50, Yv(S.wind)]], PINK, 2.5, [7, 6]);
-  label(g, `wind ${fmt(S.wind, 1)} m/s — below this it cannot fly upwind`,
-    g.W - 54, Yv(S.wind) - 8, PINK, 'right');
+  line(g, [[pad, Yv(S.wind)], [g.W - 50, Yv(S.wind)]], INK3, 2, [7, 6]);
+  label(g, `wind ${fmt(S.wind, 1)} m/s`, g.W - 54, Yv(S.wind) - 8, INK3, 'right');
 
   // curves
   line(g, band, BLUE, 3.5);

@@ -108,6 +108,9 @@
     asked for <strong>targeted drops</strong>. A package with no guidance goes wherever the air goes.</p>
   <p>Set the conditions, then drop. <strong>The guidance never sees the true wind</strong> unless
     you tell it to.</p>
+  <p>The coloured line is the <strong>trajectory</strong> &mdash; the actual path the package takes
+    through the air on its way down. It is not falling straight: it is a small glider, so it flies
+    forward the whole time, and the guidance decides where that flying is spent.</p>
 
   <div class="grid">
     <div>
@@ -135,7 +138,7 @@
     </div>
 
     <div>
-      <canvas id="cDrop" width="1000" height="620"></canvas>
+      <canvas id="cDrop" width="1000" height="820"></canvas>
       <div class="warn" id="warnPen"></div>
       <div class="readout">
         <div><div class="ro-num pink" id="roMiss">&mdash;</div><div class="ro-lab">missed by</div></div>
@@ -143,8 +146,9 @@
         <div><div class="ro-num sm" id="roTurn">&mdash;</div><div class="ro-lab">turn radius</div></div>
         <div><div class="ro-num sm" id="roTime">&mdash;</div><div class="ro-lab">time aloft</div></div>
       </div>
-      <div class="note" id="noteDrop">Pink = no wind estimate · Blue = EKF · Green = true wind supplied.
-        The cross is the target.</div>
+      <div class="note" id="noteDrop">Two views of the same flight. <strong>Top:</strong> looking
+        straight down, like a map. <strong>Bottom:</strong> from the side, so you can see it
+        gliding forward as it comes down. The helicopter drops it; the cross is the target.</div>
     </div>
   </div>
 </section>

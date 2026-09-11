@@ -21,6 +21,7 @@
 \usepackage{subcaption}
 \usepackage{xcolor}
 \usepackage{fancyhdr}
+\usepackage{listings}
 \PassOptionsToPackage{hyphens}{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
@@ -34,16 +35,43 @@
 
 % ------------------------------------------------- header / footer (minimal)
 \definecolor{accent}{HTML}{3A5BA0}
+\definecolor{codegrey}{HTML}{6E6A62}
+\definecolor{coderule}{HTML}{D8D2C2}
+
+% Change this one word if the class is different.
+\newcommand{\theclass}{Class XII}
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\footnotesize\textsc{Airdrop Trajectory Optimisation for Disaster
+\fancyhead[C]{\footnotesize\textsc{Airdrop Trajectory Optimisation for Disaster
 Relief}}
-\fancyfoot[L]{\footnotesize\textsc{Amulya D}}
+\fancyfoot[L]{\footnotesize\textsc{\theclass\ $\cdot$ Atomic Energy Central
+School, Mysuru}}
 \fancyfoot[R]{\footnotesize\thepage}
 \renewcommand{\headrule}{\color{accent}\hrule height 0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 \setlength{\headheight}{14pt}
+
+% ------------------------------------------------------------ code listings
+\lstdefinestyle{py}{
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{codegrey}\itshape,
+  stringstyle=\color{codegrey},
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{coderule},
+  framesep=7pt,
+  aboveskip=10pt, belowskip=4pt,
+  breaklines=true,
+  captionpos=b,
+  literate={-}{{-}}1 {>}{{>}}1 {<}{{<}}1,
+}
+\lstset{style=py}
+\renewcommand{\lstlistingname}{Listing}
+\crefname{lstlisting}{listing}{listings}
+\Crefname{lstlisting}{Listing}{Listings}
 
 \begin{document}
 
@@ -68,6 +96,10 @@ FOR DISASTER RELIEF\par}
 \vfill
 
 {\large BY: AMULYA D\par}
+
+\vspace{6pt}
+{\footnotesize Interactive version:
+\url{https://1101-hub.github.io/guided-airdrop/}\par}
 
 \vspace{10pt}
 {\color{accent}\rule{\textwidth}{0.8pt}}
@@ -128,6 +160,28 @@ segments in one of six orderings (Dubins, 1957). All six closed forms were
 verified against step-wise integration (largest endpoint disagreement
 $9.0\times10^{-12}$~m over $3{,}514$ solutions).
 
+\begin{lstlisting}[caption={Path planning, from
+\texttt{model/dubins.py}. An infinite question --- which curve is best? ---
+becomes picking the smallest of six numbers. A shape that cannot connect the two
+configurations returns \texttt{None} and is skipped.},label=lst:dubins]
+def solve(start, end, R, only=None):
+    """Shortest Dubins path: try all six shapes, keep the shortest."""
+    d = np.hypot(x1 - x0, y1 - y0) / R       # normalise into units of R
+    phi = np.arctan2(y1 - y0, x1 - x0)
+    a, b = _mod2pi(th0 - phi), _mod2pi(th1 - phi)
+
+    best = None
+    for name in (only or TYPES):             # LSL LSR RSL RSR RLR LRL
+        out = _SOLVERS[name](a, b, d)
+        if out is None:                      # cannot connect these two
+            continue
+        t, p, q = out
+        length = (t + p + q) * R
+        if best is None or length < best["length"]:
+            best = {"type": name, "length": length, "R": R}
+    return best
+\end{lstlisting}
+
 \paragraph{Path-length control.} Sink rate is constant, so time aloft and
 distance flown are fixed at release: the path needs prescribed, not minimum,
 length. A track at angle $\alpha$ to the bearing extends path length by
@@ -136,12 +190,52 @@ budget $s$; $\alpha$ alternates in sign. As altitude falls,
 $d/s \to 1$ and $\alpha \to 0$, giving a straight final approach with no mode
 change. Excess altitude is spent in a holding circle.
 
+\begin{lstlisting}[caption={The control law, from
+\texttt{model/guidance.py}. \texttt{d\_eff} is the Dubins length rather than the
+straight-line distance, so the turn needed to line up is charged to the budget.
+Using the straight line made the vehicle believe it had height to spare, and it
+landed short.},label=lst:weave]
+ratio = d_eff / budget          # Dubins length, not straight-line distance
+
+if ratio < np.cos(self.alpha_max):
+    # ORBIT: too high even for the steepest weave, so make no net progress
+    radial_err = np.clip((d - R) / max(R, 1e-6), -1.0, 1.0)
+    desired = bearing + self.side * (np.pi/2.0 - radial_err * np.pi/2.0)
+else:
+    # WEAVE: cos(alpha) = d / budget, alternating side to side
+    alpha = np.arccos(np.clip(ratio, -1.0, 1.0))
+    err = _wrap(th - bearing)
+    if self.side > 0 and err > alpha:     self.side = -1.0
+    elif self.side < 0 and err < -alpha:  self.side = 1.0
+    desired = bearing + self.side * alpha
+
+turn = np.sign(_wrap(desired - th))
+\end{lstlisting}
+
 \paragraph{Wind estimation.} No wind sensor is carried. An EKF (Kalman, 1960)
 maintains wind components $w_x$, $w_y$, airspeed $v_a$ and magnetometer bias $b$
 from GNSS ground velocity, nonlinearity entering through $b$ in the heading
 trigonometry. A headwind and an airspeed underestimate are indistinguishable on a
 fixed heading, leaving the state unobservable; turning separates them, and
 path-length control already turns.
+
+\begin{lstlisting}[caption={The measurement update, from
+\texttt{model/ekf.py}. The bias $b$ sits inside the heading trigonometry, which
+is what makes the problem nonlinear and the filter an \emph{extended} one; with
+$b$ known the same problem would be linear.},label=lst:ekf]
+wx, wy, va, b = self.x
+th = heading_meas + b                      # b is the compass bias: the
+c, s = np.cos(th), np.sin(th)              # nonlinearity that forces an EKF
+
+h = np.array([va * c + wx, va * s + wy])   # predicted ground velocity
+H = np.array([[1.0, 0.0, c, -va * s],      # Jacobian dh/dx
+              [0.0, 1.0, s,  va * c]])
+
+y = np.asarray(v_ground_meas, float) - h   # innovation
+S = H @ self.P @ H.T + self.R
+K = self.P @ H.T @ np.linalg.inv(S)        # Kalman gain
+self.x = self.x + K @ y
+\end{lstlisting}
 
 \paragraph{Simulation.} Descent is integrated at $\Delta t = 0.05$~s, replanning
 every step, and guidance sees only GNSS velocity with Gaussian noise of
