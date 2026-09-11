@@ -7,11 +7,11 @@
 import {
   glideState, turnRadius, minLoading, dubinsSolve, dubinsAll, dubinsSample,
   simulate, median, rng,
-} from './physics.js?v=7';
+} from './physics.js?v=8';
 import {
   ctx2d, clear, mapper, line, dot, cross, label, arrow,
   drawDrop, INK, INK3, LINE, PINK, BLUE, GRN, YEL,
-} from './draw.js?v=7';
+} from './draw.js?v=8';
 
 const CL = 0.80, CD = 0.27, BANK = 20, TARGET = [20, 10];
 const $ = id => document.getElementById(id);
@@ -26,7 +26,7 @@ const MODE_NAME = { none: 'no idea about the wind',
 const S = {
   wind: 1.6, dir: 45, height: 40, load: 1.2, bias: 6,
   mode: 'ekf', straight: false,
-  current: null, prev: null, attempts: [],
+  current: null, prev: null, lastDrop: null, attempts: [],
 };
 const windVec = () => {
   const a = S.dir * Math.PI / 180;
@@ -73,8 +73,10 @@ function refreshDrop({ animate: doAnim = false, record = false, race = false } =
     ? ['none', 'ekf', 'true'].map(mo => ({ mode: mo, color: MODE_COLOR[mo], res: runDrop(mo) }))
     : [{ mode: S.mode, color: MODE_COLOR[S.mode], res: runDrop(S.mode) }];
 
-  if (record && S.current && !S.current.race) S.prev = S.current.runs[0];
-  if (race) S.prev = null;
+  // Compare against the last drop the user actually PRESSED, never against a
+  // slider preview — otherwise changing a setting silently becomes "last try"
+  // and the verdict reads 0.0 m.
+  S.prev = race ? null : (S.lastDrop || null);
   S.current = { runs, race };
 
   if (doAnim) animate(); else paint(1);
@@ -93,6 +95,7 @@ function refreshDrop({ animate: doAnim = false, record = false, race = false } =
   $('roTime').textContent = `${fmt(S.height / d.vz, 0)} s`;
 
   if (record && !race) {
+    S.lastDrop = runs[0];
     S.attempts.push({ miss, mode: S.mode, wind: S.wind, load: S.load,
                       height: S.height, bias: S.bias });
     if (S.attempts.length > 10) S.attempts.shift();
@@ -498,7 +501,7 @@ $('bDrop').addEventListener('click', () => refreshDrop({ animate: true, record: 
 $('bRace').addEventListener('click', () => refreshDrop({ animate: true, race: true }));
 $('b50').addEventListener('click', doMany);
 $('bReset').addEventListener('click', () => {
-  S.attempts = []; S.prev = null; S.current = null;
+  S.attempts = []; S.prev = null; S.current = null; S.lastDrop = null;
   renderAttempts(); refreshDrop();
 });
 
