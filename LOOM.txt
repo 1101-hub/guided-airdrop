@@ -1,15 +1,12 @@
 ═══════════════════════════════════════
- AIRDROP · 2 MIN SCREEN DEMO  (v2)
+ AIRDROP · 2 MIN SCREEN DEMO  (v3)
  paste this into the teleprompter
 ═══════════════════════════════════════
 
- WHAT CHANGED FROM v1
-   v1 was a good demo and a bad explanation.
-   It never said you built a model, never said
-   how a parachute can steer at all, and its
-   two best moments (the wandering, and the
-   W-squared rule) both rested on ideas it
-   never taught. All four are fixed below.
+ THE RULE FOR THIS VERSION
+   Say what you DID. Never read a formula
+   out loud — the equations are on screen,
+   point at them and describe them in words.
 
  BEFORE YOU HIT RECORD
    · refresh the page (Ctrl+Shift+R)
@@ -37,7 +34,7 @@ and nothing's steering it.
 It landed twenty-four metres off.
 
 
-───────────────────────────────  0:12
+───────────────────────────────  0:10
 [ stay put · don't scroll ]
 
 In the Assam floods last July, /
@@ -45,89 +42,90 @@ eighty thousand people could only
 be reached by air.
 
 So I built a mathematical model
-of a parachute that steers itself.
+of a parachute that steers itself
+to a target.
 
 
 ───────────────────────────────  0:24
-         ** THE STEERING MATHS **
+        ** WHAT I ACTUALLY BUILT **
 [ SCROLL to 02 · IT ISN'T A NORMAL PARACHUTE ]
 
-It's a parafoil — a wing. /
-It glides forward, so pulling one side
-turns it.
+It's a parafoil — a wing, not a dome. /
+It glides forward as it falls,
+and pulling one side turns it.
 
-Its sink rate is constant. /
-So the moment it's dropped, its time
-in the air is fixed — and so is the
-distance it can fly. That's its budget.
+From its weight and its canopy size /
+I worked out how fast it flies
+and how tightly it can turn.
 
-The target is nearer than that, /
-so it has flying to waste.
+It sinks at a steady rate. /
+So the moment it's dropped I know
+how long it has in the air —
+and how far it can fly.
 
-Fly at an angle alpha off the line
-and the path stretches by one over cos alpha.
+I wrote the steering to spend
+exactly that. /
+That's why it weaves instead of
+arriving early.
 
-So set cos alpha to distance over budget. /
-That is the steering law.
 
-
-───────────────────────────────  0:56
-          ** THE WIND MATHS **
+───────────────────────────────  0:58
+        ** WORKING OUT THE WIND **
 [ SCROLL to 03 · NO WIND SENSOR ON BOARD ]
 [ CLICK "force it straight" ]
 
-There's no wind sensor. /
-Ground velocity is air velocity plus wind,
-so wind is ground minus air.
+It carries no wind sensor. /
+I wrote a filter that works
+the wind out for itself.
 
-GPS gives the ground part, /
-the glide equation the air part.
+GPS knows how fast it's crossing
+the ground. /
+My model knows how fast it moves
+through the air.
+The wind is what's left.
 
-But in a straight line, a headwind and
-a slower airspeed are the same vector.
-
-Forced straight — /
-three metres a second wrong.
+But flying straight, you can't tell
+a headwind from simply flying slower. /
+Forced straight — it's three metres
+a second wrong.
 
 [ CLICK "let it turn" ]
 
-Turning separates them: the wind stays put,
-your airspeed rotates with you.
+Turning tells them apart.
 
 Four centimetres.
 
 
-───────────────────────────────  1:24
+───────────────────────────────  1:26
 [ SCROLL BACK UP to the first drop ]
 
-That weaving from cos alpha
-is the turning. /
+And it was already turning — /
+that's the weaving.
 
-Burning off height and finding the wind
-are the same manoeuvre.
-I didn't add anything.
+So working out the wind
+cost nothing extra.
 
 
 ───────────────────────────────  1:36
-        ** WHERE THE LIMIT COMES FROM **
+          ** WHAT I FOUND **
 [ SCROLL to 06 · THE FINDING ]
 
-Lift equals weight. /
-Solve for speed, and only mass over area
-survives — the wing loading.
+Then I tested every combination — /
+three thousand drops, every weight
+against every wind.
 
-Turn radius goes as speed squared, /
-speed as the root of loading —
-so radius goes straight as loading.
+A heavier one flies faster,
+so it handles more wind. /
+But it turns wider, so it corrects
+less well at the end.
 
-To fly in wind W you need speed above W, /
-so loading grows as W squared.
+Double the wind you build for /
+and you need four times the weight —
+and that turns four times wider.
 
-Put them together: /
-the tightest turn you can make
-grows as W squared.
-
-Twice the wind, four times the error.
+So every wind has a best weight. /
+And it's only ballast — you set it
+on the day.
 
 ───────────────────────────────  2:00
                                   END
@@ -138,44 +136,36 @@ Twice the wind, four times the error.
  DON'T READ THIS PART — reference only
 ═══════════════════════════════════════
 
- THE FOUR PIECES OF MATHS IN THE VIDEO
-   1. cos alpha = d / s
-      Sink rate is constant, so time aloft and
-      path length are fixed at release. Flying
-      at alpha to the target stretches the path
-      by 1/cos alpha, so alpha is set from the
-      ratio of distance to budget.
-   2. wind = ground velocity - air velocity
-      GPS gives the first, the glide equation
-      the second. In a straight line a headwind
-      and a low airspeed are the same vector —
-      unobservable. Turning separates them.
-   3. v = sqrt(2mg / rho S C_L)
-      Lift equals weight; everything cancels
-      except mass over area.
-   4. R = v^2 / g tan phi, with v > W
-      so R_min grows as W squared.
+ WHAT THE JUDGE SHOULD BE ABLE TO REPEAT
+   1. She built a mathematical model of a
+      self-steering relief parafoil.
+   2. It glides, so it can be steered — and it
+      has a fixed amount of flying in it, which
+      is why it weaves.
+   3. It finds the wind with no wind sensor,
+      from GPS plus the flight model — and only
+      turning makes that possible, which it was
+      doing anyway.
+   4. Heavier handles more wind but turns wider,
+      so every wind has a best weight — and the
+      weight is just ballast.
 
-   Each is on screen while you say it:
-   1 in section 02, 2 in 03, 3 and 4 in 06.
-   If a judge cannot repeat any of them back,
-   the video has not done its job.
-
- THIS IS A MATHS CATEGORY
-   Recreational Mathematical Modelling. The
-   drop animation is the hook, not the entry.
-   The entry is the four lines above — say
-   them out loud, point at them on screen.
+ THE MATHS IS ON SCREEN, NOT IN YOUR MOUTH
+   section 02   cos alpha = d / s
+   section 03   wind = ground velocity - air velocity
+   section 06   v = sqrt(2mg / rho S C_L)
+                R = v^2 / g tan phi
+                R_min proportional to W^2
+   Point at them. Describe them in words.
+   If a judge asks, you can walk through any
+   of them — but never read one aloud.
 
  NUMBERS THAT SHOULD APPEAR
    cold open drop ........... 23.9 m
    second drop .............. 2.3 m  (green, 21.6 better)
    forced straight .......... 2.82 m/s
    let it turn .............. 0.04 m/s
-   50 drops ................. 9.8 m  vs  3.6 m
-
-   If a number is different, a slider moved.
-   Reload, redo the setup, start again.
+   design chart ............. 13 x 11 grid, 24 drops each
 
  NEVER SAY
    · "these are the paper's numbers"  (on screen = 50 drops,
@@ -184,17 +174,17 @@ Twice the wind, four times the error.
      overlap — it is NOT separated)
    · "nobody has done this before"  (they have — say so first)
 
- IF YOU RUN LONG
-   cut the 50 drops at 1:38.
-   NEVER cut 0:24 — it is the setup for both
-   the callback and the finding.
-
- PAGE ORDER NOW MATCHES THE SCRIPT
+ PAGE ORDER MATCHES THE SCRIPT
    01 the toy · 02 how it steers · 03 the wind
    04 the result · 05 how heavy · 06 the finding
    07 design chart · 08 six shapes · 09 write-up
    You only ever scroll DOWN, except the one
    deliberate jump back at 1:26.
+
+ IF YOU RUN LONG
+   trim the Assam lines at 0:10.
+   NEVER cut 0:24 — it is the only place the
+   model itself gets explained.
 
  IF ASKED: isn't the one that's TOLD the wind better?
    On the median, a bit — but the error bars overlap,
@@ -206,12 +196,11 @@ Twice the wind, four times the error.
    They have. Naval Postgraduate School lands one within
    3 metres. ParaDrone flies these paths on a hobby
    microcontroller. What neither of them publishes is how
-   the weight and the wind together set the limit on
-   accuracy. That part is mine.
+   the weight and the wind together decide the accuracy.
+   That part is mine.
 
  IF ASKED: is this simulated or real?
-   Simulated — it is a mathematical model, and I say so
-   in the video. No turbulence, no canopy flexing, no
-   servo lag, so the numbers are a best case. The model
-   names a test build — 1 m2 canopy, 0.5 to 0.8 kg — so a
-   real flight can prove it wrong.
+   Simulated — a mathematical model, and I say so in the
+   video. No turbulence, no canopy flexing, no servo lag.
+   The model names a test build — 1 m2 canopy, 0.5 to
+   0.8 kg — so a real flight can check it.
