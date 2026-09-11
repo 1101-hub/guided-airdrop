@@ -211,10 +211,15 @@
       <p>This is a <strong>parafoil</strong> &mdash; the kind skydivers land. It's a wing, so it
         glides <em>forward</em> while it comes down, and pulling one side makes it turn. That is
         the only reason steering it is possible at all.</p>
-      <p>But it can't hover and it can't stop. From the moment it leaves the helicopter it has a
-        <strong>fixed amount of flying in it</strong>: a set time in the air, so a set distance it
-        will cover. It can spend that going straight at the target, or it can wander. It cannot
-        save it for later.</p>
+      <p>But it can't hover and it can't stop. Its sink rate is constant, so the moment it leaves
+        the helicopter its time in the air is fixed &mdash; and so is the distance it will fly.
+        Call that budget <em>s</em>. The target is only <em>d</em> away, and <em>d</em> is smaller,
+        so it has flying to waste.</p>
+      <div class="eq">cos&nbsp;&alpha; = d / s
+        <small>Fly at angle &alpha; to the target and your path stretches by 1/cos&nbsp;&alpha;.
+        Set &alpha; from that and the extra flying is spent exactly. As it descends <em>d/s</em>
+        rises to 1, &alpha; falls to 0, and the weave straightens into a final approach on its
+        own &mdash; no switching logic.</small></div>
       <button class="btn" id="bGlide">&#9660; drop both</button>
       <div class="readout">
         <div><div class="ro-num sm" id="roRound">&mdash;</div><div class="ro-lab">round parachute</div></div>
@@ -310,8 +315,15 @@
     <div>
       <p class="lead">To fly in wind <em>W</em> you need weight going up as <em>W&sup2;</em>.
         And heavier means wider turns.</p>
-      <div class="eq">R<sub>min</sub> &#8733; W&sup2;
-        <small>Verified to 14 decimal places &mdash; an identity of the model, not a fitted curve.</small></div>
+      <div class="eq">v = &radic;(2mg / &rho;SC<sub>L</sub>) &nbsp;&rarr;&nbsp; v &#8733; &radic;(m/S)<br>
+        R = v&sup2; / g&thinsp;tan&thinsp;&phi; &nbsp;&rarr;&nbsp; R &#8733; m/S<br>
+        v &gt; W &nbsp;&rarr;&nbsp; (m/S)<sub>min</sub> &#8733; W&sup2;<br>
+        <b>&there4; R<sub>min</sub> &#8733; W&sup2;</b>
+        <small>Lift equals weight, so only the wing loading m/S sets the speed. Turn radius goes
+        as speed squared, so it goes straight as loading. Flying in wind W needs speed above W,
+        which needs loading as W&sup2;. Compose them and the tightest turn available &mdash; the
+        floor on landing error &mdash; grows as W&sup2;. Verified to 14 decimal places: an identity
+        of the model, not a fitted curve.</small></div>
       <p>So building for wind you never meet costs you accuracy <strong>all the time</strong>,
         even on a still day.</p>
     </div>
@@ -370,6 +382,6 @@
 <p class="foot">Amulya D · Atomic Energy Central School, Mysuru</p>
 </div>
 
-<script type="module" src="app.js?v=9"></script>
+<script type="module" src="app.js?v=10"></script>
 </body>
 </html>
