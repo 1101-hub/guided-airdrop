@@ -2,14 +2,16 @@
    app.js — wiring for the interactive page. Physics comes from physics.js
    (a verified port of ../model/*.py); the drop picture comes from draw.js.
    =========================================================================== */
+/* ?v= is bumped on every deploy so browsers cannot serve a stale module
+   alongside fresh HTML. */
 import {
   glideState, turnRadius, minLoading, dubinsSolve, dubinsAll, dubinsSample,
   simulate, median, rng,
-} from './physics.js';
+} from './physics.js?v=5';
 import {
   ctx2d, clear, mapper, line, dot, cross, label, arrow,
   drawDrop, INK, INK3, LINE, PINK, BLUE, GRN, YEL,
-} from './draw.js';
+} from './draw.js?v=5';
 
 const CL = 0.80, CD = 0.27, BANK = 20, TARGET = [20, 10];
 const $ = id => document.getElementById(id);
@@ -512,4 +514,6 @@ fetch('design_grid.json').then(r => r.json()).then(j => { GRID = j; drawChart();
 syncLabels();
 drawDub();
 redrawAll();
-refreshDrop({ animate: true });
+// Paint a finished drop straight away. Animating on load left the canvas
+// looking empty for three seconds, which read as "nothing is happening".
+refreshDrop();

@@ -113,8 +113,8 @@ unreached (Tribune India, 2026; Onmanorama, 2026).
 Indian Air Force helicopters airdropped supplies, and the Chief Minister stated
 an intention to attempt ``targeted drops in larger quantities'' (ANI, 2026). A
 payload released without guidance is advected by the air mass throughout its
-descent, so a requirement for targeted delivery implies
-current delivery is untargeted.
+descent: a requirement for targeted delivery implies current delivery is
+untargeted.
 
 A parafoil is a ram-air canopy that glides, so horizontal displacement can be
 commanded during descent. Guided parafoils are established
@@ -123,6 +123,7 @@ $3$~m of target (Naval Postgraduate School, n.d.), and the open-source ParaDrone
 plans Dubins paths on microcontroller hardware (Daniel, n.d.). This work claims
 no priority over either; it supplies a design analysis they do not report,
 relating wing loading and wind speed to the bound on landing error.
+\Cref{fig:drop} shows one descent flown both ways.
 
 \begin{figure}[htbp]
 \centering
@@ -191,7 +192,8 @@ every step, and guidance sees only GNSS velocity with Gaussian noise of
 $0.25$~m\,s$^{-1}$ and a magnetometer bias from $\pm12^{\circ}$, never the
 simulated wind. Each trial draws wind $0$--$3.2$~m\,s$^{-1}$ with uniform heading
 and release height $20$--$60$~m, flown three times under identical conditions:
-\emph{no-estimate} (still air assumed), \emph{EKF} (wind estimated onboard) and \emph{true-wind} (simulated wind supplied). \emph{Miss distance} is
+\emph{no-estimate} (still air), \emph{EKF} (estimated onboard) and
+\emph{true-wind} (supplied). \emph{Miss distance} is
 horizontal separation between touchdown and target; intervals are bootstrap
 percentiles from $20{,}000$ resamples.
 
@@ -220,7 +222,8 @@ track ends mark touchdown. Touchdown points are dispersed in
 \label{fig:traj}
 \end{figure}
 
-\Cref{tab:results} gives miss distance over $N = 150$ randomised drops. Compared
+\Cref{fig:traj} shows eight descents per configuration; \cref{tab:results} covers
+$N = 150$ randomised drops. Compared
 trial by trial, the median reduction from adding the EKF is $4.26$~m ($95\%$ CI
 $3.08$--$6.57$), and the EKF gives the smaller miss distance in $112$ of $150$
 trials; wind velocity is recovered to a median error of $0.104$~m\,s$^{-1}$
@@ -253,8 +256,8 @@ $R/(m/S)$ is $4.7694$~m$^{3}$\,kg$^{-1}$, constant to $1.9\times10^{-14}\%$. Win
 penetration requires $v > W$, giving $(m/S)_{\min} \propto W^{2}$: for
 $W = 2.0$--$4.0$~m\,s$^{-1}$ the ratio $(m/S)_{\min}/W^{2}$ is
 $0.058722$~kg\,m$^{-2}$(m\,s$^{-1}$)$^{-2}$, constant to
-$1.2\times10^{-14}\%$. Both sit at double-precision level: these are algebraic
-identities, not empirical fits. Composing them gives
+$1.2\times10^{-14}\%$. Both sit at double-precision level: algebraic
+identities, not fits. Composing them gives
 \begin{equation}\label{eq:scaling}
 R_{\min} \;\propto\; W^{2}.
 \end{equation}
