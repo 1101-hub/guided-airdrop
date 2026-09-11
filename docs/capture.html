@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>figure capture</title>
+<style>
+  html,body{margin:0;padding:0;background:#fff;overflow:hidden}
+  /* pin the CSS size so the backing store scales with dpr instead of
+     overflowing the viewport */
+  canvas{display:block;background:#fff;width:1000px;height:820px}
+</style>
+</head>
+<body>
+<canvas id="c" width="1000" height="820"></canvas>
+<script type="module">
+import { glideState, turnRadius, simulate } from './physics.js';
+import { ctx2d, drawDrop, setFontScale, PINK, BLUE, GRN } from './draw.js';
+
+const q = new URLSearchParams(location.search);
+const num = (k, d) => q.has(k) ? parseFloat(q.get(k)) : d;
+const wind = num('wind', 2.0), dir = num('dir', 90), height = num('h', 30);
+const load = num('load', 1.2), bias = num('bias', 10);
+const mode = q.get('mode') || 'ekf';
+
+const TARGET = [20, 10];
+const g0 = glideState(load, 1.0, 0.80, 0.27);
+const params = { vh: g0.vh, vz: g0.vz, R: turnRadius(g0.vh, 20) };
+const a = dir * Math.PI / 180;
+const w = [wind * Math.cos(a), wind * Math.sin(a)];
+
+const one = m => simulate({ target: TARGET, windTrue: w, params, height0: height,
+                           mode: m, headingBiasDeg: bias, seed: 7 });
+const res = one(mode);
+const color = { none: PINK, ekf: BLUE, true: GRN }[mode];
+
+// Frame both figures identically, so the before/after pair is comparable:
+// take the bounding box of BOTH configurations and force it into each.
+const corners = [];
+for (const m of ['none', 'ekf']) {
+  const t = one(m).track;
+  const xs = t.map(p => p[1]), ys = t.map(p => p[2]);
+  corners.push([Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]);
+}
+
+setFontScale(num('fs', 1.9));   // legible when printed small in the paper
+drawDrop(ctx2d(document.getElementById('c')), {
+  runs: [{ color, res }], frac: 1, wind: w, windSpeed: wind,
+  height, target: TARGET, extraBounds: corners,
+});
+document.title = `miss ${res.miss.toFixed(2)} m`;
+</script>
+</body>
+</html>

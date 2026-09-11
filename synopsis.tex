@@ -5,10 +5,16 @@
 %  Compile: pdflatex synopsis  (twice, for cross-references)
 %
 %  Figures required in ./figures/ :
-%     fig1a_no_estimate.png    Fig 1(a)
-%     fig1b_ekf_estimate.png   Fig 1(b)
-%     design_chart.png         Fig 2
-%  All three are generated title-less; captions carry the text.
+%     drop_none.png            Fig 1(a)  screenshot from docs/ (no estimate)
+%     drop_ekf.png             Fig 1(b)  screenshot from docs/ (EKF)
+%     fig1a_no_estimate.png    Fig 2(a)
+%     fig1b_ekf_estimate.png   Fig 2(b)
+%     design_chart.png         Fig 3
+%  All are generated title-less; captions carry the text.
+%
+%  Fig 1 is captured from the interactive page at
+%    wind 2.0 m/s, direction 90 deg, height 30 m, loading 1.20, bias +10 deg
+%  Retaking it is just a matter of overwriting those two files.
 % =====================================================================
 
 \documentclass[11pt,a4paper]{article}
@@ -21,7 +27,6 @@
 \usepackage{subcaption}
 \usepackage{xcolor}
 \usepackage{fancyhdr}
-\usepackage{listings}
 \PassOptionsToPackage{hyphens}{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
@@ -35,8 +40,6 @@
 
 % ------------------------------------------------- header / footer (minimal)
 \definecolor{accent}{HTML}{3A5BA0}
-\definecolor{codegrey}{HTML}{6E6A62}
-\definecolor{coderule}{HTML}{D8D2C2}
 
 % Change this one word if the class is different.
 \newcommand{\theclass}{Class XII}
@@ -52,26 +55,6 @@ School, Mysuru}}
 \renewcommand{\footrulewidth}{0pt}
 \setlength{\headheight}{14pt}
 
-% ------------------------------------------------------------ code listings
-\lstdefinestyle{py}{
-  language=Python,
-  basicstyle=\ttfamily\scriptsize,
-  keywordstyle=\color{accent}\bfseries,
-  commentstyle=\color{codegrey}\itshape,
-  stringstyle=\color{codegrey},
-  showstringspaces=false,
-  frame=single,
-  rulecolor=\color{coderule},
-  framesep=7pt,
-  aboveskip=10pt, belowskip=4pt,
-  breaklines=true,
-  captionpos=b,
-  literate={-}{{-}}1 {>}{{>}}1 {<}{{<}}1,
-}
-\lstset{style=py}
-\renewcommand{\lstlistingname}{Listing}
-\crefname{lstlisting}{listing}{listings}
-\Crefname{lstlisting}{Listing}{Listings}
 
 \begin{document}
 
@@ -141,6 +124,30 @@ plans Dubins paths on microcontroller hardware (Daniel, n.d.). This work claims
 no priority over either; it supplies a design analysis they do not report,
 relating wing loading and wind speed to the bound on landing error.
 
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+  \centering\includegraphics[width=\textwidth]{figures/drop_none.png}
+  \caption{No wind estimate. Miss distance $7.33$~m.}
+  \label{fig:drop-none}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.49\textwidth}
+  \centering\includegraphics[width=\textwidth]{figures/drop_ekf.png}
+  \caption{EKF estimate. Miss distance $3.64$~m.}
+  \label{fig:drop-ekf}
+\end{subfigure}
+\caption{One descent, seen two ways, from the interactive model. The upper panel
+of each pair looks straight down; the lower panel is the same flight from the
+side, showing the canopy gliding forward as it descends at a constant rate. The
+helicopter marks the release point and the cross marks the target. Both panels
+use identical axes, and both are the same drop --- wind $2.0$~m\,s$^{-1}$ from
+the south, release height $30$~m, wing loading $1.2$~kg\,m$^{-2}$, magnetometer
+bias $+10^{\circ}$ --- differing only in whether the guidance estimates the wind.
+These are single flights shown to make the trajectory concrete; the statistical
+comparison is in \cref{tab:results}.}
+\label{fig:drop}
+\end{figure}
+
 % ------------------------------------------------------------------ METHODS
 \section{Methods}
 
@@ -160,27 +167,6 @@ segments in one of six orderings (Dubins, 1957). All six closed forms were
 verified against step-wise integration (largest endpoint disagreement
 $9.0\times10^{-12}$~m over $3{,}514$ solutions).
 
-\begin{lstlisting}[caption={Path planning, from
-\texttt{model/dubins.py}. An infinite question --- which curve is best? ---
-becomes picking the smallest of six numbers. A shape that cannot connect the two
-configurations returns \texttt{None} and is skipped.},label=lst:dubins]
-def solve(start, end, R, only=None):
-    """Shortest Dubins path: try all six shapes, keep the shortest."""
-    d = np.hypot(x1 - x0, y1 - y0) / R       # normalise into units of R
-    phi = np.arctan2(y1 - y0, x1 - x0)
-    a, b = _mod2pi(th0 - phi), _mod2pi(th1 - phi)
-
-    best = None
-    for name in (only or TYPES):             # LSL LSR RSL RSR RLR LRL
-        out = _SOLVERS[name](a, b, d)
-        if out is None:                      # cannot connect these two
-            continue
-        t, p, q = out
-        length = (t + p + q) * R
-        if best is None or length < best["length"]:
-            best = {"type": name, "length": length, "R": R}
-    return best
-\end{lstlisting}
 
 \paragraph{Path-length control.} Sink rate is constant, so time aloft and
 distance flown are fixed at release: the path needs prescribed, not minimum,
@@ -190,27 +176,6 @@ budget $s$; $\alpha$ alternates in sign. As altitude falls,
 $d/s \to 1$ and $\alpha \to 0$, giving a straight final approach with no mode
 change. Excess altitude is spent in a holding circle.
 
-\begin{lstlisting}[caption={The control law, from
-\texttt{model/guidance.py}. \texttt{d\_eff} is the Dubins length rather than the
-straight-line distance, so the turn needed to line up is charged to the budget.
-Using the straight line made the vehicle believe it had height to spare, and it
-landed short.},label=lst:weave]
-ratio = d_eff / budget          # Dubins length, not straight-line distance
-
-if ratio < np.cos(self.alpha_max):
-    # ORBIT: too high even for the steepest weave, so make no net progress
-    radial_err = np.clip((d - R) / max(R, 1e-6), -1.0, 1.0)
-    desired = bearing + self.side * (np.pi/2.0 - radial_err * np.pi/2.0)
-else:
-    # WEAVE: cos(alpha) = d / budget, alternating side to side
-    alpha = np.arccos(np.clip(ratio, -1.0, 1.0))
-    err = _wrap(th - bearing)
-    if self.side > 0 and err > alpha:     self.side = -1.0
-    elif self.side < 0 and err < -alpha:  self.side = 1.0
-    desired = bearing + self.side * alpha
-
-turn = np.sign(_wrap(desired - th))
-\end{lstlisting}
 
 \paragraph{Wind estimation.} No wind sensor is carried. An EKF (Kalman, 1960)
 maintains wind components $w_x$, $w_y$, airspeed $v_a$ and magnetometer bias $b$
@@ -219,23 +184,6 @@ trigonometry. A headwind and an airspeed underestimate are indistinguishable on 
 fixed heading, leaving the state unobservable; turning separates them, and
 path-length control already turns.
 
-\begin{lstlisting}[caption={The measurement update, from
-\texttt{model/ekf.py}. The bias $b$ sits inside the heading trigonometry, which
-is what makes the problem nonlinear and the filter an \emph{extended} one; with
-$b$ known the same problem would be linear.},label=lst:ekf]
-wx, wy, va, b = self.x
-th = heading_meas + b                      # b is the compass bias: the
-c, s = np.cos(th), np.sin(th)              # nonlinearity that forces an EKF
-
-h = np.array([va * c + wx, va * s + wy])   # predicted ground velocity
-H = np.array([[1.0, 0.0, c, -va * s],      # Jacobian dh/dx
-              [0.0, 1.0, s,  va * c]])
-
-y = np.asarray(v_ground_meas, float) - h   # innovation
-S = H @ self.P @ H.T + self.R
-K = self.P @ H.T @ np.linalg.inv(S)        # Kalman gain
-self.x = self.x + K @ y
-\end{lstlisting}
 
 \paragraph{Simulation.} Descent is integrated at $\Delta t = 0.05$~s, replanning
 every step, and guidance sees only GNSS velocity with Gaussian noise of

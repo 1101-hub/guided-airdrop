@@ -1,152 +1,28 @@
 /* ===========================================================================
-   app.js — wiring for the interactive page. All physics comes from
-   physics.js, which is a verified port of the Python in ../model/.
+   app.js — wiring for the interactive page. Physics comes from physics.js
+   (a verified port of ../model/*.py); the drop picture comes from draw.js.
    =========================================================================== */
 import {
   glideState, turnRadius, minLoading, dubinsSolve, dubinsAll, dubinsSample,
-  DUBINS_TYPES, simulate, median, rng, G,
+  simulate, median, rng,
 } from './physics.js';
+import {
+  ctx2d, clear, mapper, line, dot, cross, label, arrow,
+  drawDrop, INK, INK3, LINE, PINK, BLUE, GRN, YEL,
+} from './draw.js';
 
-const INK = '#141414', INK3 = '#8C877C', LINE = '#E2DCCB';
-const PINK = '#FF2E93', BLUE = '#3B54E8', GRN = '#4FA828', YEL = '#FFD12E';
-const MONO = '11px ui-monospace, Consolas, monospace';
 const CL = 0.80, CD = 0.27, BANK = 20, TARGET = [20, 10];
-
 const $ = id => document.getElementById(id);
+const fmt = (v, n = 2) => v.toFixed(n);
 
-/* Canvas helper: device-pixel-ratio aware, plus a world->screen mapper. */
-function ctx2d(cv) {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const w = cv.width, h = cv.height;
-  cv.width = w * dpr; cv.height = h * dpr;
-  cv.style.height = 'auto';
-  const g = cv.getContext('2d');
-  g.scale(dpr, dpr);
-  g.W = w; g.H = h;
-  return g;
-}
-function clear(g) { g.clearRect(0, 0, g.W, g.H); }
+const MODE_COLOR = { none: PINK, ekf: BLUE, true: GRN };
+const MODE_NAME = { none: 'no wind estimate', ekf: 'the EKF estimate', true: 'the true wind' };
 
-/* Equal-aspect map from world metres to canvas pixels, optionally into a
-   sub-rectangle of the canvas so one canvas can hold two panels. */
-function mapper(g, xs, ys, pad = 46, rect = null) {
-  const R = rect || { x: 0, y: 0, w: g.W, h: g.H };
-  let x0 = Math.min(...xs), x1 = Math.max(...xs);
-  let y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-  let sx = (x1 - x0) || 1, sy = (y1 - y0) || 1;
-  const s = Math.min((R.w - 2 * pad) / sx, (R.h - 2 * pad) / sy);
-  return {
-    s,
-    x: v => R.x + R.w / 2 + (v - cx) * s,
-    y: v => R.y + R.h / 2 - (v - cy) * s,
-  };
-}
-
-/* ------------------------------------------------------------------ icons */
-
-/* The helicopter that drops the package. */
-function helicopter(g, x, y, s = 1, color = INK) {
-  g.save(); g.translate(x, y); g.scale(s, s);
-  g.strokeStyle = color; g.fillStyle = color;
-  g.lineCap = 'round'; g.lineJoin = 'round';
-  g.beginPath(); g.ellipse(0, 0, 13, 8.5, 0, 0, 7); g.fill();       // cabin
-  g.lineWidth = 4.5;
-  g.beginPath(); g.moveTo(9, -2.5); g.lineTo(30, -5.5); g.stroke(); // tail boom
-  g.lineWidth = 3;
-  g.beginPath(); g.moveTo(29, -5.5); g.lineTo(34.5, -13); g.stroke();  // fin
-  g.beginPath(); g.moveTo(0, -8.5); g.lineTo(0, -13.5); g.stroke();    // mast
-  g.lineWidth = 3.4;
-  g.beginPath(); g.moveTo(-21, -13.5); g.lineTo(21, -13.5); g.stroke(); // rotor
-  g.lineWidth = 2.2;
-  g.beginPath(); g.moveTo(-11, 10.5); g.lineTo(12, 10.5); g.stroke();   // skid
-  g.beginPath();
-  g.moveTo(-6, 8); g.lineTo(-7.5, 10.5); g.moveTo(6, 8); g.lineTo(7.5, 10.5);
-  g.stroke();
-  g.restore();
-}
-
-/* The parafoil, seen from the side: canopy, lines, box of supplies. */
-function parafoilSide(g, x, y, s = 1, color = PINK) {
-  g.save(); g.translate(x, y); g.scale(s, s);
-  g.strokeStyle = color; g.fillStyle = color;
-  g.lineCap = 'round'; g.lineJoin = 'round';
-  g.lineWidth = 4.5;
-  g.beginPath(); g.arc(0, 0, 13, Math.PI * 1.13, Math.PI * 1.87); g.stroke();
-  g.lineWidth = 1.5;
-  g.beginPath();
-  g.moveTo(-11.4, -5.2); g.lineTo(-2.5, 7.5);
-  g.moveTo(11.4, -5.2); g.lineTo(2.5, 7.5);
-  g.stroke();
-  g.fillRect(-4, 7.5, 8, 6.5);                                    // payload
-  g.restore();
-}
-
-/* The parafoil from above: a wing across the direction of travel. */
-function parafoilTop(g, x, y, heading, s = 1, color = PINK) {
-  g.save(); g.translate(x, y); g.rotate(-heading); g.scale(s, s);
-  g.strokeStyle = color; g.fillStyle = color;
-  g.lineCap = 'round'; g.lineJoin = 'round';
-  g.lineWidth = 8;
-  g.beginPath(); g.moveTo(-1, -8.5); g.lineTo(-1, 8.5); g.stroke();  // canopy
-  g.lineWidth = 2;
-  g.beginPath(); g.moveTo(-1, 0); g.lineTo(7, 0); g.stroke();        // payload
-  g.beginPath(); g.moveTo(13, 0); g.lineTo(6, -3.6); g.lineTo(6, 3.6);
-  g.closePath(); g.fill();                                           // nose
-  g.restore();
-}
-
-/* Hatched ground line for the side view. */
-function ground(g, x0, x1, y) {
-  line(g, [[x0, y], [x1, y]], INK, 3);
-  g.save(); g.strokeStyle = '#C9C2AF'; g.lineWidth = 2; g.lineCap = 'round';
-  for (let x = x0; x < x1; x += 11) {
-    g.beginPath(); g.moveTo(x, y); g.lineTo(x - 7, y + 9); g.stroke();
-  }
-  g.restore();
-}
-function line(g, pts, color, width = 3, dash = null) {
-  if (pts.length < 2) return;
-  g.save(); g.strokeStyle = color; g.lineWidth = width;
-  g.lineJoin = 'round'; g.lineCap = 'round';
-  if (dash) g.setLineDash(dash);
-  g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
-  for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]);
-  g.stroke(); g.restore();
-}
-function dot(g, x, y, r, fill, ring = '#fff') {
-  g.save(); g.beginPath(); g.arc(x, y, r, 0, 7);
-  g.fillStyle = fill; g.fill();
-  if (ring) { g.lineWidth = 2; g.strokeStyle = ring; g.stroke(); }
-  g.restore();
-}
-function cross(g, x, y, r, color) {
-  g.save(); g.strokeStyle = color; g.lineWidth = 3.5; g.lineCap = 'round';
-  g.beginPath();
-  g.moveTo(x - r, y - r); g.lineTo(x + r, y + r);
-  g.moveTo(x + r, y - r); g.lineTo(x - r, y + r);
-  g.stroke(); g.restore();
-}
-function label(g, text, x, y, color = INK3, align = 'left', font = MONO) {
-  g.save(); g.fillStyle = color; g.font = font; g.textAlign = align;
-  g.fillText(text, x, y); g.restore();
-}
-function arrow(g, x, y, dx, dy, color, width = 3) {
-  const len = Math.hypot(dx, dy); if (len < 1) return;
-  const ux = dx / len, uy = dy / len;
-  line(g, [[x, y], [x + dx, y + dy]], color, width);
-  const hx = x + dx, hy = y + dy, a = 7;
-  g.save(); g.fillStyle = color; g.beginPath();
-  g.moveTo(hx, hy);
-  g.lineTo(hx - a * ux + a * 0.55 * uy, hy - a * uy - a * 0.55 * ux);
-  g.lineTo(hx - a * ux - a * 0.55 * uy, hy - a * uy + a * 0.55 * ux);
-  g.closePath(); g.fill(); g.restore();
-}
-
-/* ------------------------------------------------------------ shared state */
+/* ------------------------------------------------------------ page state */
 const S = {
   wind: 1.6, dir: 45, height: 40, load: 1.2, bias: 6,
   mode: 'ekf', straight: false,
+  current: null, prev: null, attempts: [],
 };
 const windVec = () => {
   const a = S.dir * Math.PI / 180;
@@ -156,183 +32,116 @@ function design(load = S.load) {
   const g = glideState(load, 1.0, CL, CD);
   return { ...g, R: turnRadius(g.vh, BANK) };
 }
-const fmt = (v, n = 2) => v.toFixed(n);
 
 /* ======================================================== 01 · THE DROP === */
 const gDrop = ctx2d($('cDrop'));
 let anim = null;
 
-function runDrop(mode, seed = 7) {
-  const d = design();
-  return simulate({
-    target: TARGET, windTrue: windVec(),
-    params: { vh: d.vh, vz: d.vz, R: d.R },
-    height0: S.height, mode, headingBiasDeg: S.bias, seed,
+const runDrop = (mode, seed = 7) => simulate({
+  target: TARGET, windTrue: windVec(),
+  params: (d => ({ vh: d.vh, vz: d.vz, R: d.R }))(design()),
+  height0: S.height, mode, headingBiasDeg: S.bias, seed,
+});
+
+function paint(frac) {
+  drawDrop(gDrop, {
+    runs: S.current.runs, prev: S.prev, frac,
+    wind: windVec(), windSpeed: S.wind, height: S.height, target: TARGET,
   });
 }
 
-/* Cumulative distance flown along a track, for the side view. */
-function pathDistance(track) {
-  const out = [0];
-  for (let i = 1; i < track.length; i++)
-    out.push(out[i - 1] + Math.hypot(track[i][1] - track[i - 1][1],
-                                     track[i][2] - track[i - 1][2]));
-  return out;
-}
-
-const TOP_RECT = g => ({ x: 0, y: 30, w: g.W, h: 462 });
-const SIDE_RECT = g => ({ x: 0, y: 536, w: g.W, h: 276 });
-
-function drawDrop(runs, frac = 1) {
-  const g = gDrop; clear(g);
-  const TOP = TOP_RECT(g), SIDE = SIDE_RECT(g);
-
-  /* ---------------------------------------------- panel 1: looking down */
-  const xs = [0, TARGET[0]], ys = [0, TARGET[1]];
-  for (const r of runs) for (const p of r.res.track) { xs.push(p[1]); ys.push(p[2]); }
-  const m = mapper(g, xs, ys, 52, TOP);
-
-  g.save();
-  g.beginPath(); g.rect(TOP.x, TOP.y, TOP.w, TOP.h); g.clip();   // keep it in this panel
-  g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
-  const lo = Math.floor(Math.min(...xs) / 10) * 10, hi = Math.ceil(Math.max(...xs) / 10) * 10;
-  const lo2 = Math.floor(Math.min(...ys) / 10) * 10, hi2 = Math.ceil(Math.max(...ys) / 10) * 10;
-  for (let v = lo; v <= hi; v += 10) {
-    g.beginPath(); g.moveTo(m.x(v), TOP.y); g.lineTo(m.x(v), TOP.y + TOP.h); g.stroke();
-  }
-  for (let v = lo2; v <= hi2; v += 10) {
-    g.beginPath(); g.moveTo(0, m.y(v)); g.lineTo(g.W, m.y(v)); g.stroke();
-  }
-  g.restore();
-
-  label(g, 'LOOKING STRAIGHT DOWN  ·  where it goes', 16, 20, INK3);
-
-  const w = windVec();
-  if (S.wind > 0.05) {
-    const px = 92, py = TOP.y + 34, sc = 27;
-    arrow(g, px, py, w[0] / S.wind * sc, -w[1] / S.wind * sc, INK3, 3);
-    label(g, `wind ${fmt(S.wind, 1)} m/s`, px - 34, py + 32, INK3);
-  }
-
-  cross(g, m.x(TARGET[0]), m.y(TARGET[1]), 9, INK);
-  label(g, 'TARGET', m.x(TARGET[0]) + 14, m.y(TARGET[1]) + 4, INK);
-
-  for (const r of runs) {
-    const t = r.res.track, n = Math.max(2, Math.floor(t.length * frac));
-    // whole route as a ghost, so the trajectory is readable even mid-flight
-    if (frac < 1) line(g, t.map(p => [m.x(p[1]), m.y(p[2])]), r.color + '2E', 2.4);
-    line(g, t.slice(0, n).map(p => [m.x(p[1]), m.y(p[2])]), r.color, 2.8);
-    if (frac >= 1) dot(g, m.x(r.res.landing[0]), m.y(r.res.landing[1]), 6, r.color);
-    else {
-      const p = t[n - 1];
-      parafoilTop(g, m.x(p[1]), m.y(p[2]), p[4], 1.15, r.color);
-    }
-  }
-  helicopter(g, m.x(0), m.y(0), 1.0);
-  label(g, 'DROPPED HERE', m.x(0) - 18, m.y(0) + 32, INK);
-
-  const barM = 20, px0 = g.W - 42 - barM * m.s, py0 = TOP.y + TOP.h - 12;
-  line(g, [[px0, py0], [px0 + barM * m.s, py0]], INK3, 2.5);
-  label(g, `${barM} m`, px0 + barM * m.s / 2, py0 - 8, INK3, 'center');
-
-  /* ------------------------------------------------ panel 2: from the side */
-  g.save(); g.strokeStyle = LINE; g.lineWidth = 2; g.setLineDash([6, 6]);
-  g.beginPath(); g.moveTo(20, SIDE.y - 16); g.lineTo(g.W - 20, SIDE.y - 16); g.stroke();
-  g.restore();
-  label(g, 'FROM THE SIDE  ·  it glides forward while it comes down',
-    16, SIDE.y - 26, INK3);
-
-  const pad = 52, gy = SIDE.y + SIDE.h - 40;
-  const maxD = Math.max(...runs.map(r => {
-    const d = pathDistance(r.res.track); return d[d.length - 1];
-  }), 1);
-  const X = d => pad + d / maxD * (g.W - pad - 54);
-  const Y = z => gy - z / Math.max(S.height, 1) * (SIDE.h - 84);
-
-  // height gridlines, so the drop reads as a real altitude
-  g.save(); g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
-  for (let k = 1; k <= 4; k++) {
-    const z = S.height * k / 4;
-    g.beginPath(); g.moveTo(pad, Y(z)); g.lineTo(g.W - 30, Y(z)); g.stroke();
-  }
-  g.restore();
-  for (let k = 1; k <= 4; k++) {
-    const z = S.height * k / 4;
-    label(g, `${Math.round(z)}`, pad - 10, Y(z) + 4, INK3, 'right');
-  }
-
-  ground(g, pad - 22, g.W - 24, gy);
-  label(g, '0', pad - 10, gy + 4, INK3, 'right');
-  label(g, 'HEIGHT  m', pad + 4, Y(S.height) - 16, INK3, 'left');
-  label(g, 'DISTANCE FLOWN THROUGH THE AIR  m', (g.W) / 2, SIDE.y + SIDE.h - 6,
-    INK3, 'center');
-  label(g, `${Math.round(maxD)} m`, X(maxD), SIDE.y + SIDE.h - 20, INK3, 'center');
-
-  for (const r of runs) {
-    const t = r.res.track, d = pathDistance(t);
-    const n = Math.max(2, Math.floor(t.length * frac));
-    if (frac < 1) line(g, t.map((p, i) => [X(d[i]), Y(p[3])]), r.color + '2E', 2.4);
-    line(g, t.slice(0, n).map((p, i) => [X(d[i]), Y(p[3])]), r.color, 2.8);
-    if (frac < 1) {
-      const i = n - 1;
-      parafoilSide(g, X(d[i]), Y(t[i][3]) - 9, 1.15, r.color);
-    } else {
-      dot(g, X(d[d.length - 1]), Y(0), 5.5, r.color);
-    }
-  }
-  helicopter(g, X(0), Y(S.height) - 11, 0.95);
-}
-
-const MODE_COLOR = { none: PINK, ekf: BLUE, true: GRN };
-const MODE_NAME = { none: 'no estimate', ekf: 'EKF', true: 'true wind' };
-
-const EXPLAIN = '<strong>Top:</strong> looking straight down, like a map. ' +
-  '<strong>Bottom:</strong> from the side, so you can watch it glide forward as it ' +
-  'comes down. ';
-
-function animateDrop(runs) {
+function animate() {
   if (anim) cancelAnimationFrame(anim);
-  const t0 = performance.now(), dur = 2600;
+  const t0 = performance.now(), dur = 3000;
   const step = now => {
     const f = Math.min(1, (now - t0) / dur);
-    drawDrop(runs, f);
-    if (f < 1) anim = requestAnimationFrame(step);
-    else anim = null;
+    paint(f);
+    anim = f < 1 ? requestAnimationFrame(step) : null;
   };
   anim = requestAnimationFrame(step);
 }
 
-function doDrop() {
+/* One attempt. `record` files it in the history so the NEXT drop can show
+   whether the change the judge made actually helped. */
+function refreshDrop({ animate: doAnim = false, record = false, race = false } = {}) {
   const d = design();
-  const runs = [{ mode: S.mode, color: MODE_COLOR[S.mode], res: runDrop(S.mode) }];
-  animateDrop(runs);
-  $('roMiss').textContent = `${fmt(runs[0].res.miss, 1)} m`;
-  $('roMiss').style.color = MODE_COLOR[S.mode];
+  const runs = race
+    ? ['none', 'ekf', 'true'].map(mo => ({ mode: mo, color: MODE_COLOR[mo], res: runDrop(mo) }))
+    : [{ mode: S.mode, color: MODE_COLOR[S.mode], res: runDrop(S.mode) }];
+
+  if (record && S.current && !S.current.race) S.prev = S.current.runs[0];
+  if (race) S.prev = null;
+  S.current = { runs, race };
+
+  if (doAnim) animate(); else paint(1);
+
+  const miss = runs[0].res.miss;
+  if (race) {
+    $('roMiss').innerHTML = runs.map(r =>
+      `<span style="color:${r.color}">${fmt(r.res.miss, 1)}</span>`)
+      .join('<span style="color:#8C877C"> / </span>') + ' m';
+  } else {
+    $('roMiss').textContent = `${fmt(miss, 1)} m`;
+    $('roMiss').style.color = MODE_COLOR[S.mode];
+  }
   $('roAir').textContent = `${fmt(d.vh, 1)} m/s`;
   $('roTurn').textContent = `${fmt(d.R, 1)} m`;
   $('roTime').textContent = `${fmt(S.height / d.vz, 0)} s`;
-  $('noteDrop').innerHTML = EXPLAIN +
-    `Flying with <strong>${MODE_NAME[S.mode]}</strong>; the compass is ` +
-    `${S.bias > 0 ? '+' : ''}${S.bias}° out, which the filter has to work out too.`;
+
+  if (record && !race) {
+    S.attempts.push({ miss, mode: S.mode, wind: S.wind, load: S.load,
+                      height: S.height, bias: S.bias });
+    if (S.attempts.length > 10) S.attempts.shift();
+  }
+  renderVerdict(race, miss);
+  renderAttempts();
   checkPenetration(d);
 }
 
-function doRace() {
-  const runs = ['none', 'ekf', 'true'].map(mo =>
-    ({ mode: mo, color: MODE_COLOR[mo], res: runDrop(mo) }));
-  animateDrop(runs);
-  const d = design();
-  $('roMiss').innerHTML = runs.map(r =>
-    `<span style="color:${r.color}">${fmt(r.res.miss, 1)}</span>`).join('<span style="color:#8C877C"> / </span>') + ' m';
-  $('roAir').textContent = `${fmt(d.vh, 1)} m/s`;
-  $('roTurn').textContent = `${fmt(d.R, 1)} m`;
-  $('roTime').textContent = `${fmt(S.height / d.vz, 0)} s`;
+const EXPLAIN = '<strong>Top:</strong> looking straight down, like a map. ' +
+  '<strong>Bottom:</strong> from the side, so you can watch it glide forward ' +
+  'as it comes down. ';
+
+function renderVerdict(race, miss) {
+  const v = $('verdict');
+  if (race) {
+    v.className = 'verdict';
+    v.innerHTML = `<span style="color:${PINK}">pink knows nothing</span> · ` +
+      `<span style="color:${BLUE}">blue estimates the wind</span> · ` +
+      `<span style="color:${GRN}">green is told the wind</span> — same conditions.`;
+    $('noteDrop').innerHTML = EXPLAIN + 'Three packages dropped under identical conditions.';
+    return;
+  }
+  if (S.prev) {
+    const before = S.prev.res.miss, delta = before - miss;
+    const better = delta > 0;
+    v.className = 'verdict ' + (better ? 'good' : 'bad');
+    v.innerHTML = `<strong>${fmt(before, 1)} m</strong> last time ` +
+      `<span class="ar">&rarr;</span> <strong>${fmt(miss, 1)} m</strong> now ` +
+      `&nbsp;<span class="d">${better ? '&#9660;' : '&#9650;'} ` +
+      `${fmt(Math.abs(delta), 1)} m ${better ? 'better' : 'worse'}</span>`;
+  } else {
+    v.className = 'verdict';
+    v.innerHTML = 'Change something, then drop again — this line will tell you ' +
+      'whether it helped.';
+  }
   $('noteDrop').innerHTML = EXPLAIN +
-    `Three packages, identical conditions: ` +
-    `<span style="color:${PINK}"><strong>pink</strong> knows nothing</span>, ` +
-    `<span style="color:${BLUE}"><strong>blue</strong> estimates the wind</span>, ` +
-    `<span style="color:${GRN}"><strong>green</strong> is simply told the wind</span>.`;
-  checkPenetration(d);
+    `Flying with <strong>${MODE_NAME[S.mode]}</strong>; the compass is ` +
+    `${S.bias > 0 ? '+' : ''}${S.bias}&deg; out, which the filter must work out too.`;
+}
+
+function renderAttempts() {
+  const host = $('attempts');
+  if (!S.attempts.length) { host.innerHTML = ''; return; }
+  const best = Math.min(...S.attempts.map(a => a.miss));
+  host.innerHTML = S.attempts.map((a, i) => {
+    const isBest = Math.abs(a.miss - best) < 1e-9;
+    const last = i === S.attempts.length - 1;
+    return `<span class="pill${isBest ? ' best' : ''}${last ? ' now' : ''}" ` +
+      `style="border-color:${MODE_COLOR[a.mode]}" ` +
+      `title="wind ${fmt(a.wind, 1)} m/s · loading ${fmt(a.load, 2)} · ` +
+      `height ${a.height} m · bias ${a.bias}&deg;">${fmt(a.miss, 1)}</span>`;
+  }).join('');
 }
 
 function doMany() {
@@ -353,27 +162,28 @@ function doMany() {
   const g = gDrop; clear(g);
   const xs = [TARGET[0]], ys = [TARGET[1]];
   for (const mo of ['none', 'ekf']) for (const p of land[mo]) { xs.push(p[0]); ys.push(p[1]); }
-  const m = mapper(g, xs, ys);
+  const m = mapper(g, xs, ys, 56);
   for (const mo of ['none', 'ekf'])
     for (const p of land[mo]) dot(g, m.x(p[0]), m.y(p[1]), 4.5, MODE_COLOR[mo], '#fff');
   cross(g, m.x(TARGET[0]), m.y(TARGET[1]), 10, INK);
-  label(g, `${N} drops, random wind / height / compass bias`, 16, 22, INK3);
+  label(g, `${N} drops · random wind, height and compass bias`, 16, 24, INK3);
   const mn = median(res.none), me = median(res.ekf);
   $('roMiss').innerHTML = `<span style="color:${PINK}">${fmt(mn, 1)}</span>` +
     `<span style="color:#8C877C"> / </span><span style="color:${BLUE}">${fmt(me, 1)}</span> m`;
-  $('noteDrop').innerHTML = `Median miss over ${N} drops: ` +
-    `<span style="color:${PINK}">${fmt(mn, 1)} m</span> with no estimate, ` +
-    `<span style="color:${BLUE}">${fmt(me, 1)} m</span> with the EKF. ` +
-    `Each dot is where one package landed.`;
+  $('verdict').className = 'verdict';
+  $('verdict').innerHTML = `Median over ${N} drops: ` +
+    `<strong style="color:${PINK}">${fmt(mn, 1)} m</strong> knowing nothing, ` +
+    `<strong style="color:${BLUE}">${fmt(me, 1)} m</strong> with the EKF.`;
+  $('noteDrop').textContent = 'Every dot is one package on the ground.';
+  S.current = null; S.prev = null;
 }
 
 function checkPenetration(d) {
   const w = $('warnPen'), can = d.vh > S.wind;
   w.classList.toggle('on', !can);
   if (!can) w.textContent =
-    `Wind ${fmt(S.wind, 1)} m/s beats the airspeed ${fmt(d.vh, 1)} m/s. ` +
-    `The package physically cannot fly upwind — no guidance law fixes this. ` +
-    `Add ballast (more loading) or wait for calmer air.`;
+    `Wind ${fmt(S.wind, 1)} m/s beats the airspeed ${fmt(d.vh, 1)} m/s. The package ` +
+    `physically cannot fly upwind — no guidance law fixes this. Add ballast, or wait.`;
 }
 
 /* ====================================================== 02 · WING LOADING = */
@@ -386,19 +196,15 @@ function drawLoad() {
   const Yv = v => g.H - pad - v / vmax * (g.H - 2 * pad);
   const Yr = v => g.H - pad - v / Rmax * (g.H - 2 * pad);
 
-  // axes
   line(g, [[pad, pad - 14], [pad, g.H - pad], [g.W - 50, g.H - pad]], LINE, 2);
 
-  // Everything left of this loading is too slow to fly in the current wind.
   const band = [];
   for (let L = L0; L <= L1; L += 0.01) band.push([X(L), Yv(glideState(L, 1, CL, CD).vh)]);
   const Lcrit = minLoading(S.wind);
   if (Lcrit > L0) {
     const xEnd = X(Math.min(Lcrit, L1));
-    g.save();
-    g.fillStyle = 'rgba(255,46,147,.13)';
-    g.fillRect(X(L0), pad - 14, xEnd - X(L0), g.H - pad - (pad - 14));
-    g.restore();
+    g.save(); g.fillStyle = 'rgba(255,46,147,.13)';
+    g.fillRect(X(L0), pad - 14, xEnd - X(L0), g.H - pad - (pad - 14)); g.restore();
     line(g, [[xEnd, pad - 14], [xEnd, g.H - pad]], PINK, 2.5, [6, 5]);
     if (xEnd - X(L0) > 78)
       label(g, 'TOO SLOW TO FLY', (X(L0) + xEnd) / 2, pad + 4, PINK, 'center');
@@ -407,13 +213,12 @@ function drawLoad() {
   line(g, [[pad, Yv(S.wind)], [g.W - 50, Yv(S.wind)]], INK3, 2, [7, 6]);
   label(g, `wind ${fmt(S.wind, 1)} m/s`, g.W - 54, Yv(S.wind) - 8, INK3, 'right');
 
-  // curves
   line(g, band, BLUE, 3.5);
   const rc = [];
-  for (let L = L0; L <= L1; L += 0.01) rc.push([X(L), Yr(turnRadius(glideState(L, 1, CL, CD).vh, BANK))]);
+  for (let L = L0; L <= L1; L += 0.01)
+    rc.push([X(L), Yr(turnRadius(glideState(L, 1, CL, CD).vh, BANK))]);
   line(g, rc, PINK, 3.5);
 
-  // current point
   const d = design();
   line(g, [[X(S.load), pad - 14], [X(S.load), g.H - pad]], INK, 2, [4, 5]);
   dot(g, X(S.load), Yv(d.vh), 6.5, BLUE);
@@ -422,9 +227,9 @@ function drawLoad() {
   label(g, 'AIRSPEED  m/s', pad + 6, pad - 2, BLUE);
   label(g, 'TURN RADIUS  m', g.W - 54, pad - 2, PINK, 'right');
   for (let L = 0.5; L <= 2.5; L += 0.5) label(g, L.toFixed(1), X(L), g.H - pad + 18, INK3, 'center');
-  label(g, 'WING LOADING  kg/m²', (g.W) / 2, g.H - 14, INK3, 'center');
+  label(g, 'WING LOADING  kg/m²', g.W / 2, g.H - 14, INK3, 'center');
 
-  $('roL2').textContent = `${fmt(S.load, 2)}`;
+  $('roL2').textContent = fmt(S.load, 2);
   $('roV2').textContent = `${fmt(d.vh, 1)} m/s`;
   $('roR2').textContent = `${fmt(d.R, 1)} m`;
 }
@@ -448,8 +253,7 @@ function drawChart() {
   if (!GRID) { label(g, 'loading design grid…', g.W / 2, g.H / 2, INK3, 'center'); return; }
   const { loads, winds, miss } = GRID;
   const { px, py, pw, ph } = chartBox(g);
-  const vmax = 16;
-  const cw = pw / loads.length, ch = ph / winds.length;
+  const vmax = 16, cw = pw / loads.length, ch = ph / winds.length;
 
   for (let j = 0; j < winds.length; j++)
     for (let i = 0; i < loads.length; i++) {
@@ -457,7 +261,6 @@ function drawChart() {
       g.fillRect(px + i * cw, py + ph - (j + 1) * ch, Math.ceil(cw) + .5, Math.ceil(ch) + .5);
     }
 
-  // v = W boundary
   const bd = [];
   for (let j = 0; j < 200; j++) {
     const W = winds[0] + (winds[winds.length - 1] - winds[0]) * j / 199;
@@ -468,7 +271,6 @@ function drawChart() {
   }
   line(g, bd, PINK, 3);
 
-  // current design marker
   const mx = px + (S.load - loads[0]) / (loads[loads.length - 1] - loads[0]) * pw;
   const my = py + ph - (S.wind - winds[0]) / (winds[winds.length - 1] - winds[0]) * ph;
   if (mx >= px && mx <= px + pw && my >= py && my <= py + ph) {
@@ -477,8 +279,7 @@ function drawChart() {
     g.strokeStyle = INK; g.lineWidth = 2.5; g.stroke(); g.restore();
   }
 
-  g.save(); g.strokeStyle = INK; g.lineWidth = 2.5;
-  g.strokeRect(px, py, pw, ph); g.restore();
+  g.save(); g.strokeStyle = INK; g.lineWidth = 2.5; g.strokeRect(px, py, pw, ph); g.restore();
 
   for (let i = 0; i < loads.length; i += 3)
     label(g, loads[i].toFixed(2), px + (i + .5) * cw, py + ph + 18, INK3, 'center');
@@ -488,7 +289,6 @@ function drawChart() {
   g.save(); g.translate(14, py + ph / 2); g.rotate(-Math.PI / 2);
   label(g, 'WIND SPEED  m/s', 0, 0, INK3, 'center'); g.restore();
 
-  // legend
   const lx = px + pw + 22, lw = 16, lh = ph;
   for (let k = 0; k < lh; k++) {
     g.fillStyle = rampColor(vmax * (1 - k / lh), vmax);
@@ -501,8 +301,7 @@ function drawChart() {
 
 function chartPick(ev, commit) {
   if (!GRID) return;
-  const g = gChart, r = $('cChart').getBoundingClientRect();
-  const scale = g.W / r.width;
+  const g = gChart, r = $('cChart').getBoundingClientRect(), scale = g.W / r.width;
   const x = (ev.clientX - r.left) * scale, y = (ev.clientY - r.top) * scale;
   const { px, py, pw, ph } = chartBox(g);
   const { loads, winds, miss } = GRID;
@@ -519,8 +318,9 @@ function chartPick(ev, commit) {
     S.load = Math.max(0.25, Math.min(2.5, loads[i]));
     S.wind = Math.max(0, Math.min(4, winds[j]));
     $('sL').value = S.load; $('sWind').value = S.wind;
-    syncLabels(); redrawAll(); doDrop();
-    document.querySelector('section:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+    syncLabels(); redrawAll();
+    refreshDrop({ animate: true, record: true });
+    document.getElementById('sec-drop').scrollIntoView({ behavior: 'smooth' });
   }
 }
 
@@ -528,14 +328,18 @@ function chartPick(ev, commit) {
 const gDub = ctx2d($('cDub'));
 const DUB = { start: [-26, -12, 0.3], end: [22, 10, 2.2], R: 7, drag: null };
 
-function drawDub() {
-  const g = gDub; clear(g);
+function dubMap() {
   const all = dubinsAll(DUB.start, DUB.end, DUB.R);
-  const best = dubinsSolve(DUB.start, DUB.end, DUB.R);
   const xs = [DUB.start[0], DUB.end[0]], ys = [DUB.start[1], DUB.end[1]];
   for (const p of Object.values(all))
     for (const q of dubinsSample(p, 1.5)) { xs.push(q[0]); ys.push(q[1]); }
-  const m = mapper(g, xs, ys, 52);
+  return { all, m: mapper(gDub, xs, ys, 52), xs, ys };
+}
+
+function drawDub() {
+  const g = gDub; clear(g);
+  const { all, m } = dubMap();
+  const best = dubinsSolve(DUB.start, DUB.end, DUB.R);
 
   for (const [name, p] of Object.entries(all)) {
     if (best && name === best.type) continue;
@@ -553,7 +357,6 @@ function drawDub() {
     ah * Math.cos(DUB.end[2]), -ah * Math.sin(DUB.end[2]), BLUE, 3);
   dot(g, m.x(DUB.end[0]), m.y(DUB.end[1]), 7, BLUE);
   label(g, 'ARRIVE HERE — drag me', m.x(DUB.end[0]) + 12, m.y(DUB.end[1]) - 14, BLUE);
-  // rotation handle
   const hx = m.x(DUB.end[0]) + (ah + 16) * Math.cos(DUB.end[2]);
   const hy = m.y(DUB.end[1]) - (ah + 16) * Math.sin(DUB.end[2]);
   dot(g, hx, hy, 6, YEL, INK);
@@ -570,11 +373,7 @@ function drawDub() {
 function dubPointer(ev, down) {
   const g = gDub, r = $('cDub').getBoundingClientRect(), scale = g.W / r.width;
   const x = (ev.clientX - r.left) * scale, y = (ev.clientY - r.top) * scale;
-  const all = dubinsAll(DUB.start, DUB.end, DUB.R);
-  const xs = [DUB.start[0], DUB.end[0]], ys = [DUB.start[1], DUB.end[1]];
-  for (const p of Object.values(all))
-    for (const q of dubinsSample(p, 1.5)) { xs.push(q[0]); ys.push(q[1]); }
-  const m = mapper(g, xs, ys, 52);
+  const { m, xs, ys } = dubMap();
   const ah = 22;
   const hx = m.x(DUB.end[0]) + (ah + 16) * Math.cos(DUB.end[2]);
   const hy = m.y(DUB.end[1]) - (ah + 16) * Math.sin(DUB.end[2]);
@@ -583,10 +382,10 @@ function dubPointer(ev, down) {
   if (DUB.drag === 'spin') {
     DUB.end[2] = Math.atan2(-(y - m.y(DUB.end[1])), x - m.x(DUB.end[0]));
   } else {
-    const inv = (px, py) => [(px - g.W / 2) / m.s + (Math.min(...xs) + Math.max(...xs)) / 2,
-                             -(py - g.H / 2) / m.s + (Math.min(...ys) + Math.max(...ys)) / 2];
-    const [wx, wy] = inv(x, y);
-    DUB.end[0] = wx; DUB.end[1] = wy;
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    DUB.end[0] = (x - g.W / 2) / m.s + cx;
+    DUB.end[1] = -(y - g.H / 2) / m.s + cy;
   }
   drawDub();
 }
@@ -611,7 +410,6 @@ function drawEkf() {
 
   line(g, [[pad, pad - 12], [pad, g.H - pad + 12]], LINE, 2);
   line(g, [[pad, Y(0)], [g.W - 34, Y(0)]], LINE, 2);
-
   line(g, [[pad, Y(w[0])], [g.W - 34, Y(w[0])]], BLUE, 2, [7, 6]);
   line(g, [[pad, Y(w[1])], [g.W - 34, Y(w[1])]], PINK, 2, [7, 6]);
   line(g, H.map(p => [X(p[0]), Y(p[1])]), BLUE, 3.2);
@@ -620,7 +418,7 @@ function drawEkf() {
   label(g, 'wind east  (true, dashed)', g.W - 36, Y(w[0]) - 9, BLUE, 'right');
   label(g, 'wind north (true, dashed)', g.W - 36, Y(w[1]) + 18, PINK, 'right');
   label(g, '0', pad - 8, Y(0) + 4, INK3, 'right');
-  label(g, `${lim.toFixed(1)}`, pad - 8, Y(lim) + 4, INK3, 'right');
+  label(g, lim.toFixed(1), pad - 8, Y(lim) + 4, INK3, 'right');
   label(g, `-${lim.toFixed(1)}`, pad - 8, Y(-lim) + 4, INK3, 'right');
   label(g, 'SECONDS AFTER RELEASE', g.W / 2, g.H - 12, INK3, 'center');
   for (let t = 0; t <= T; t += 5) label(g, `${t}`, X(t), g.H - pad + 28, INK3, 'center');
@@ -672,18 +470,19 @@ function syncLabels() {
 }
 function redrawAll() { drawLoad(); drawChart(); drawEkf(); drawScale(); }
 
-const bind = (id, key, parse = parseFloat) => $(id).addEventListener('input', e => {
-  S[key] = parse(e.target.value);
-  syncLabels(); redrawAll(); doDrop();
+const bind = (id, key) => $(id).addEventListener('input', e => {
+  S[key] = parseFloat(e.target.value);
+  syncLabels(); redrawAll();
+  refreshDrop();                       // preview only — not a recorded attempt
 });
-bind('sWind', 'wind'); bind('sDir', 'dir'); bind('sH', 'height');
-bind('sL', 'load'); bind('sB', 'bias');
+['sWind:wind', 'sDir:dir', 'sH:height', 'sL:load', 'sB:bias']
+  .forEach(p => bind(...p.split(':')));
 
 $('modeSeg').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   S.mode = b.dataset.mode;
   [...$('modeSeg').children].forEach(x => x.setAttribute('aria-pressed', x === b));
-  doDrop();
+  refreshDrop();
 });
 $('obsSeg').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
@@ -691,14 +490,19 @@ $('obsSeg').addEventListener('click', e => {
   [...$('obsSeg').children].forEach(x => x.setAttribute('aria-pressed', x === b));
   drawEkf();
 });
-$('bDrop').addEventListener('click', doDrop);
-$('bRace').addEventListener('click', doRace);
+$('bDrop').addEventListener('click', () => refreshDrop({ animate: true, record: true }));
+$('bRace').addEventListener('click', () => refreshDrop({ animate: true, race: true }));
 $('b50').addEventListener('click', doMany);
+$('bReset').addEventListener('click', () => {
+  S.attempts = []; S.prev = null; S.current = null;
+  renderAttempts(); refreshDrop();
+});
 
 $('cChart').addEventListener('mousemove', e => chartPick(e, false));
 $('cChart').addEventListener('click', e => chartPick(e, true));
-
-$('cDub').addEventListener('pointerdown', e => { $('cDub').setPointerCapture(e.pointerId); dubPointer(e, true); });
+$('cDub').addEventListener('pointerdown', e => {
+  $('cDub').setPointerCapture(e.pointerId); dubPointer(e, true);
+});
 $('cDub').addEventListener('pointermove', e => { if (DUB.drag) dubPointer(e, false); });
 window.addEventListener('pointerup', () => { DUB.drag = null; });
 
@@ -708,4 +512,4 @@ fetch('design_grid.json').then(r => r.json()).then(j => { GRID = j; drawChart();
 syncLabels();
 drawDub();
 redrawAll();
-doDrop();
+refreshDrop({ animate: true });

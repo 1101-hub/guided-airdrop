@@ -78,6 +78,21 @@
   pre .c{color:var(--ink3)} pre .k{color:var(--blue);font-weight:700} pre .s{color:var(--grn)}
   pre b{color:var(--pink)}
 
+  .verdict{font-family:var(--mono);font-size:14px;line-height:1.5;margin:14px 0 0;
+           border:3px solid var(--ink);border-radius:12px;padding:11px 15px;background:#fff}
+  .verdict .ar{color:var(--ink3);margin:0 4px}
+  .verdict .d{font-weight:800;padding:.15em .6em;border-radius:999px}
+  .verdict.good{border-color:var(--grn)} .verdict.good .d{background:var(--green);color:#14300a}
+  .verdict.bad{border-color:var(--pink)} .verdict.bad .d{background:var(--pink);color:#fff}
+
+  .attempts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:14px 0 0;min-height:30px}
+  .attempts .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+                 text-transform:uppercase;color:var(--ink3);margin-right:4px}
+  .pill{font-family:var(--mono);font-size:12px;font-weight:800;border:2.5px solid var(--ink3);
+        border-radius:999px;padding:.3em .75em;background:#fff;cursor:default}
+  .pill.best{background:var(--yellow)}
+  .pill.now{box-shadow:0 0 0 3px rgba(20,20,20,.12)}
+
   .foot{font-family:var(--mono);font-size:12px;color:var(--ink3);text-align:center;padding:26px 0 0}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
   .chip{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
@@ -100,8 +115,9 @@
 </section>
 
 <!-- ===================================================== THE DROP -->
-<section>
+<section id="sec-drop">
   <p class="tag">01 · the experiment</p>
+  <span class="badge b-pink">have a go</span>
   <h2>Drop it yourself.</h2>
   <p>In July 2026 a cloudburst flooded four districts of Upper Assam. 705,000 people were
     affected; 80,000 could not be reached. Helicopters dropped supplies, and the Chief Minister
@@ -135,6 +151,11 @@
       <button class="btn" id="bDrop">&#9660; drop it</button>
       <button class="btn ghost" id="bRace">race all three</button>
       <button class="btn ghost" id="b50">run 50 drops</button>
+      <button class="btn ghost" id="bReset">clear attempts</button>
+
+      <div class="attempts" id="attempts"></div>
+      <div class="note">Every drop you make is kept here, newest last. Yellow is your
+        best. Hover one to see what you had the sliders set to.</div>
     </div>
 
     <div>
@@ -146,6 +167,7 @@
         <div><div class="ro-num sm" id="roTurn">&mdash;</div><div class="ro-lab">turn radius</div></div>
         <div><div class="ro-num sm" id="roTime">&mdash;</div><div class="ro-lab">time aloft</div></div>
       </div>
+      <div class="verdict" id="verdict"></div>
       <div class="note" id="noteDrop">Two views of the same flight. <strong>Top:</strong> looking
         straight down, like a map. <strong>Bottom:</strong> from the side, so you can see it
         gliding forward as it comes down. The helicopter drops it; the cross is the target.</div>
