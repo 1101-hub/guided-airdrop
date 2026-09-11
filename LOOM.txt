@@ -42,8 +42,7 @@ eighty thousand people could only
 be reached by air.
 
 So I built a mathematical model
-of a parachute that steers itself
-to a target.
+of a parachute that steers itself.
 
 
 ───────────────────────────────  0:24
@@ -51,8 +50,8 @@ to a target.
 [ SCROLL to 02 · IT ISN'T A NORMAL PARACHUTE ]
 
 It's a parafoil — a wing, not a dome. /
-It glides forward as it falls,
-and pulling one side turns it.
+It glides forward, and pulling
+one side turns it.
 
 From its weight and its canopy size /
 I worked out how fast it flies
@@ -74,7 +73,7 @@ arriving early.
 [ SCROLL to 03 · NO WIND SENSOR ON BOARD ]
 [ CLICK "force it straight" ]
 
-It carries no wind sensor. /
+It has no wind sensor. /
 I wrote a filter that works
 the wind out for itself.
 
@@ -86,7 +85,7 @@ The wind is what's left.
 
 But flying straight, you can't tell
 a headwind from simply flying slower. /
-Forced straight — it's three metres
+Forced straight — three metres
 a second wrong.
 
 [ CLICK "let it turn" ]
@@ -108,24 +107,35 @@ cost nothing extra.
 
 ───────────────────────────────  1:36
           ** WHAT I FOUND **
+[ SCROLL to 05 · HOW HEAVY YOU MAKE IT ]
+[ drag the weight slider LEFT, then RIGHT ]
+[ read the two numbers as they change ]
+
+Then I tested every weight
+against every wind. /
+Three thousand drops.
+
+Watch the turn number. /
+Right now it turns inside six metres.
+
+Make it heavier — faster, so it pushes
+through more wind. /
+But now it needs twelve metres
+to turn round.
+
+Twelve metres, when you're aiming
+at a spot. /
+
+So lighter is better — until the wind
+is faster than it is.
+
 [ SCROLL to 06 · THE FINDING ]
 
-Then I tested every combination — /
-three thousand drops, every weight
-against every wind.
+So: the lightest one that still
+beats the wind. /
 
-A heavier one flies faster,
-so it handles more wind. /
-But it turns wider, so it corrects
-less well at the end.
-
-Double the wind you build for /
-and you need four times the weight —
-and that turns four times wider.
-
-So every wind has a best weight. /
-And it's only ballast — you set it
-on the day.
+And it's only ballast —
+you set it that morning.
 
 ───────────────────────────────  2:00
                                   END
@@ -161,6 +171,8 @@ on the day.
    of them — but never read one aloud.
 
  NUMBERS THAT SHOULD APPEAR
+   weight 1.20 kg/m2 ........ 4.5 m/s, turns in 5.7 m
+   weight 2.50 kg/m2 ........ 6.5 m/s, turns in 11.9 m
    cold open drop ........... 23.9 m
    second drop .............. 2.3 m  (green, 21.6 better)
    forced straight .......... 2.82 m/s
