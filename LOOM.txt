@@ -1,0 +1,181 @@
+═══════════════════════════════════════
+ AIRDROP · 2 MIN SCREEN DEMO
+ paste this into Loom's teleprompter
+═══════════════════════════════════════
+
+ BEFORE YOU HIT RECORD
+   · refresh the page (Ctrl+Shift+R)
+   · zoom 90%, close other tabs
+   · scroll to  01 · THE TOY
+   · click the FIRST card: "Nothing at all"
+   · DO NOT touch any slider
+
+ ONE RULE
+   press · silence · let it land · THEN talk
+
+
+───────────────────────────────  0:00
+[ PRESS "drop it" ]
+[ SILENCE. 3 seconds. Let it land. ]
+
+That's a box of food,
+dropped from a helicopter.
+Nobody steering it.
+
+It missed by TWENTY-FOUR METRES.
+
+
+───────────────────────────────  0:13
+[ stay where you are · don't scroll ]
+
+July 2026.
+Four districts of Upper Assam go under.
+
+Seven lakh people affected.
+Eighty thousand unreachable by road.
+
+Everything they get comes from the air.
+
+A box twenty-four metres off
+is a box in the river.
+
+
+───────────────────────────────  0:28
+[ CLICK 2nd card: "Works the wind out itself" ]
+[ PRESS "drop it" ]
+[ SILENCE. 3 seconds. ]
+
+Same wind.
+Same height.
+Same parachute.
+
+One difference —
+this one works out the wind
+on the way down.
+
+TWO POINT THREE METRES.
+
+And there's no wind sensor on board.
+
+    ( bar goes green: 21.6 m better )
+
+
+───────────────────────────────  0:46
+          ** THE IMPORTANT BIT **
+[ SCROLL to 05 · NO WIND SENSOR ON BOARD ]
+[ CLICK "force it straight" ]
+
+So how does it know the wind?
+
+GPS tells it how fast
+it's crossing the ground.
+
+The maths tells it how fast
+it moves through the air.
+
+Subtract, and that's the wind.
+
+Except in a straight line that fails.
+
+A headwind — and simply flying slower —
+look EXACTLY THE SAME.
+There's no way to tell them apart.
+
+Forced to fly straight,
+it's nearly three metres a second wrong.
+
+[ CLICK "let it turn" ]
+
+Now let it turn.
+
+FOUR CENTIMETRES.
+
+Turning breaks the tie,
+because the wind keeps pointing one way
+while you swing round.
+
+
+───────────────────────────────  1:20
+[ SCROLL BACK UP to the first drop ]
+
+Look again at that first flight.
+It wandered the whole way down.
+
+That wasn't waste —
+it was burning off spare height.
+
+THE MOVE IT ALREADY HAD TO MAKE
+IS THE MOVE THAT FINDS THE WIND.
+
+
+───────────────────────────────  1:33
+[ PRESS "50 drops at once" ]
+
+One drop is luck.
+
+So — fifty. Wind, height and compass
+error randomised every time.
+
+Around ten metres out knowing nothing.
+Under four working it out.
+
+
+───────────────────────────────  1:45
+[ SCROLL to 07 · THE FINDING ]
+
+And there's a rule underneath it.
+
+Build for twice the wind,
+and the landing gets FOUR TIMES worse.
+
+Every drop. Even on a still day.
+
+I'm not the first to build one of these.
+The rule is mine.
+
+Fly it yourself:
+1101-hub dot github dot io
+slash guided-airdrop.
+
+───────────────────────────────  2:00
+                                  END
+
+
+
+═══════════════════════════════════════
+ DON'T READ THIS PART — reference only
+═══════════════════════════════════════
+
+ NUMBERS THAT SHOULD APPEAR
+   cold open drop ........... 23.9 m
+   second drop .............. 2.3 m  (green, 21.6 better)
+   forced straight .......... 2.82 m/s
+   let it turn .............. 0.04 m/s
+   50 drops ................. 9.8 m  vs  3.6 m
+
+   If a number is different, a slider moved.
+   Reload, redo the setup, start again.
+
+ NEVER SAY
+   · "these are the paper's numbers"  (on screen = 50 drops,
+     the paper = a separate 150-drop run)
+   · "it beats being told the true wind"  (the intervals
+     overlap — it is NOT separated)
+   · "nobody has done this before"  (they have — say so first)
+
+ IF YOU RUN LONG
+   cut the 50 drops at 1:33.
+   NEVER cut 0:46 or the callback at 1:20.
+
+ IF ASKED: isn't the one that's TOLD the wind better?
+   On the median, slightly — but the error bars overlap,
+   so at 150 drops those two aren't separated.
+   What I can defend: drop for drop it cuts the miss by
+   4.26 metres and wins 112 times out of 150.
+
+ IF ASKED: has nobody done this?
+   They have. Naval Postgraduate School lands one within
+   3 metres. ParaDrone flies these paths on a hobby
+   microcontroller. What neither publishes is how wing
+   loading and wind set the floor on accuracy.
+   That part is mine.
