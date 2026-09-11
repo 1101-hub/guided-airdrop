@@ -41,8 +41,8 @@ In the Assam floods last July, /
 eighty thousand people could only
 be reached by air.
 
-So I built a mathematical model
-of a parachute that steers itself.
+So I modelled a parachute
+that steers itself.
 
 
 ───────────────────────────────  0:24
@@ -55,11 +55,11 @@ one side turns it.
 
 From its weight and canopy size /
 I worked out how fast it flies
-and how tightly it turns.
+and how tight it turns.
 
 It sinks at a steady rate. /
 So the moment it's dropped I know
-how long it has in the air,
+how long it has in the air —
 and how far it can fly.
 
 I wrote the steering to spend
@@ -74,17 +74,16 @@ arriving early.
 [ CLICK "force it straight" ]
 
 It has no wind sensor. /
-I wrote a filter that works it out
-for itself.
+I wrote a filter that works it out.
 
-GPS knows how fast it's crossing
+GPS knows how fast it crosses
 the ground. /
 My model knows how fast it moves
 through the air.
 The wind is the difference.
 
-But flying straight, you can't tell
-a headwind from just flying slower. /
+But flying straight, a headwind and
+just flying slower look the same. /
 Forced straight — three metres
 a second wrong.
 
@@ -106,29 +105,33 @@ cost nothing extra.
 
 
 ───────────────────────────────  1:36
-        ** HOW IT PICKS ITS ROUTE **
+     ** HOW FAR IT REALLY HAS TO FLY **
 [ SCROLL to 04 · THE SHORTEST WAY ROUND ]
-[ DRAG the blue arrow around while you talk ]
+[ DRAG the blue arrow slowly while you talk ]
+[ let them SEE the winning shape change ]
 
-One last problem. /
-It can't turn on the spot, so it can
-rarely fly straight at the target.
-So which way should it curve? /
+But how far does it really
+have to fly? /
+
+It can't turn on the spot, /
+so the real distance isn't
+the straight line. It's a curve.
 
 In 1957 a mathematician called Dubins
-proved something I didn't expect: /
-whatever the start and the finish,
-the shortest route is always one
-of just six shapes.
+proved the shortest curve /
+is always one of six shapes.
 
 Six. Not a curve you search for. /
 Six you can write down.
 
-So it works out all six
-and flies the shortest that fits. /
+So it checks all six. /
+That's the real distance to go —
+and the steering spends
+whatever's left over.
 
-Drag where it has to arrive —
-watch the winner change.
+No wind sensor. Nothing from the ground. /
+It works the whole thing out
+on the way down.
 
 ───────────────────────────────  2:00
                                   END
@@ -149,10 +152,12 @@ watch the winner change.
       from GPS plus the flight model — and only
       turning makes that possible, which it was
       doing anyway.
-   4. It can't turn on the spot, so it plans a
-      curve — and Dubins proved the shortest one
-      is always among six named shapes, so the
-      model just checks all six.
+   4. It can't turn on the spot, so the real
+      distance to go is a curve, not a straight
+      line. Dubins proved the shortest curve is
+      always one of six shapes — so the model
+      checks all six, and that length is what
+      the steering budgets against.
 
  THE MATHS IS ON SCREEN, NOT IN YOUR MOUTH
    section 02   cos alpha = d / s
