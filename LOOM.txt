@@ -1,7 +1,15 @@
 ═══════════════════════════════════════
- AIRDROP · 2 MIN SCREEN DEMO
- paste this into Loom's teleprompter
+ AIRDROP · 2 MIN SCREEN DEMO  (v2)
+ paste this into the teleprompter
 ═══════════════════════════════════════
+
+ WHAT CHANGED FROM v1
+   v1 was a good demo and a bad explanation.
+   It never said you built a model, never said
+   how a parachute can steer at all, and its
+   two best moments (the wandering, and the
+   W-squared rule) both rested on ideas it
+   never taught. All four are fixed below.
 
  BEFORE YOU HIT RECORD
    · refresh the page (Ctrl+Shift+R)
@@ -9,6 +17,7 @@
    · scroll to  01 · THE TOY
    · click the FIRST card: "Nothing at all"
    · DO NOT touch any slider
+   · turn CAPTIONS on in the recorder
 
  HOW TO READ THIS
    Don't read it word for word.
@@ -17,6 +26,7 @@
 
 
 ───────────────────────────────  0:00
+[ say your name / class / school first ]
 [ PRESS "drop it" ]
 [ SILENCE. 3 seconds. Let it land. ]
 
@@ -28,115 +38,112 @@ It landed twenty-four metres
 from where it should have.
 
 
-───────────────────────────────  0:11
+───────────────────────────────  0:12
 [ stay put · don't scroll ]
 
-This is Assam, last July. /
-Four districts went under, /
-and eighty thousand people
-couldn't be reached by road.
+In the Assam floods last July, /
+eighty thousand people could only
+be reached by air.
 
-And in a flood, that means
-it's in the water.
+So I built a model of a parachute
+that steers itself to the target.
 
 
 ───────────────────────────────  0:24
+        ** HOW IT CAN STEER AT ALL **
+[ point at the top half of the picture ]
+
+It's not a round parachute.
+It's a parafoil — /
+it glides forward as it comes down,
+so pulling one side turns it.
+
+From the moment it's dropped /
+it has a fixed amount of flying in it.
+
+Remember that.
+
+
+───────────────────────────────  0:44
 [ CLICK 2nd card: "Works the wind out itself" ]
 [ PRESS "drop it" ]
 [ SILENCE. 3 seconds. ]
 
-Now watch this one.
-Nothing's changed — /
-same wind, same height, same parachute.
-
-The only difference is
-this one figures out the wind
+Same wind, same height,
+same parachute. /
+This one works out the wind
 on the way down.
 
 Two point three metres.
 
-And it doesn't have a wind sensor.
-
-    ( bar goes green: 21.6 m better )
+And no wind sensor on board.
 
 
-───────────────────────────────  0:42
+───────────────────────────────  1:00
           ** THE IMPORTANT BIT **
 [ SCROLL to 05 · NO WIND SENSOR ON BOARD ]
 [ CLICK "force it straight" ]
 
 So how does it know the wind?
 
-The GPS knows how fast
-it's crossing the ground. /
-The maths tells me how fast
-it should be moving through the air.
+GPS gives its speed over the ground, /
+the maths gives its speed through the air,
+and the difference is the wind.
 
-Take one from the other
-and that's the wind.
-
-Except that falls apart
-in a straight line.
-
+Except that fails
+in a straight line. /
 A headwind, and just flying slower,
 look identical.
 
-Forced straight, it's three metres
-a second out. Useless.
+Forced straight — /
+three metres a second out.
 
 [ CLICK "let it turn" ]
 
-Now let it turn.
+Let it turn — four centimetres.
 
-Four centimetres.
-
-Because when you turn, /
-the wind keeps pointing the same way
-and you don't.
+Because when you turn, the wind
+keeps pointing one way and you don't.
 
 
-───────────────────────────────  1:14
+───────────────────────────────  1:26
 [ SCROLL BACK UP to the first drop ]
 
-And this is the bit I like.
+And remember that spare flying
+it had to get rid of? /
+That's why it was wandering.
 
-Go back to that first drop — /
-it was wandering the whole way down.
-
-That's not it being lost. /
-That's it burning off height
-it doesn't need.
-
-So it was already turning — /
-already doing the thing
+So it was already turning. /
+Already doing the thing
 that finds the wind.
 
+I got that for free.
 
-───────────────────────────────  1:32
+
+───────────────────────────────  1:38
 [ PRESS "50 drops at once" ]
 
 One drop could be luck. /
-So here's fifty, everything randomised.
+So — fifty, everything randomised.
 
 Ten metres out without the wind,
 under four with it.
 
 
-───────────────────────────────  1:42
+───────────────────────────────  1:47
 [ SCROLL to 07 · THE FINDING ]
 
-And what I found is this. /
-Build it for twice the wind, /
+Now — a heavier one flies faster,
+so it beats the wind. /
+But heavy things turn wide.
+
+Those fight. And what I found is: /
+build it for twice the wind,
 and your landing gets four times worse.
 Even on a still day.
 
-I'm not the first to build
-a steerable parachute. /
-But that bit is mine.
-
-Go play with it —
-1101-hub dot github dot io
-slash guided-airdrop.
+I'm not the first to build one.
+That rule is mine.
 
 ───────────────────────────────  2:00
                                   END
@@ -146,6 +153,19 @@ slash guided-airdrop.
 ═══════════════════════════════════════
  DON'T READ THIS PART — reference only
 ═══════════════════════════════════════
+
+ THE FOUR THINGS A JUDGE MUST LEAVE WITH
+   1. She built a model of a self-steering
+      relief parachute.
+   2. It glides, so it can be steered — but it
+      has a fixed flying budget.
+   3. It finds the wind with no wind sensor,
+      and only turning makes that possible —
+      which it was doing anyway.
+   4. Accuracy is capped by the square of the
+      wind you design for.
+   If any one of those is missing, the video
+   has not done its job.
 
  NUMBERS THAT SHOULD APPEAR
    cold open drop ........... 23.9 m
@@ -164,19 +184,10 @@ slash guided-airdrop.
      overlap — it is NOT separated)
    · "nobody has done this before"  (they have — say so first)
 
- WHY IT'S IN THIS ORDER
-   · You open on the failure. Nobody needs briefing to
-     understand a box landing in the wrong place.
-   · The wandering is planted at 0:00 and paid off at 1:14.
-     That is the moment it stops being a simulation.
-   · Only three numbers are said out loud. Everything else
-     is on screen — reading it aloud just slows you down.
-   · Never describe what is visible. If a picture needs
-     narrating, fix the picture.
-
  IF YOU RUN LONG
-   cut the 50 drops at 1:32.
-   NEVER cut 0:42 or the callback at 1:14.
+   cut the 50 drops at 1:38.
+   NEVER cut 0:24 — it is the setup for both
+   the callback and the finding.
 
  IF ASKED: isn't the one that's TOLD the wind better?
    On the median, a bit — but the error bars overlap,
@@ -190,3 +201,10 @@ slash guided-airdrop.
    microcontroller. What neither of them publishes is how
    the weight and the wind together set the limit on
    accuracy. That part is mine.
+
+ IF ASKED: is this simulated or real?
+   Simulated — it is a mathematical model, and I say so
+   in the video. No turbulence, no canopy flexing, no
+   servo lag, so the numbers are a best case. The model
+   names a test build — 1 m2 canopy, 0.5 to 0.8 kg — so a
+   real flight can prove it wrong.
