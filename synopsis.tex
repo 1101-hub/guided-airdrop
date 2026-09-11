@@ -19,6 +19,8 @@
 \usepackage{booktabs}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
 \PassOptionsToPackage{hyphens}{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
@@ -30,13 +32,48 @@
 \setlength{\parskip}{4pt}
 \setlength{\parindent}{0pt}
 
-\title{\vspace{-1.6cm}Airdrop Trajectory Optimisation for Disaster Relief\\[4pt]
-\large Guiding Supply Packages to a Target in Unknown Wind}
-\date{}
+% ------------------------------------------------- header / footer (minimal)
+\definecolor{accent}{HTML}{3A5BA0}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\textsc{Airdrop Trajectory Optimisation for Disaster
+Relief}}
+\fancyfoot[L]{\footnotesize\textsc{Amulya D}}
+\fancyfoot[R]{\footnotesize\thepage}
+\renewcommand{\headrule}{\color{accent}\hrule height 0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{14pt}
 
 \begin{document}
-\maketitle
-\vspace{-1.4cm}
+
+% ---------------------------------------------------------------- COVER PAGE
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vspace*{3.2cm}
+
+{\LARGE\bfseries AIRDROP TRAJECTORY OPTIMISATION\\[8pt]
+FOR DISASTER RELIEF\par}
+
+\vspace{14pt}
+{\large Guiding Supply Packages to a Target in Unknown Wind\par}
+
+\vspace{26pt}
+{\textsc{Atomic Energy Central School, Mysuru}\par}
+
+\vfill
+\includegraphics[width=4.4cm]{logo.png}
+\vfill
+
+{\large BY: AMULYA D\par}
+
+\vspace{10pt}
+{\color{accent}\rule{\textwidth}{0.8pt}}
+
+\vspace*{0.6cm}
+\end{titlepage}
 
 % ---------------------------------------------------------------- ABSTRACT
 \section*{Abstract}
