@@ -110,6 +110,17 @@
       border-radius:12px;padding:14px 18px;margin:16px 0;display:inline-block;line-height:1.5}
   .eq small{display:block;font-family:var(--sans);font-size:.68em;font-weight:400;color:var(--ink3);margin-top:.6em}
 
+  /* a plain "you can touch this" marker, next to every live control */
+  .cue{display:inline-flex;align-items:center;gap:.5em;font-family:var(--mono);font-size:11px;
+       font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);
+       background:#fff;border:2.5px solid var(--blue);border-radius:999px;
+       padding:.36em .9em;margin:0 0 10px;animation:nudge 2.4s ease-in-out infinite}
+  .cue.pink{color:var(--pink);border-color:var(--pink)}
+  .cue.grn{color:var(--grn);border-color:var(--grn)}
+  .cue .a{font-size:13px;line-height:1}
+  @keyframes nudge{0%,88%,100%{transform:translateX(0)}94%{transform:translateX(4px)}}
+  @media (prefers-reduced-motion:reduce){.cue{animation:none}}
+
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
   .chip{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
         border:2px solid var(--ink);border-radius:999px;padding:.35em .9em;font-weight:700}
@@ -134,13 +145,14 @@
 
 <!-- ===================================================== THE DROP -->
 <section id="sec-drop">
-  <p class="tag">01 · the toy</p>
+  <p class="tag">01 · try it yourself</p>
   <span class="badge b-pink">your turn</span>
   <h2>Drop it.</h2>
   <p class="lead">Set the wind, the height and the weight. Press drop. Watch where it lands.</p>
 
   <div class="grid">
     <div>
+      <div><span class="cue "><span class="a">&#9654;</span>drag these</span></div>
       <label class="ctl"><span class="lab">wind speed <span class="val" id="vWind">1.6 m/s</span></span>
         <input type="range" id="sWind" min="0" max="4" step="0.1" value="1.6"></label>
       <label class="ctl"><span class="lab">wind direction <span class="val" id="vDir">45&deg;</span></span>
@@ -152,7 +164,9 @@
       <label class="ctl"><span class="lab">how wrong the compass is <span class="val" id="vB">+6&deg;</span></span>
         <input type="range" id="sB" min="-12" max="12" step="1" value="6"></label>
 
-      <p class="tag" style="margin:20px 0 8px">how much does it know about the wind?</p>
+      <p class="tag" style="margin:20px 0 6px">how much does it know about the wind?</p>
+      <div><span class="cue pink"><span class="a">&#9654;</span>click one</span></div>
+      
       <div class="opts" id="modeSeg">
         <button data-mode="none" aria-pressed="false" style="--c:#FF2E93">
           <span class="sw"></span>
@@ -174,6 +188,7 @@
         </button>
       </div>
 
+      <div><span class="cue grn"><span class="a">&#9654;</span>then click this</span></div>
       <button class="btn big" id="bDrop">&#9660; drop it</button><br>
       <button class="btn ghost" id="bRace">race all three</button>
       <button class="btn ghost" id="b50">50 drops at once</button>
@@ -220,6 +235,7 @@
         Set &alpha; from that and the extra flying is spent exactly. As it descends <em>d/s</em>
         rises to 1, &alpha; falls to 0, and the weave straightens into a final approach on its
         own &mdash; no switching logic.</small></div>
+      <div><span class="cue grn"><span class="a">&#9654;</span>click to drop both</span></div>
       <button class="btn" id="bGlide">&#9660; drop both</button>
       <div class="readout">
         <div><div class="ro-num sm" id="roRound">&mdash;</div><div class="ro-lab">round parachute</div></div>
@@ -243,6 +259,7 @@
         through the air. The difference is the wind.</p>
       <p>But flying straight, <strong>a headwind and simply flying slower look identical</strong>.
         Turning tells them apart &mdash; the wind keeps pointing one way while you swing round.</p>
+      <div><span class="cue pink"><span class="a">&#9654;</span>click either one</span></div>
       <div class="seg" id="obsSeg">
         <button data-straight="0" aria-pressed="true">let it turn</button>
         <button data-straight="1" aria-pressed="false">force it straight</button>
@@ -266,6 +283,7 @@
       <p class="lead">It cannot turn on the spot, so it can rarely fly straight at the target.</p>
       <p>In 1957 Lester Dubins proved the shortest path is <strong>always</strong> one of six
         shapes. An infinite question becomes picking the smallest of six numbers.</p>
+      <div><span class="cue grn"><span class="a">&#9654;</span>drag the blue arrow</span></div>
       <table id="tDub"><thead><tr><th>shape</th><th>length</th></tr></thead><tbody></tbody></table>
       <div class="note">Grey = the losers. Pink = the one being flown.</div>
     </div>
@@ -313,6 +331,10 @@
         <small>Weight over canopy area is the only thing that sets how fast it flies.</small></div>
       <p>Left of the pink line it cannot fly into the wind <em>at all</em>. No amount of clever
         steering fixes that &mdash; it is simply slower than the air.</p>
+      <div><span class="cue "><span class="a">&#9654;</span>drag this</span></div>
+      <label class="ctl"><span class="lab">weight per m&sup2;
+        <span class="val" id="vL2">1.20 kg/m&sup2;</span></span>
+        <input type="range" id="sL2" min="0.25" max="2.5" step="0.05" value="1.2"></label>
       <div class="readout">
         <div><div class="ro-num sm" id="roL2">&mdash;</div><div class="ro-lab">weight per m&sup2;</div></div>
         <div><div class="ro-num sm blue" id="roV2">&mdash;</div><div class="ro-lab">flying speed</div></div>
@@ -356,7 +378,8 @@
     <div><canvas id="cChart" width="820" height="560"></canvas></div>
     <div>
       <p class="lead">Darker means it lands further away. Grey means it cannot fly at all.</p>
-      <p><strong>Click anywhere</strong> and the toy above will fly that design for you.</p>
+      <div><span class="cue "><span class="a">&#9654;</span>click any square</span></div>
+      <p>Click anywhere and the model above will fly that design for you.</p>
       <div class="readout">
         <div><div class="ro-num sm" id="roPick">&mdash;</div><div class="ro-lab">typical miss here</div></div>
       </div>
@@ -368,7 +391,7 @@
 <!-- ===================================================== WRITEUP -->
 <section>
   <p class="tag">09 · the write-up</p>
-  <h2>The paper behind the toy.</h2>
+  <h2>The paper behind it.</h2>
   <p class="lead">1,000 words, full method, statistics and references.</p>
   <p>
     <a class="btn" href="https://github.com/1101-hub/guided-airdrop/blob/main/synopsis.pdf">read the paper</a>
@@ -382,6 +405,6 @@
 <p class="foot">Amulya D · Atomic Energy Central School, Mysuru</p>
 </div>
 
-<script type="module" src="app.js?v=11"></script>
+<script type="module" src="app.js?v=12"></script>
 </body>
 </html>

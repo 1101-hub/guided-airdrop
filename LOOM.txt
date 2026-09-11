@@ -11,7 +11,7 @@
  BEFORE YOU HIT RECORD
    · refresh the page (Ctrl+Shift+R)
    · zoom 90%, close other tabs
-   · scroll to  01 · THE TOY
+   · scroll to  01 · TRY IT YOURSELF
    · click the FIRST card: "Nothing at all"
    · DO NOT touch any slider
    · turn CAPTIONS on in the recorder
@@ -185,7 +185,7 @@ on the way down.
    · "nobody has done this before"  (they have — say so first)
 
  PAGE ORDER MATCHES THE SCRIPT
-   01 the toy · 02 how it steers · 03 the wind
+   01 try it yourself · 02 how it steers · 03 wind
    04 six shapes · 05 the result · 06 how heavy
    07 the finding · 08 design chart · 09 write-up
    You only ever scroll DOWN, except the one

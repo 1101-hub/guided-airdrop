@@ -7,11 +7,11 @@
 import {
   glideState, turnRadius, minLoading, dubinsSolve, dubinsAll, dubinsSample,
   simulate, median, rng,
-} from './physics.js?v=11';
+} from './physics.js?v=12';
 import {
   ctx2d, clear, mapper, line, dot, cross, label, arrow,
   drawDrop, INK, INK3, LINE, PINK, BLUE, GRN, YEL,
-} from './draw.js?v=11';
+} from './draw.js?v=12';
 
 const CL = 0.80, CD = 0.27, BANK = 20, TARGET = [20, 10];
 const $ = id => document.getElementById(id);
@@ -512,6 +512,9 @@ function drawScale() {
 /* ============================================================ wiring ===== */
 function syncLabels() {
   $('vWind').textContent = `${fmt(S.wind, 1)} m/s`;
+  $('vL2').textContent = `${fmt(S.load, 2)} kg/m²`;
+  $('sL2').value = S.load;            // the weight slider appears twice;
+  $('sL').value = S.load;             // keep both showing the same value
   $('vDir').textContent = `${S.dir}°`;
   $('vH').textContent = `${S.height} m`;
   $('vL').textContent = `${fmt(S.load, 2)} kg/m²`;
@@ -524,7 +527,7 @@ const bind = (id, key) => $(id).addEventListener('input', e => {
   syncLabels(); redrawAll();
   refreshDrop();                       // preview only — not a recorded attempt
 });
-['sWind:wind', 'sDir:dir', 'sH:height', 'sL:load', 'sB:bias']
+['sWind:wind', 'sDir:dir', 'sH:height', 'sL:load', 'sB:bias', 'sL2:load']
   .forEach(p => bind(...p.split(':')));
 
 $('modeSeg').addEventListener('click', e => {
