@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Airdrop Trajectory Optimisation for Disaster Relief</title>
-<meta name="description" content="Interactive model of a self-steering relief parafoil that finds the wind without a wind sensor.">
+<meta name="description" content="Drop a relief package yourself: a parafoil that finds the wind with no wind sensor.">
 <style>
   :root{
     --paper:#F7F3E6; --ink:#141414; --ink2:#4E4A42; --ink3:#8C877C; --line:#E2DCCB;
@@ -15,48 +15,50 @@
   *{box-sizing:border-box}
   body{margin:0;background:#E4E9F2;color:var(--ink);font-family:var(--sans);
        -webkit-font-smoothing:antialiased}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 20px 80px}
-  section{background:var(--paper);border-radius:18px;box-shadow:0 10px 40px rgba(20,20,30,.14);
-          padding:46px 44px;margin:22px 0}
-  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-       color:var(--ink3);margin:0 0 14px}
-  h1{font-size:clamp(38px,6.2vw,76px);line-height:.92;letter-spacing:-.045em;margin:0 0 18px;font-weight:800}
-  h2{font-size:clamp(28px,3.6vw,44px);line-height:1;letter-spacing:-.035em;margin:0 0 8px;font-weight:800;
-     max-width:20ch;text-wrap:balance}
-  h3{font-size:19px;letter-spacing:-.01em;margin:26px 0 10px;font-weight:800}
-  p{font-size:17px;line-height:1.55;color:var(--ink2);margin:0 0 14px;max-width:62ch}
-  p.lead{font-size:21px;line-height:1.4;color:var(--ink);font-weight:600;max-width:40ch}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 70px}
+  section{background:var(--paper);border-radius:20px;box-shadow:0 10px 40px rgba(20,20,30,.14);
+          padding:44px 42px;margin:20px 0}
+
+  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+       color:var(--ink3);margin:0 0 12px}
+  h1{font-size:clamp(42px,7vw,84px);line-height:.88;letter-spacing:-.05em;margin:0 0 20px;font-weight:800}
+  h2{font-size:clamp(32px,4.6vw,56px);line-height:.96;letter-spacing:-.04em;margin:0 0 14px;
+     font-weight:800;max-width:18ch;text-wrap:balance}
+  h3{font-size:20px;letter-spacing:-.01em;margin:24px 0 8px;font-weight:800}
+  p{font-size:18px;line-height:1.5;color:var(--ink2);margin:0 0 14px;max-width:52ch}
+  p.lead{font-size:clamp(20px,2.1vw,26px);line-height:1.32;color:var(--ink);font-weight:700;max-width:30ch}
   strong{font-weight:800;color:var(--ink)}
   a{color:var(--blue)}
   .blue{color:var(--blue)} .pink{color:var(--pink)} .gr{color:var(--grn)}
-  .badge{display:inline-block;font-size:12px;font-weight:800;padding:.45em 1em;border-radius:999px;
-         transform:rotate(-3deg);margin-bottom:16px;letter-spacing:.01em}
+  .badge{display:inline-block;font-size:13px;font-weight:800;padding:.45em 1.05em;border-radius:999px;
+         transform:rotate(-3deg);margin:0 0 14px;letter-spacing:.01em}
   .b-pink{background:var(--pink);color:#fff} .b-blue{background:var(--blue);color:#fff}
   .b-grn{background:var(--green);color:#14300a} .b-yel{background:var(--yellow);color:#3a2c00}
 
-  .grid{display:grid;grid-template-columns:340px 1fr;gap:34px;align-items:start}
-  .grid.flip{grid-template-columns:1fr 380px}
-  @media(max-width:860px){.grid,.grid.flip{grid-template-columns:1fr}}
+  .grid{display:grid;grid-template-columns:300px 1fr;gap:30px;align-items:start}
+  .grid.flip{grid-template-columns:1fr 360px}
+  @media(max-width:880px){.grid,.grid.flip{grid-template-columns:1fr}}
 
-  canvas{width:100%;display:block;border-radius:12px;background:#fff;border:3px solid var(--ink)}
+  canvas{width:100%;display:block;border-radius:14px;background:#fff;border:3px solid var(--ink)}
 
-  label.ctl{display:block;margin:0 0 15px}
+  label.ctl{display:block;margin:0 0 14px}
   label.ctl .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-                 color:var(--ink3);display:flex;justify-content:space-between;margin-bottom:5px}
+                 color:var(--ink3);display:flex;justify-content:space-between;margin-bottom:4px}
   label.ctl .val{color:var(--ink);font-weight:800}
   input[type=range]{width:100%;accent-color:var(--blue);height:22px;margin:0}
 
-  .seg{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
   .seg button{font-family:var(--sans);font-size:13px;font-weight:800;border:2.5px solid var(--ink);
     background:#fff;color:var(--ink);border-radius:999px;padding:.42em 1em;cursor:pointer}
   .seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
-  .btn{font-size:14px;font-weight:800;border:3px solid var(--ink);background:var(--yellow);color:var(--ink);
-       border-radius:999px;padding:.55em 1.3em;cursor:pointer;font-family:var(--sans);margin:0 8px 8px 0}
+  .btn{font-size:15px;font-weight:800;border:3px solid var(--ink);background:var(--yellow);color:var(--ink);
+       border-radius:999px;padding:.55em 1.35em;cursor:pointer;font-family:var(--sans);margin:0 7px 8px 0}
   .btn:hover{background:var(--green)}
-  .btn.ghost{background:#fff}
+  .btn.ghost{background:#fff;font-size:13px;padding:.5em 1.05em}
+  .btn.big{font-size:19px;padding:.6em 1.6em}
 
-  .readout{display:flex;gap:30px;align-items:baseline;flex-wrap:wrap;margin:16px 0 4px}
-  .ro-num{font-family:var(--mono);font-size:40px;font-weight:800;letter-spacing:-.04em;line-height:1}
+  .readout{display:flex;gap:26px;align-items:baseline;flex-wrap:wrap;margin:16px 0 4px}
+  .ro-num{font-family:var(--mono);font-size:46px;font-weight:800;letter-spacing:-.04em;line-height:1}
   .ro-num.sm{font-size:24px}
   .ro-lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
           color:var(--ink3);margin-top:5px}
@@ -64,39 +66,36 @@
   .warn{background:var(--pink);color:#fff;font-weight:800;font-size:14px;border-radius:10px;
         padding:11px 15px;margin:14px 0;display:none}
   .warn.on{display:block}
-  .note{font-family:var(--mono);font-size:12px;color:var(--ink3);line-height:1.6;margin-top:12px}
+  .note{font-family:var(--mono);font-size:12px;color:var(--ink3);line-height:1.6;margin-top:10px}
 
-  table{border-collapse:collapse;font-size:15px;width:100%;margin:8px 0 0}
-  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);
-     font-weight:400;text-align:left;padding:0 14px 9px 0}
-  td{padding:9px 14px 9px 0;border-top:2px solid var(--line);color:var(--ink2)}
-  td.n{font-family:var(--mono);font-weight:800;color:var(--ink)}
-  tr.key td,tr.key td.n{color:var(--pink);font-weight:800}
-
-  pre{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:16px 18px;overflow-x:auto;
-      font-family:var(--mono);font-size:12.5px;line-height:1.65;margin:14px 0}
-  pre .c{color:var(--ink3)} pre .k{color:var(--blue);font-weight:700} pre .s{color:var(--grn)}
-  pre b{color:var(--pink)}
-
-  .verdict{font-family:var(--mono);font-size:14px;line-height:1.5;margin:14px 0 0;
-           border:3px solid var(--ink);border-radius:12px;padding:11px 15px;background:#fff}
+  .verdict{font-family:var(--mono);font-size:15px;line-height:1.5;margin:14px 0 0;
+           border:3px solid var(--ink);border-radius:12px;padding:12px 16px;background:#fff}
   .verdict .ar{color:var(--ink3);margin:0 4px}
   .verdict .d{font-weight:800;padding:.15em .6em;border-radius:999px}
   .verdict.good{border-color:var(--grn)} .verdict.good .d{background:var(--green);color:#14300a}
   .verdict.bad{border-color:var(--pink)} .verdict.bad .d{background:var(--pink);color:#fff}
 
-  .attempts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:14px 0 0;min-height:30px}
-  .attempts .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
-                 text-transform:uppercase;color:var(--ink3);margin-right:4px}
+  .attempts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:12px 0 0;min-height:28px}
   .pill{font-family:var(--mono);font-size:12px;font-weight:800;border:2.5px solid var(--ink3);
         border-radius:999px;padding:.3em .75em;background:#fff;cursor:default}
   .pill.best{background:var(--yellow)}
   .pill.now{box-shadow:0 0 0 3px rgba(20,20,20,.12)}
 
-  .foot{font-family:var(--mono);font-size:12px;color:var(--ink3);text-align:center;padding:26px 0 0}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+  table{border-collapse:collapse;font-size:16px;width:100%;margin:6px 0 0}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);
+     font-weight:400;text-align:left;padding:0 14px 9px 0}
+  td{padding:10px 14px 10px 0;border-top:2px solid var(--line);color:var(--ink2)}
+  td.n{font-family:var(--mono);font-weight:800;color:var(--ink)}
+  tr.key td,tr.key td.n{color:var(--pink);font-weight:800}
+
+  .eq{font-family:var(--mono);font-size:17px;font-weight:800;background:#fff;border:3px solid var(--ink);
+      border-radius:12px;padding:14px 18px;margin:16px 0;display:inline-block;line-height:1.5}
+  .eq small{display:block;font-family:var(--sans);font-size:.68em;font-weight:400;color:var(--ink3);margin-top:.6em}
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
   .chip{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
         border:2px solid var(--ink);border-radius:999px;padding:.35em .9em;font-weight:700}
+  .foot{font-family:var(--mono);font-size:12px;color:var(--ink3);text-align:center;padding:24px 0 0}
 </style>
 </head>
 <body>
@@ -106,27 +105,21 @@
 <section>
   <p class="tag">Recreational Mathematical Modelling · Atomic Energy Central School, Mysuru</p>
   <h1>Airdrop Trajectory<br>Optimisation for<br>Disaster Relief</h1>
-  <p class="lead">A relief package that steers itself to the target &mdash;
-    and works out the wind on the way down, with no wind sensor on board.</p>
+  <p class="lead">Drop a relief package from a helicopter and watch it steer itself to the target
+    &mdash; with no wind sensor on board.</p>
   <div class="chips">
-    <span class="chip">everything below is live</span>
-    <span class="chip">move a slider, watch it change</span>
+    <span class="chip">you fly it</span>
+    <span class="chip">move a slider, drop again</span>
+    <span class="chip">it tells you if you improved</span>
   </div>
 </section>
 
 <!-- ===================================================== THE DROP -->
 <section id="sec-drop">
-  <p class="tag">01 · the experiment</p>
-  <span class="badge b-pink">have a go</span>
-  <h2>Drop it yourself.</h2>
-  <p>In July 2026 a cloudburst flooded four districts of Upper Assam. 705,000 people were
-    affected; 80,000 could not be reached. Helicopters dropped supplies, and the Chief Minister
-    asked for <strong>targeted drops</strong>. A package with no guidance goes wherever the air goes.</p>
-  <p>Set the conditions, then drop. <strong>The guidance never sees the true wind</strong> unless
-    you tell it to.</p>
-  <p>The coloured line is the <strong>trajectory</strong> &mdash; the actual path the package takes
-    through the air on its way down. It is not falling straight: it is a small glider, so it flies
-    forward the whole time, and the guidance decides where that flying is spent.</p>
+  <p class="tag">01 · the toy</p>
+  <span class="badge b-pink">your turn</span>
+  <h2>Drop it.</h2>
+  <p class="lead">Set the wind, the height and the weight. Press drop. Watch where it lands.</p>
 
   <div class="grid">
     <div>
@@ -134,28 +127,28 @@
         <input type="range" id="sWind" min="0" max="4" step="0.1" value="1.6"></label>
       <label class="ctl"><span class="lab">wind direction <span class="val" id="vDir">45&deg;</span></span>
         <input type="range" id="sDir" min="0" max="360" step="5" value="45"></label>
-      <label class="ctl"><span class="lab">release height <span class="val" id="vH">40 m</span></span>
+      <label class="ctl"><span class="lab">drop height <span class="val" id="vH">40 m</span></span>
         <input type="range" id="sH" min="20" max="60" step="1" value="40"></label>
-      <label class="ctl"><span class="lab">wing loading <span class="val" id="vL">1.20 kg/m&sup2;</span></span>
+      <label class="ctl"><span class="lab">how heavy, per m&sup2; of canopy <span class="val" id="vL">1.20 kg/m&sup2;</span></span>
         <input type="range" id="sL" min="0.25" max="2.5" step="0.05" value="1.2"></label>
-      <label class="ctl"><span class="lab">compass bias <span class="val" id="vB">+6&deg;</span></span>
+      <label class="ctl"><span class="lab">how wrong the compass is <span class="val" id="vB">+6&deg;</span></span>
         <input type="range" id="sB" min="-12" max="12" step="1" value="6"></label>
 
-      <p class="tag" style="margin:22px 0 8px">what the guidance knows</p>
+      <p class="tag" style="margin:20px 0 8px">what the package knows about the wind</p>
       <div class="seg" id="modeSeg">
         <button data-mode="none" aria-pressed="false">nothing</button>
-        <button data-mode="ekf" aria-pressed="true">EKF estimate</button>
-        <button data-mode="true" aria-pressed="false">true wind</button>
+        <button data-mode="ekf" aria-pressed="true">works it out</button>
+        <button data-mode="true" aria-pressed="false">simply told</button>
       </div>
 
-      <button class="btn" id="bDrop">&#9660; drop it</button>
+      <button class="btn big" id="bDrop">&#9660; drop it</button><br>
       <button class="btn ghost" id="bRace">race all three</button>
-      <button class="btn ghost" id="b50">run 50 drops</button>
-      <button class="btn ghost" id="bReset">clear attempts</button>
+      <button class="btn ghost" id="b50">50 drops at once</button>
+      <button class="btn ghost" id="bReset">clear</button>
 
       <div class="attempts" id="attempts"></div>
-      <div class="note">Every drop you make is kept here, newest last. Yellow is your
-        best. Hover one to see what you had the sliders set to.</div>
+      <div class="note">Every drop is kept here, newest last, your best in yellow.
+        Hover one to see the settings behind it.</div>
     </div>
 
     <div>
@@ -163,14 +156,12 @@
       <div class="warn" id="warnPen"></div>
       <div class="readout">
         <div><div class="ro-num pink" id="roMiss">&mdash;</div><div class="ro-lab">missed by</div></div>
-        <div><div class="ro-num sm" id="roAir">&mdash;</div><div class="ro-lab">airspeed</div></div>
-        <div><div class="ro-num sm" id="roTurn">&mdash;</div><div class="ro-lab">turn radius</div></div>
-        <div><div class="ro-num sm" id="roTime">&mdash;</div><div class="ro-lab">time aloft</div></div>
+        <div><div class="ro-num sm" id="roAir">&mdash;</div><div class="ro-lab">flying speed</div></div>
+        <div><div class="ro-num sm" id="roTurn">&mdash;</div><div class="ro-lab">tightest turn</div></div>
+        <div><div class="ro-num sm" id="roTime">&mdash;</div><div class="ro-lab">time in the air</div></div>
       </div>
       <div class="verdict" id="verdict"></div>
-      <div class="note" id="noteDrop">Two views of the same flight. <strong>Top:</strong> looking
-        straight down, like a map. <strong>Bottom:</strong> from the side, so you can see it
-        gliding forward as it comes down. The helicopter drops it; the cross is the target.</div>
+      <div class="note" id="noteDrop"></div>
     </div>
   </div>
 </section>
@@ -178,26 +169,21 @@
 <!-- ===================================================== WING LOADING -->
 <section>
   <p class="tag">02 · the one number that decides everything</p>
-  <h2>Wing loading.</h2>
+  <span class="badge b-blue">try dragging it</span>
+  <h2>How heavy you make it.</h2>
   <div class="grid flip">
     <div>
-      <p>Weight divided by canopy area. It is the <em>only</em> thing that sets how fast the
-        parafoil flies, because lift has to equal weight:</p>
-      <pre><span class="c"># parafoil.py</span>
-<span class="k">def</span> airspeed(mass, area, cl):
-    <span class="c">"""V = sqrt( 2 m g / (rho S C_L) )  -- only m/S matters."""</span>
-    <span class="k">return</span> np.sqrt(<b>2.0 * mass * G / (RHO * area * cl)</b>)</pre>
-      <p>Two things pull in opposite directions. <strong class="blue">Fly too slow</strong> and the wind
-        blows you away &mdash; below the pink line the package cannot fly upwind <em>at all</em>, whatever
-        the guidance says. <strong class="pink">Fly too fast</strong> and your turns get wide, so you
-        cannot make small corrections at the end.</p>
-      <p>That is the whole design problem in one picture. Drag the slider.</p>
+      <p class="lead">Too light and the wind blows it away. Too heavy and its turns get too wide
+        to fix anything at the end.</p>
+      <div class="eq">v = &radic;(2mg / &rho;SC<sub>L</sub>)
+        <small>Weight over canopy area is the only thing that sets how fast it flies.</small></div>
+      <p>Left of the pink line it cannot fly into the wind <em>at all</em>. No amount of clever
+        steering fixes that &mdash; it is simply slower than the air.</p>
       <div class="readout">
-        <div><div class="ro-num sm" id="roL2">&mdash;</div><div class="ro-lab">loading</div></div>
-        <div><div class="ro-num sm blue" id="roV2">&mdash;</div><div class="ro-lab">airspeed</div></div>
-        <div><div class="ro-num sm pink" id="roR2">&mdash;</div><div class="ro-lab">turn radius</div></div>
+        <div><div class="ro-num sm" id="roL2">&mdash;</div><div class="ro-lab">weight per m&sup2;</div></div>
+        <div><div class="ro-num sm blue" id="roV2">&mdash;</div><div class="ro-lab">flying speed</div></div>
+        <div><div class="ro-num sm pink" id="roR2">&mdash;</div><div class="ro-lab">tightest turn</div></div>
       </div>
-      <div class="note">Both curves come from the same slider as the drop above.</div>
     </div>
     <div><canvas id="cLoad" width="760" height="520"></canvas></div>
   </div>
@@ -206,25 +192,17 @@
 <!-- ===================================================== DESIGN CHART -->
 <section>
   <p class="tag">03 · every combination, tested</p>
-  <h2>Where it lands, everywhere.</h2>
-  <p>24 drops at each of 13 &times; 11 settings &mdash; 3,432 simulated descents. Darker means it
-    lands further from the target. The grey wedge is where the wind beats the airspeed and no
-    guided descent exists. <strong>Click anywhere on the chart</strong> to fly that design.</p>
+  <span class="badge b-yel">click the chart</span>
+  <h2>3,432 drops on one picture.</h2>
   <div class="grid flip">
+    <div><canvas id="cChart" width="820" height="560"></canvas></div>
     <div>
-      <canvas id="cChart" width="820" height="560"></canvas>
-    </div>
-    <div>
-      <h3 style="margin-top:0">Read it like this</h3>
-      <p>Go <strong>right</strong> (heavier) and the miss distance grows no matter how calm it is &mdash;
-        wide turns. Go <strong>up</strong> (windier) and you eventually fall off the cliff into the
-        grey.</p>
-      <p>So the best design is the <strong>lightest</strong> one that still beats the wind you expect.
-        And because loading is set by how much you put in the box, you can retune it on the day.</p>
+      <p class="lead">Darker means it lands further away. Grey means it cannot fly at all.</p>
+      <p><strong>Click anywhere</strong> and the toy above will fly that design for you.</p>
       <div class="readout">
-        <div><div class="ro-num sm" id="roPick">&mdash;</div><div class="ro-lab">median miss here</div></div>
+        <div><div class="ro-num sm" id="roPick">&mdash;</div><div class="ro-lab">typical miss here</div></div>
       </div>
-      <div class="note" id="notePick">Hover the chart to read a cell.</div>
+      <div class="note" id="notePick">Hover the chart to read a square.</div>
     </div>
   </div>
 </section>
@@ -232,37 +210,32 @@
 <!-- ===================================================== DUBINS -->
 <section>
   <p class="tag">04 · the shortest way round</p>
+  <span class="badge b-grn">drag the arrow</span>
   <h2>Only six shapes exist.</h2>
   <div class="grid flip">
-    <div>
-      <p>The parafoil cannot turn sharper than some radius, so it usually cannot fly straight at
-        the target. In 1957 Lester Dubins proved that the shortest path is <strong>always</strong>
-        one of six: turn&ndash;straight&ndash;turn in four arrangements, or three arcs in two.</p>
-      <p>An infinite question &mdash; "what is the best possible curve?" &mdash; collapses into picking
-        the smallest of six numbers. <strong>Drag the arrow</strong> to change where the package has to
-        arrive and watch which shape wins.</p>
-      <table id="tDub"><thead><tr><th>shape</th><th>length</th></tr></thead><tbody></tbody></table>
-      <div class="note">Faint grey = the other five. Pink = the winner being flown.</div>
-    </div>
     <div><canvas id="cDub" width="780" height="560"></canvas></div>
+    <div>
+      <p class="lead">It cannot turn on the spot, so it can rarely fly straight at the target.</p>
+      <p>In 1957 Lester Dubins proved the shortest path is <strong>always</strong> one of six
+        shapes. An infinite question becomes picking the smallest of six numbers.</p>
+      <table id="tDub"><thead><tr><th>shape</th><th>length</th></tr></thead><tbody></tbody></table>
+      <div class="note">Grey = the losers. Pink = the one being flown.</div>
+    </div>
   </div>
 </section>
 
 <!-- ===================================================== EKF -->
 <section>
   <p class="tag">05 · no wind sensor on board</p>
-  <h2>How it finds the wind.</h2>
+  <span class="badge b-pink">press the buttons</span>
+  <h2>It works out the wind by turning.</h2>
   <div class="grid flip">
+    <div><canvas id="cEkf" width="780" height="520"></canvas></div>
     <div>
-      <p>GPS says how fast you move <em>over the ground</em>. The glide model says how fast you move
-        <em>through the air</em>. Subtract them and you have the wind.</p>
-      <p>Except the compass is biased and the airspeed is not exactly the design value &mdash; and
-        <strong>flying in a straight line you cannot tell those apart</strong>. A 1 m/s headwind looks
-        exactly like flying 1 m/s slower.</p>
-      <p><strong class="pink">Turning breaks the tie.</strong> The wind keeps pointing the same way while
-        your own airspeed swings round with you. And the parafoil already turns constantly, because
-        that is how it burns off height. The manoeuvre that manages energy is the same manoeuvre
-        that reveals the wind.</p>
+      <p class="lead">GPS says how fast you cross the ground. The maths says how fast you move
+        through the air. The difference is the wind.</p>
+      <p>But flying straight, <strong>a headwind and simply flying slower look identical</strong>.
+        Turning tells them apart &mdash; the wind keeps pointing one way while you swing round.</p>
       <div class="seg" id="obsSeg">
         <button data-straight="0" aria-pressed="true">let it turn</button>
         <button data-straight="1" aria-pressed="false">force it straight</button>
@@ -270,9 +243,8 @@
       <div class="readout">
         <div><div class="ro-num sm" id="roWerr">&mdash;</div><div class="ro-lab">wind error at landing</div></div>
       </div>
-      <div class="note">Dashed = the true wind. Solid = what the filter believes, second by second.</div>
+      <div class="note">Dashed = the real wind. Solid = what it believes, second by second.</div>
     </div>
-    <div><canvas id="cEkf" width="780" height="520"></canvas></div>
   </div>
 </section>
 
@@ -280,70 +252,58 @@
 <section>
   <p class="tag">06 · the result</p>
   <h2>150 drops, three ways.</h2>
-  <p>Identical conditions in every row. The only thing that changes is what the guidance is
-    allowed to know about the wind.</p>
+  <p class="lead">Same conditions every time. Only the wind knowledge changes.</p>
   <table>
-    <thead><tr><th>guidance knows</th><th>median miss</th><th>mean</th><th>90th pct</th></tr></thead>
+    <thead><tr><th>what it knows</th><th>typical miss</th><th>average</th><th>worst 10%</th></tr></thead>
     <tbody>
-      <tr><td>nothing</td><td class="n">8.57 m (6.49&ndash;12.46)</td><td class="n">11.52 &plusmn; 0.81</td><td class="n">24.27 m</td></tr>
-      <tr class="key"><td>EKF estimate</td><td class="n">3.89 m (2.85&ndash;5.28)</td><td class="n">4.94 &plusmn; 0.31</td><td class="n">10.75 m</td></tr>
-      <tr><td>the true wind</td><td class="n">4.62 m (3.37&ndash;5.44)</td><td class="n">4.84 &plusmn; 0.32</td><td class="n">10.93 m</td></tr>
+      <tr><td>nothing</td><td class="n">8.57 m</td><td class="n">11.52 &plusmn; 0.81</td><td class="n">24.27 m</td></tr>
+      <tr class="key"><td>works out the wind</td><td class="n">3.89 m</td><td class="n">4.94 &plusmn; 0.31</td><td class="n">10.75 m</td></tr>
+      <tr><td>simply told the wind</td><td class="n">4.62 m</td><td class="n">4.84 &plusmn; 0.32</td><td class="n">10.93 m</td></tr>
     </tbody>
   </table>
-  <h3>Being honest about the last row</h3>
-  <p>The EKF row looks better than the true-wind row, but the confidence intervals overlap, so
-    <strong>those two are not separated</strong> at 150 drops. The claim that <em>is</em> supported is the
-    paired one: compared drop by drop under identical conditions, adding the EKF cuts the miss by
-    a median <strong class="pink">4.26 m</strong> (95% CI 3.08&ndash;6.57), and it wins in
-    <strong>112 of 150</strong> trials.</p>
-  <h3>What this model does not include</h3>
-  <p>No turbulence, no canopy deformation, no actuator lag. So these numbers are an
-    <strong>upper bound</strong> on how well it could do. The model names a test configuration &mdash;
-    1 m&sup2; canopy, 0.5&ndash;0.8 kg payload, 20 m minimum release &mdash; so a real flight can prove
-    it wrong rather than be fitted to it.</p>
+  <h3>Why the last row is not a win</h3>
+  <p>Row 2 looks better than row 3, but the error bars overlap, so <strong>those two are not
+    really separated</strong> at 150 drops. The honest claim is the paired one: drop for drop,
+    working out the wind cuts the miss by <strong class="pink">4.26 m</strong>, and wins
+    <strong>112 times out of 150</strong>.</p>
+  <h3>What this leaves out</h3>
+  <p>No gusts, no canopy flexing, no servo lag. These numbers are a <strong>best case</strong>.
+    The model names a test build &mdash; 1 m&sup2; canopy, 0.5&ndash;0.8 kg &mdash; so a real
+    flight can prove it wrong.</p>
   <h3>Not the first guided parafoil</h3>
-  <p>The Naval Postgraduate School's <em>Snowflake</em> has landed within 3 m of target, and the
-    open-source ParaDrone already plans Dubins paths on a microcontroller. This project claims no
-    priority over either. What it adds is the design analysis they do not publish: how wing
-    loading and wind speed together set the floor on landing accuracy.</p>
+  <p>The Naval Postgraduate School's <em>Snowflake</em> lands within 3 m, and ParaDrone already
+    flies Dubins paths on a hobby microcontroller. No priority is claimed over either. What is
+    new here is the design analysis they do not publish.</p>
 </section>
 
 <!-- ===================================================== SCALING -->
 <section>
   <p class="tag">07 · the finding</p>
-  <h2>The error floor grows with the <em>square</em> of the wind.</h2>
+  <h2>Double the wind, four times the error.</h2>
   <div class="grid flip">
-    <div>
-      <p>Two facts, chained together. To fly in wind <em>W</em> you need loading proportional to
-        <em>W&sup2;</em>. And turn radius grows in proportion to loading. So:</p>
-      <pre><span class="c"># both verified numerically, over the whole design range</span>
-R / (m/S)        = 4.7694 m&sup3;/kg   <span class="c">constant to 1.9e-14 %</span>
-(m/S)_min / W&sup2;   = 0.058722       <span class="c">constant to 1.2e-14 %</span>
-
-<span class="c"># deviations at double-precision level, so these are</span>
-<span class="c"># algebraic identities of the model, not fitted curves</span>
-        <b>R_min  &#8733;  W&sup2;</b></pre>
-      <p>Double the wind you design for and the smallest correction you can make at the end gets
-        <strong>four times</strong> bigger &mdash; in every condition, including dead calm. Specifying for
-        wind you never meet is not free insurance. It costs you accuracy all the time.</p>
-    </div>
     <div><canvas id="cScale" width="760" height="520"></canvas></div>
+    <div>
+      <p class="lead">To fly in wind <em>W</em> you need weight going up as <em>W&sup2;</em>.
+        And heavier means wider turns.</p>
+      <div class="eq">R<sub>min</sub> &#8733; W&sup2;
+        <small>Verified to 14 decimal places &mdash; an identity of the model, not a fitted curve.</small></div>
+      <p>So building for wind you never meet costs you accuracy <strong>all the time</strong>,
+        even on a still day.</p>
+    </div>
   </div>
 </section>
 
 <section>
-  <p class="tag">08 · read the paper</p>
-  <h2>Everything here is in the write-up.</h2>
-  <p>The synopsis is a 1,000-word IMRaD paper with the full method, the statistics and the
-    references. The model is six Python files; this page is a line-for-line port of them into
-    JavaScript, checked against the originals to 6&times;10<sup>&minus;12</sup>.</p>
+  <p class="tag">08 · the write-up</p>
+  <h2>The paper behind the toy.</h2>
+  <p class="lead">1,000 words, full method, statistics and references.</p>
   <p>
-    <a class="btn" href="https://github.com/1101-hub/guided-airdrop/blob/main/synopsis.pdf">read the paper (PDF)</a>
-    <a class="btn ghost" href="https://github.com/1101-hub/guided-airdrop">the code on GitHub</a>
+    <a class="btn" href="https://github.com/1101-hub/guided-airdrop/blob/main/synopsis.pdf">read the paper</a>
+    <a class="btn ghost" href="https://github.com/1101-hub/guided-airdrop">the code</a>
   </p>
 </section>
 
-<p class="foot">Amulya D · Atomic Energy Central School, Mysuru · Recreational Mathematical Modelling</p>
+<p class="foot">Amulya D · Atomic Energy Central School, Mysuru</p>
 </div>
 
 <script type="module" src="app.js"></script>

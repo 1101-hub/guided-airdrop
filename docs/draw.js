@@ -1,20 +1,29 @@
 /* ===========================================================================
-   draw.js — the drop picture: helicopter, parafoil, trajectory, two panels.
+   draw.js — the drop scene.
 
-   Kept separate from app.js so the figures printed in the paper are rendered
-   by exactly the same code the judges see on screen (capture.html uses this).
+   Two views of one flight:
+     SCENE   a big side-on picture. Helicopter at altitude, package released,
+             canopy opens, it glides down through the wind to a target on the
+             ground. This is the one you watch.
+     MAP     the same flight from above, where the miss distance is honest in
+             both directions.
+
+   Kept separate from app.js so the figures in the paper are drawn by exactly
+   the same code as the page (capture.html uses this).
    =========================================================================== */
 
 export const INK = '#141414', INK2 = '#4E4A42', INK3 = '#8C877C';
 export const LINE = '#E2DCCB', GHOST = '#B4AD9C';
 export const PINK = '#FF2E93', BLUE = '#3B54E8', GRN = '#4FA828', YEL = '#FFD12E';
-/* Labels are sized for the screen. Print figures are placed at about a third
-   of the canvas width, so capture.html scales them up to stay legible. */
+const SKY = '#EFF3FF', EARTH = '#DFE7C8', EARTH2 = '#BFCE9C';
+
 let FONT_PX = 11;
 let MONO = `${FONT_PX}px ui-monospace, Consolas, monospace`;
+let MONO_B = `bold ${FONT_PX + 1}px ui-monospace, Consolas, monospace`;
 export function setFontScale(k) {
   FONT_PX = 11 * k;
   MONO = `${FONT_PX}px ui-monospace, Consolas, monospace`;
+  MONO_B = `bold ${FONT_PX + 1}px ui-monospace, Consolas, monospace`;
 }
 
 /* ------------------------------------------------------------ primitives */
@@ -80,48 +89,46 @@ export function arrow(g, x, y, dx, dy, color, width = 3) {
   g.closePath(); g.fill(); g.restore();
 }
 
-/* ----------------------------------------------------------------- icons */
+/* ----------------------------------------------------------------- props */
 
-/* Flies in, drops the package, carries on. Faces +x unless flipped. */
 export function helicopter(g, x, y, s = 1, color = INK, spin = 0) {
   g.save(); g.translate(x, y); g.scale(s, s);
   g.strokeStyle = color; g.fillStyle = color;
   g.lineCap = 'round'; g.lineJoin = 'round';
-  g.beginPath(); g.ellipse(0, 0, 13, 8.5, 0, 0, 7); g.fill();          // cabin
+  g.beginPath(); g.ellipse(0, 0, 13, 8.5, 0, 0, 7); g.fill();
   g.lineWidth = 4.5;
-  g.beginPath(); g.moveTo(9, -2.5); g.lineTo(30, -5.5); g.stroke();    // boom
+  g.beginPath(); g.moveTo(9, -2.5); g.lineTo(30, -5.5); g.stroke();
   g.lineWidth = 3;
-  g.beginPath(); g.moveTo(29, -5.5); g.lineTo(34.5, -13); g.stroke();  // fin
-  g.beginPath(); g.moveTo(0, -8.5); g.lineTo(0, -13.5); g.stroke();    // mast
-  // rotor: squashed by the spin phase so it reads as turning
-  const rw = 21 * Math.max(0.25, Math.abs(Math.cos(spin)));
+  g.beginPath(); g.moveTo(29, -5.5); g.lineTo(34.5, -13); g.stroke();
+  g.beginPath(); g.moveTo(0, -8.5); g.lineTo(0, -13.5); g.stroke();
+  const rw = 21 * Math.max(0.25, Math.abs(Math.cos(spin)));   // rotor blur
   g.lineWidth = 3.4;
   g.beginPath(); g.moveTo(-rw, -13.5); g.lineTo(rw, -13.5); g.stroke();
   g.lineWidth = 2.2;
-  g.beginPath(); g.moveTo(-11, 10.5); g.lineTo(12, 10.5); g.stroke();  // skid
+  g.beginPath(); g.moveTo(-11, 10.5); g.lineTo(12, 10.5); g.stroke();
   g.beginPath();
   g.moveTo(-6, 8); g.lineTo(-7.5, 10.5); g.moveTo(6, 8); g.lineTo(7.5, 10.5);
   g.stroke();
   g.restore();
 }
 
-/* Side on: canopy, lines, box of supplies. */
+/* Canopy open, supplies swinging underneath. */
 export function parafoilSide(g, x, y, s = 1, color = PINK) {
   g.save(); g.translate(x, y); g.scale(s, s);
   g.strokeStyle = color; g.fillStyle = color;
   g.lineCap = 'round'; g.lineJoin = 'round';
-  g.lineWidth = 4.5;
-  g.beginPath(); g.arc(0, 0, 13, Math.PI * 1.13, Math.PI * 1.87); g.stroke();
+  g.lineWidth = 5;
+  g.beginPath(); g.arc(0, 0, 14, Math.PI * 1.10, Math.PI * 1.90); g.stroke();
   g.lineWidth = 1.5;
   g.beginPath();
-  g.moveTo(-11.4, -5.2); g.lineTo(-2.5, 7.5);
-  g.moveTo(11.4, -5.2); g.lineTo(2.5, 7.5);
+  g.moveTo(-12.5, -5.6); g.lineTo(-2.8, 8);
+  g.moveTo(12.5, -5.6); g.lineTo(2.8, 8);
   g.stroke();
-  g.fillRect(-4, 7.5, 8, 6.5);
+  g.fillRect(-4.5, 8, 9, 7);
   g.restore();
 }
 
-/* From above: a wing across the direction of travel, nose forward. */
+/* From above: a wing across the direction of travel. */
 export function parafoilTop(g, x, y, heading, s = 1, color = PINK) {
   g.save(); g.translate(x, y); g.rotate(-heading); g.scale(s, s);
   g.strokeStyle = color; g.fillStyle = color;
@@ -135,25 +142,28 @@ export function parafoilTop(g, x, y, heading, s = 1, color = PINK) {
   g.restore();
 }
 
-/* A falling supply box, for the moment between release and canopy opening. */
-export function box(g, x, y, s = 1, color = INK) {
+/* The crate, in the moment after release before the canopy catches. */
+export function crate(g, x, y, s = 1, color = INK) {
   g.save(); g.translate(x, y); g.scale(s, s);
-  g.fillStyle = color; g.fillRect(-4.5, -4, 9, 8);
-  g.strokeStyle = '#fff'; g.lineWidth = 1.4;
-  g.beginPath(); g.moveTo(-4.5, 0); g.lineTo(4.5, 0); g.stroke();
+  g.fillStyle = color; g.fillRect(-5.5, -5, 11, 10);
+  g.strokeStyle = '#fff'; g.lineWidth = 1.6;
+  g.beginPath(); g.moveTo(-5.5, 0); g.lineTo(5.5, 0);
+  g.moveTo(0, -5); g.lineTo(0, 5); g.stroke();
   g.restore();
 }
 
-export function ground(g, x0, x1, y) {
-  line(g, [[x0, y], [x1, y]], INK, 3);
-  g.save(); g.strokeStyle = '#C9C2AF'; g.lineWidth = 2; g.lineCap = 'round';
-  for (let x = x0; x < x1; x += 11) {
-    g.beginPath(); g.moveTo(x, y); g.lineTo(x - 7, y + 9); g.stroke();
-  }
+/* Where the supplies are supposed to land. */
+export function flag(g, x, y, s = 1) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  g.strokeStyle = INK; g.lineWidth = 2.6; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -26); g.stroke();
+  g.fillStyle = PINK;
+  g.beginPath(); g.moveTo(0, -26); g.lineTo(17, -20.5); g.lineTo(0, -15);
+  g.closePath(); g.fill();
   g.restore();
 }
 
-/* ------------------------------------------------------------- the scene */
+/* --------------------------------------------------------------- helpers */
 
 export function pathDistance(track) {
   const out = [0];
@@ -163,131 +173,170 @@ export function pathDistance(track) {
   return out;
 }
 
-const TOP_RECT = g => ({ x: 0, y: 30, w: g.W, h: 462 });
-const SIDE_RECT = g => ({ x: 0, y: 536, w: g.W, h: 276 });
+const SCENE_RECT = g => ({ x: 0, y: 0, w: g.W, h: Math.round(g.H * 0.635) });
+const MAP_RECT = g => ({ x: 0, y: Math.round(g.H * 0.635) + 14,
+                         w: g.W, h: g.H - Math.round(g.H * 0.635) - 14 });
 
-export const RELEASE_AT = 0.20;   // fraction of the animation spent flying in
-const APPROACH_M = 46;            // how far back the helicopter starts
+export const RELEASE_AT = 0.22;    // share of the animation spent flying in
+const APPROACH_M = 46;
+const CANOPY_AT = 0.05;            // share of the descent before the canopy opens
 
-/* Draw the whole picture.
-     runs   [{color, res}]   one entry per guidance configuration
-     prev   {res, miss}      the previous attempt, drawn as a grey ghost
-     frac   0..1             animation progress; >=1 is the finished state   */
+/* Draw both views of one flight.
+     runs   [{color, res}]  one entry per guidance configuration
+     prev   {res}           the previous attempt, as a grey ghost on the map
+     frac   0..1            animation progress; >= 1 is the finished state   */
 export function drawDrop(g, { runs, prev = null, frac = 1, wind = [0, 0],
                               windSpeed = 0, height = 40, target = [20, 10],
                               extraBounds = [] }) {
   clear(g);
-  const TOP = TOP_RECT(g), SIDE = SIDE_RECT(g);
-
-  const flying = frac < RELEASE_AT;                       // still on approach
+  const SC = SCENE_RECT(g), MP = MAP_RECT(g);
+  const flying = frac < RELEASE_AT;
   const pf = flying ? 0 : Math.min(1, (frac - RELEASE_AT) / (1 - RELEASE_AT));
-  // runs in from the west and holds a hover over the release point
-  const hx = flying ? -APPROACH_M * (1 - frac / RELEASE_AT) : 0;
 
-  /* ------------------------------------------- panel 1: looking straight down */
-  const xs = [0, target[0], -APPROACH_M], ys = [0, target[1]];
-  for (const r of runs) for (const p of r.res.track) { xs.push(p[1]); ys.push(p[2]); }
-  if (prev) for (const p of prev.res.track) { xs.push(p[1]); ys.push(p[2]); }
-  for (const [x, y] of extraBounds) { xs.push(x); ys.push(y); }
-  const m = mapper(g, xs, ys, 52, TOP);
+  /* ===================================================== the scene, side on */
+  // Look along the release -> target line, so the flag sits at its true
+  // distance and the package visibly drifts toward or past it.
+  const tLen = Math.hypot(target[0], target[1]) || 1;
+  const ux = target[0] / tLen, uy = target[1] / tLen;
+  const along = p => p[1] * ux + p[2] * uy;
 
+  const alongs = [0, tLen];
+  for (const r of runs) for (const p of r.res.track) alongs.push(along(p));
+  // leave room on the left for the helicopter's run-in, but no more than that
+  const aMin = Math.min(...alongs, -16), aMax = Math.max(...alongs, tLen) + 6;
+  const approachFrom = aMin + 5;
+
+  const padL = 58, padR = 34, padT = 44, gh = 46;   // ground band height
+  const X = a => padL + (a - aMin) / ((aMax - aMin) || 1) * (SC.w - padL - padR);
+  const Y = z => SC.y + SC.h - gh - z / (height * 1.12) * (SC.h - gh - padT);
+
+  // sky and ground
   g.save();
-  g.beginPath(); g.rect(TOP.x, TOP.y, TOP.w, TOP.h); g.clip();
-  g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
-  const lo = Math.floor(Math.min(...xs) / 10) * 10, hi = Math.ceil(Math.max(...xs) / 10) * 10;
-  const lo2 = Math.floor(Math.min(...ys) / 10) * 10, hi2 = Math.ceil(Math.max(...ys) / 10) * 10;
-  for (let v = lo; v <= hi; v += 10) {
-    g.beginPath(); g.moveTo(m.x(v), TOP.y); g.lineTo(m.x(v), TOP.y + TOP.h); g.stroke();
-  }
-  for (let v = lo2; v <= hi2; v += 10) {
-    g.beginPath(); g.moveTo(0, m.y(v)); g.lineTo(g.W, m.y(v)); g.stroke();
+  const grad = g.createLinearGradient(0, SC.y, 0, SC.y + SC.h - gh);
+  grad.addColorStop(0, '#FFFFFF'); grad.addColorStop(1, SKY);
+  g.fillStyle = grad; g.fillRect(SC.x, SC.y, SC.w, SC.h - gh);
+  g.fillStyle = EARTH; g.fillRect(SC.x, SC.y + SC.h - gh, SC.w, gh);
+  g.restore();
+  line(g, [[SC.x, SC.y + SC.h - gh], [SC.x + SC.w, SC.y + SC.h - gh]], EARTH2, 3);
+
+  // height gridlines
+  g.save(); g.strokeStyle = 'rgba(60,80,140,.10)'; g.lineWidth = 1;
+  for (let k = 1; k <= 4; k++) {
+    const z = height * k / 4;
+    g.beginPath(); g.moveTo(padL, Y(z)); g.lineTo(SC.w - 14, Y(z)); g.stroke();
   }
   g.restore();
+  for (let k = 1; k <= 4; k++)
+    label(g, `${Math.round(height * k / 4)} m`, padL - 9, Y(height * k / 4) + 4,
+      INK3, 'right');
 
-  label(g, 'LOOKING STRAIGHT DOWN  ·  where it goes', 16, 20, INK3);
-
+  // wind, as streaks drifting the way the air is going
+  const wAlong = wind[0] * ux + wind[1] * uy;
   if (windSpeed > 0.05) {
-    const px = 92, py = TOP.y + 34, sc = 27;
-    arrow(g, px, py, wind[0] / windSpeed * sc, -wind[1] / windSpeed * sc, INK3, 3);
-    label(g, `wind ${windSpeed.toFixed(1)} m/s`, px - 34, py + 32, INK3);
+    const dir = wAlong >= 0 ? 1 : -1;
+    const len = 16 + 13 * Math.min(windSpeed / 4, 1);
+    g.save(); g.strokeStyle = 'rgba(59,84,232,.30)'; g.lineWidth = 2.4;
+    g.lineCap = 'round';
+    for (let k = 0; k < 7; k++) {
+      const z = height * (0.16 + 0.13 * k);
+      const span = SC.w - padL - padR - 40;
+      const off = ((frac * 1.7 + k * 0.37) % 1) * span;
+      const x0 = padL + 20 + (dir > 0 ? off : span - off);
+      g.beginPath(); g.moveTo(x0, Y(z)); g.lineTo(x0 + dir * len, Y(z)); g.stroke();
+    }
+    g.restore();
+    const ax = padL + 40, ay = SC.y + SC.h - gh - 30;   // low left, out of the way
+    arrow(g, ax, ay, dir * 34, 0, BLUE, 3);
+    label(g, `WIND ${windSpeed.toFixed(1)} m/s`, ax + (dir > 0 ? 42 : -42),
+      ay + 4, BLUE, dir > 0 ? 'left' : 'right');
   }
 
-  // the attempt before this one, so improvement is visible
-  if (prev) {
-    line(g, prev.res.track.map(p => [m.x(p[1]), m.y(p[2])]), GHOST, 2, [6, 5]);
-    dot(g, m.x(prev.res.landing[0]), m.y(prev.res.landing[1]), 5, GHOST);
-    label(g, `last try  ${prev.res.miss.toFixed(1)} m`,
-      m.x(prev.res.landing[0]) + 10, m.y(prev.res.landing[1]) + 16, GHOST);
-  }
+  flag(g, X(tLen), SC.y + SC.h - gh, 1.15);
+  label(g, 'TARGET', X(tLen) + 22, SC.y + SC.h - gh - 24, INK, 'left', MONO_B);
 
-  cross(g, m.x(target[0]), m.y(target[1]), 9, INK);
-  label(g, 'TARGET', m.x(target[0]) + 6 + FONT_PX * 0.75, m.y(target[1]) + 4, INK);
+  label(g, 'WATCH IT FALL', 16, SC.y + 22, INK3, 'left', MONO_B);
 
-  if (!flying) {
-    for (const r of runs) {
-      const t = r.res.track, n = Math.max(2, Math.floor(t.length * pf));
-      if (pf < 1) line(g, t.map(p => [m.x(p[1]), m.y(p[2])]), r.color + '2E', 2.4);
-      line(g, t.slice(0, n).map(p => [m.x(p[1]), m.y(p[2])]), r.color, 2.8);
-      if (pf >= 1) dot(g, m.x(r.res.landing[0]), m.y(r.res.landing[1]), 6, r.color);
-      else {
-        const p = t[n - 1];
-        parafoilTop(g, m.x(p[1]), m.y(p[2]), p[4], 1.15, r.color);
+  // the flight
+  for (const r of runs) {
+    const t = r.res.track;
+    const n = flying ? 0 : Math.max(2, Math.floor(t.length * pf));
+    if (!flying) {
+      line(g, t.slice(0, n).map(p => [X(along(p)), Y(p[3])]), r.color, 3);
+      const p = t[n - 1];
+      if (pf >= 1) {
+        // Only mark WHERE it stopped here. This view is a projection onto the
+        // release->target line, so the visible gap is the along-track part
+        // only; the exact miss is drawn on the map below, where it is honest.
+        dot(g, X(along(p)), Y(0), 6, r.color);
+        label(g, 'LANDED', X(along(p)), SC.y + SC.h - gh + 22, r.color,
+          'center', MONO_B);
+      } else if (pf < CANOPY_AT) {
+        crate(g, X(along(p)), Y(p[3]), 1.2);
+      } else {
+        parafoilSide(g, X(along(p)), Y(p[3]) - 10, 1.25, r.color);
       }
     }
   }
 
-  if (!flying) dot(g, m.x(0), m.y(0), 4, INK, null);
-  helicopter(g, m.x(hx), m.y(0), 1.0, INK, frac * 26);
-  label(g, flying ? 'COMING IN TO DROP' : 'DROPPED HERE',
-    m.x(hx) - (flying ? 24 : 18), m.y(0) + 32, INK);
+  // helicopter: runs in, then holds a hover over the release point
+  const hAlong = flying ? approachFrom * (1 - frac / RELEASE_AT) : 0;
+  helicopter(g, X(hAlong), Y(height), 1.05, INK, frac * 26);
+  label(g, flying ? 'COMING IN' : 'RELEASED HERE', X(hAlong), Y(height) - 26,
+    INK, 'center');
 
-  const barM = 20, px0 = g.W - 42 - barM * m.s, py0 = TOP.y + TOP.h - 12;
-  line(g, [[px0, py0], [px0 + barM * m.s, py0]], INK3, 2.5);
-  label(g, `${barM} m`, px0 + barM * m.s / 2, py0 - 8, INK3, 'center');
-
-  /* --------------------------------------------- panel 2: from the side */
+  /* ======================================================= the map, above */
   g.save(); g.strokeStyle = LINE; g.lineWidth = 2; g.setLineDash([6, 6]);
-  g.beginPath(); g.moveTo(20, SIDE.y - 16); g.lineTo(g.W - 20, SIDE.y - 16); g.stroke();
+  g.beginPath(); g.moveTo(16, MP.y - 7); g.lineTo(g.W - 16, MP.y - 7); g.stroke();
   g.restore();
-  label(g, 'FROM THE SIDE  ·  it glides forward while it comes down',
-    16, SIDE.y - 26, INK3);
 
-  const pad = 52, gy = SIDE.y + SIDE.h - 40;
-  const maxD = Math.max(...runs.map(r => {
-    const d = pathDistance(r.res.track); return d[d.length - 1];
-  }), 1);
-  const X = d => pad + d / maxD * (g.W - pad - 54);
-  const Y = z => gy - z / Math.max(height, 1) * (SIDE.h - 84);
+  const xs = [0, target[0]], ys = [0, target[1]];
+  for (const r of runs) for (const p of r.res.track) { xs.push(p[1]); ys.push(p[2]); }
+  if (prev) for (const p of prev.res.track) { xs.push(p[1]); ys.push(p[2]); }
+  for (const [x, y] of extraBounds) { xs.push(x); ys.push(y); }
+  const m = mapper(g, xs, ys, 40, MP);
 
-  g.save(); g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
-  for (let k = 1; k <= 4; k++) {
-    const z = height * k / 4;
-    g.beginPath(); g.moveTo(pad, Y(z)); g.lineTo(g.W - 30, Y(z)); g.stroke();
+  g.save();
+  g.beginPath(); g.rect(MP.x, MP.y, MP.w, MP.h); g.clip();
+  g.strokeStyle = '#F0ECE0'; g.lineWidth = 1;
+  const lo = Math.floor(Math.min(...xs) / 10) * 10, hi = Math.ceil(Math.max(...xs) / 10) * 10;
+  const lo2 = Math.floor(Math.min(...ys) / 10) * 10, hi2 = Math.ceil(Math.max(...ys) / 10) * 10;
+  for (let v = lo; v <= hi; v += 10) {
+    g.beginPath(); g.moveTo(m.x(v), MP.y); g.lineTo(m.x(v), MP.y + MP.h); g.stroke();
+  }
+  for (let v = lo2; v <= hi2; v += 10) {
+    g.beginPath(); g.moveTo(MP.x, m.y(v)); g.lineTo(MP.x + MP.w, m.y(v)); g.stroke();
   }
   g.restore();
-  for (let k = 1; k <= 4; k++)
-    label(g, `${Math.round(height * k / 4)}`, pad - 10, Y(height * k / 4) + 4, INK3, 'right');
 
-  ground(g, pad - 22, g.W - 24, gy);
-  label(g, '0', pad - 10, gy + 4, INK3, 'right');
-  label(g, 'HEIGHT  m', pad + 100, Y(height) - 16, INK3, 'left');
-  label(g, 'DISTANCE FLOWN THROUGH THE AIR  m', g.W / 2, SIDE.y + SIDE.h - 6,
-    INK3, 'center');
-  label(g, `${Math.round(maxD)} m`, X(maxD), gy - 8, INK3, 'right');
+  label(g, 'SAME FLIGHT FROM ABOVE', 16, MP.y + 18, INK3, 'left', MONO_B);
 
-  if (!flying) {
-    for (const r of runs) {
-      const t = r.res.track, d = pathDistance(t);
-      const n = Math.max(2, Math.floor(t.length * pf));
-      if (pf < 1) line(g, t.map((p, i) => [X(d[i]), Y(p[3])]), r.color + '2E', 2.4);
-      line(g, t.slice(0, n).map((p, i) => [X(d[i]), Y(p[3])]), r.color, 2.8);
-      if (pf >= 1) dot(g, X(d[d.length - 1]), Y(0), 5.5, r.color);
-      else if (pf < 0.06) box(g, X(d[n - 1]), Y(t[n - 1][3]) - 4, 1.2);  // just let go
-      else parafoilSide(g, X(d[n - 1]), Y(t[n - 1][3]) - 9, 1.15, r.color);
-    }
+  if (prev) {
+    line(g, prev.res.track.map(p => [m.x(p[1]), m.y(p[2])]), GHOST, 2, [6, 5]);
+    dot(g, m.x(prev.res.landing[0]), m.y(prev.res.landing[1]), 4.5, GHOST);
+    label(g, `last try ${prev.res.miss.toFixed(1)} m`,
+      m.x(prev.res.landing[0]) + 9, m.y(prev.res.landing[1]) + 15, GHOST);
   }
 
-  // helicopter runs in along the release height, then holds at the left edge
-  const shx = pad + (flying ? (frac / RELEASE_AT - 1) * 46 : 0);
-  helicopter(g, shx, Y(height) - 11, 0.95, INK, frac * 26);
+  cross(g, m.x(target[0]), m.y(target[1]), 8, INK);
+  for (const r of runs) {
+    const t = r.res.track;
+    const n = flying ? 0 : Math.max(2, Math.floor(t.length * pf));
+    if (flying) continue;
+    line(g, t.slice(0, n).map(p => [m.x(p[1]), m.y(p[2])]), r.color, 2.4);
+    const p = t[n - 1];
+    if (pf >= 1) {
+      dot(g, m.x(p[1]), m.y(p[2]), 5.5, r.color);
+      const lx = m.x(p[1]), ly = m.y(p[2]), tx = m.x(target[0]), ty = m.y(target[1]);
+      line(g, [[lx, ly], [tx, ty]], r.color, 2, [4, 4]);
+      if (runs.length === 1)
+        label(g, `${r.res.miss.toFixed(1)} m out`, (lx + tx) / 2 + 8,
+          (ly + ty) / 2 - 7, r.color, 'left', MONO_B);
+    } else parafoilTop(g, m.x(p[1]), m.y(p[2]), p[4], 1, r.color);
+  }
+  dot(g, m.x(0), m.y(0), 4, INK, null);
+  label(g, 'DROPPED', m.x(0), m.y(0) + 18, INK3, 'center');
+
+  const barM = 20, px0 = g.W - 34 - barM * m.s, py0 = MP.y + MP.h - 12;
+  line(g, [[px0, py0], [px0 + barM * m.s, py0]], INK3, 2.5);
+  label(g, `${barM} m`, px0 + barM * m.s / 2, py0 - 7, INK3, 'center');
 }

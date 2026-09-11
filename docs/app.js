@@ -98,9 +98,9 @@ function refreshDrop({ animate: doAnim = false, record = false, race = false } =
   checkPenetration(d);
 }
 
-const EXPLAIN = '<strong>Top:</strong> looking straight down, like a map. ' +
-  '<strong>Bottom:</strong> from the side, so you can watch it glide forward ' +
-  'as it comes down. ';
+const EXPLAIN = '<strong>Top:</strong> the drop as you would see it from the side. ' +
+  '<strong>Bottom:</strong> the same flight from above, where the miss is honest ' +
+  'in both directions. ';
 
 function renderVerdict(race, miss) {
   const v = $('verdict');
