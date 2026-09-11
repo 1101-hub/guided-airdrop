@@ -46,7 +46,7 @@ eighty thousand people could only
 be reached by air.
 
 So I built a model of a parachute
-that steers itself to the target.
+that steers itself.
 
 
 ───────────────────────────────  0:24
@@ -57,7 +57,7 @@ that steers itself to the target.
 
 It's not a round parachute.
 It's a parafoil — /
-it glides forward as it comes down,
+it glides forward,
 so pulling one side turns it.
 
 From the moment it's dropped /
@@ -76,9 +76,8 @@ same parachute. /
 This one works out the wind
 on the way down.
 
-Two point three metres.
-
-And no wind sensor on board.
+Two point three metres —
+and no wind sensor.
 
 
 ───────────────────────────────  1:00
@@ -89,12 +88,12 @@ And no wind sensor on board.
 So how does it know the wind?
 
 GPS gives its speed over the ground, /
-the maths gives its speed through the air,
-and the difference is the wind.
+the maths its speed through the air.
+The difference is the wind.
 
 Except that fails
 in a straight line. /
-A headwind, and just flying slower,
+A headwind and flying slower
 look identical.
 
 Forced straight — /
@@ -111,12 +110,12 @@ keeps pointing one way and you don't.
 ───────────────────────────────  1:26
 [ SCROLL BACK UP to the first drop ]
 
-And remember that spare flying
-it had to get rid of? /
-That's why it was wandering.
+Remember that spare flying
+it had to lose? /
+That's why it wandered.
 
-So it was already turning. /
-Already doing the thing
+So it was already turning — /
+already doing the thing
 that finds the wind.
 
 I got that for free.
@@ -126,26 +125,29 @@ I got that for free.
 [ PRESS "50 drops at once" ]
 
 One drop could be luck. /
-So — fifty, everything randomised.
+So — fifty, randomised.
 
-Ten metres out without the wind,
+Ten metres without the wind,
 under four with it.
 
 
 ───────────────────────────────  1:47
 [ SCROLL to 06 · THE FINDING ]
 
-Now — a heavier one flies faster,
-so it beats the wind. /
-But heavy things turn wide.
+Now, the weight. /
+Heavier flies faster, so it pushes
+into wind. /
+But heavier turns wider, and a wide turn
+is clumsy near the ground.
 
-Those fight. And what I found is: /
-build it for twice the wind,
-and your landing gets four times worse.
-Even on a still day.
+Twice the wind needs four times the weight. /
+Four times the weight,
+four times the turn radius.
 
-I'm not the first to build one.
-That rule is mine.
+So the best you can land
+gets four times worse. /
+And you pick that weight before you drop.
+So you carry it even on a still day.
 
 ───────────────────────────────  2:00
                                   END
