@@ -7,18 +7,20 @@
 import {
   glideState, turnRadius, minLoading, dubinsSolve, dubinsAll, dubinsSample,
   simulate, median, rng,
-} from './physics.js?v=5';
+} from './physics.js?v=6';
 import {
   ctx2d, clear, mapper, line, dot, cross, label, arrow,
   drawDrop, INK, INK3, LINE, PINK, BLUE, GRN, YEL,
-} from './draw.js?v=5';
+} from './draw.js?v=6';
 
 const CL = 0.80, CD = 0.27, BANK = 20, TARGET = [20, 10];
 const $ = id => document.getElementById(id);
 const fmt = (v, n = 2) => v.toFixed(n);
 
 const MODE_COLOR = { none: PINK, ekf: BLUE, true: GRN };
-const MODE_NAME = { none: 'no wind estimate', ekf: 'the EKF estimate', true: 'the true wind' };
+const MODE_NAME = { none: 'no idea about the wind',
+                    ekf: 'the wind worked out on board',
+                    true: 'the wind handed to it' };
 
 /* ------------------------------------------------------------ page state */
 const S = {
@@ -142,7 +144,7 @@ function renderAttempts() {
     return `<span class="pill${isBest ? ' best' : ''}${last ? ' now' : ''}" ` +
       `style="border-color:${MODE_COLOR[a.mode]}" ` +
       `title="wind ${fmt(a.wind, 1)} m/s · loading ${fmt(a.load, 2)} · ` +
-      `height ${a.height} m · bias ${a.bias}&deg;">${fmt(a.miss, 1)}</span>`;
+      `height ${a.height} m · bias ${a.bias}°">${fmt(a.miss, 1)} m</span>`;
   }).join('');
 }
 
