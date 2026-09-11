@@ -28,7 +28,7 @@
 [ SILENCE. 3 seconds. Let it land. ]
 
 That's a box of food dropped
-out of a helicopter, /
+from a helicopter, /
 and nothing's steering it.
 
 It landed twenty-four metres off.
@@ -53,13 +53,13 @@ It's a parafoil — a wing, not a dome. /
 It glides forward, and pulling
 one side turns it.
 
-From its weight and its canopy size /
+From its weight and canopy size /
 I worked out how fast it flies
-and how tightly it can turn.
+and how tightly it turns.
 
 It sinks at a steady rate. /
 So the moment it's dropped I know
-how long it has in the air —
+how long it has in the air,
 and how far it can fly.
 
 I wrote the steering to spend
@@ -74,17 +74,17 @@ arriving early.
 [ CLICK "force it straight" ]
 
 It has no wind sensor. /
-I wrote a filter that works
-the wind out for itself.
+I wrote a filter that works it out
+for itself.
 
 GPS knows how fast it's crossing
 the ground. /
 My model knows how fast it moves
 through the air.
-The wind is what's left.
+The wind is the difference.
 
 But flying straight, you can't tell
-a headwind from simply flying slower. /
+a headwind from just flying slower. /
 Forced straight — three metres
 a second wrong.
 
@@ -106,36 +106,29 @@ cost nothing extra.
 
 
 ───────────────────────────────  1:36
-          ** WHAT I FOUND **
-[ SCROLL to 05 · HOW HEAVY YOU MAKE IT ]
-[ drag the weight slider LEFT, then RIGHT ]
-[ read the two numbers as they change ]
+        ** HOW IT PICKS ITS ROUTE **
+[ SCROLL to 04 · THE SHORTEST WAY ROUND ]
+[ DRAG the blue arrow around while you talk ]
 
-Then I tested every weight
-against every wind. /
-Three thousand drops.
+One last problem. /
+It can't turn on the spot, so it can
+rarely fly straight at the target.
+So which way should it curve? /
 
-Watch the turn number. /
-Right now it turns inside six metres.
+In 1957 a mathematician called Dubins
+proved something I didn't expect: /
+whatever the start and the finish,
+the shortest route is always one
+of just six shapes.
 
-Make it heavier — faster, so it pushes
-through more wind. /
-But now it needs twelve metres
-to turn round.
+Six. Not a curve you search for. /
+Six you can write down.
 
-Twelve metres, when you're aiming
-at a spot. /
+So it works out all six
+and flies the shortest that fits. /
 
-So lighter is better — until the wind
-is faster than it is.
-
-[ SCROLL to 06 · THE FINDING ]
-
-So: the lightest one that still
-beats the wind. /
-
-And it's only ballast —
-you set it that morning.
+Drag where it has to arrive —
+watch the winner change.
 
 ───────────────────────────────  2:00
                                   END
@@ -156,14 +149,16 @@ you set it that morning.
       from GPS plus the flight model — and only
       turning makes that possible, which it was
       doing anyway.
-   4. Heavier handles more wind but turns wider,
-      so every wind has a best weight — and the
-      weight is just ballast.
+   4. It can't turn on the spot, so it plans a
+      curve — and Dubins proved the shortest one
+      is always among six named shapes, so the
+      model just checks all six.
 
  THE MATHS IS ON SCREEN, NOT IN YOUR MOUTH
    section 02   cos alpha = d / s
    section 03   wind = ground velocity - air velocity
-   section 06   v = sqrt(2mg / rho S C_L)
+   section 04   six Dubins shapes, with lengths
+   section 07   v = sqrt(2mg / rho S C_L)
                 R = v^2 / g tan phi
                 R_min proportional to W^2
    Point at them. Describe them in words.
@@ -171,8 +166,6 @@ you set it that morning.
    of them — but never read one aloud.
 
  NUMBERS THAT SHOULD APPEAR
-   weight 1.20 kg/m2 ........ 4.5 m/s, turns in 5.7 m
-   weight 2.50 kg/m2 ........ 6.5 m/s, turns in 11.9 m
    cold open drop ........... 23.9 m
    second drop .............. 2.3 m  (green, 21.6 better)
    forced straight .......... 2.82 m/s
@@ -188,8 +181,8 @@ you set it that morning.
 
  PAGE ORDER MATCHES THE SCRIPT
    01 the toy · 02 how it steers · 03 the wind
-   04 the result · 05 how heavy · 06 the finding
-   07 design chart · 08 six shapes · 09 write-up
+   04 six shapes · 05 the result · 06 how heavy
+   07 the finding · 08 design chart · 09 write-up
    You only ever scroll DOWN, except the one
    deliberate jump back at 1:26.
 
@@ -197,6 +190,13 @@ you set it that morning.
    trim the Assam lines at 0:10.
    NEVER cut 0:24 — it is the only place the
    model itself gets explained.
+
+ THE WEIGHT / BALLAST FINDING IS NOT IN v4
+   It is still on the page (06 and 07) and in
+   the paper. If a judge asks what you found:
+   heavier flies faster so it beats more wind,
+   but it turns wider — so every wind has a
+   best weight, and weight is only ballast.
 
  IF ASKED: isn't the one that's TOLD the wind better?
    On the median, a bit — but the error bars overlap,
