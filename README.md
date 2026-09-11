@@ -1,4 +1,8 @@
-# Guided Airdrop
+# Airdrop Trajectory Optimisation for Disaster Relief
+
+### Guiding Supply Packages to a Target in Unknown Wind
+
+A mathematical model of a self-steering parachute that works out the wind with no wind sensor — and the scaling law that decides how accurately any such system can land.
 
 **A self-steering parachute that lands relief supplies on a target, built from about ₹4,000 of parts.**
 

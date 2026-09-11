@@ -1,4 +1,10 @@
-# What this project is, and the maths behind it
+# Airdrop Trajectory Optimisation for Disaster Relief
+
+### Guiding Supply Packages to a Target in Unknown Wind
+
+---
+
+## What this project is, and the maths behind it
 
 Written to be read start to finish. Assumes school algebra and trigonometry — if you can solve a
 quadratic and you know what sine and cosine mean, you have enough. Everything else is built up here.

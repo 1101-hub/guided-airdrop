@@ -1,0 +1,1 @@
+I: Airdropped relief supplies drift and miss. M: Modelled a self-steering parafoil — Dubins path planning plus a Kalman filter inferring wind from GPS alone; 150 simulated drops. R: Median miss 8.6→3.9 m. D: Accuracy is capped by the square of the design wind speed.
