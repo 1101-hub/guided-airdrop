@@ -4,3 +4,11 @@ __pycache__/
 venv/
 _grid.npz
 archive/
+
+# LaTeX build artefacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
