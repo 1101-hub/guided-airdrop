@@ -10,130 +10,131 @@
    · click the FIRST card: "Nothing at all"
    · DO NOT touch any slider
 
- ONE RULE
-   press · silence · let it land · THEN talk
+ HOW TO READ THIS
+   Don't read it word for word.
+   Glance down, then say it your way.
+   "/" is just a breathing point.
 
 
 ───────────────────────────────  0:00
 [ PRESS "drop it" ]
 [ SILENCE. 3 seconds. Let it land. ]
 
-That's a box of food,
-dropped from a helicopter.
-Nobody steering it.
+That's a box of food dropped
+out of a helicopter, /
+and nothing's steering it.
 
-It missed by TWENTY-FOUR METRES.
-
-
-───────────────────────────────  0:13
-[ stay where you are · don't scroll ]
-
-July 2026.
-Four districts of Upper Assam go under.
-
-Seven lakh people affected.
-Eighty thousand unreachable by road.
-
-Everything they get comes from the air.
-
-A box twenty-four metres off
-is a box in the river.
+It landed twenty-four metres
+from where it should have.
 
 
-───────────────────────────────  0:28
+───────────────────────────────  0:11
+[ stay put · don't scroll ]
+
+This is Assam, last July. /
+Four districts went under, /
+and eighty thousand people
+couldn't be reached by road.
+
+And in a flood, that means
+it's in the water.
+
+
+───────────────────────────────  0:24
 [ CLICK 2nd card: "Works the wind out itself" ]
 [ PRESS "drop it" ]
 [ SILENCE. 3 seconds. ]
 
-Same wind.
-Same height.
-Same parachute.
+Now watch this one.
+Nothing's changed — /
+same wind, same height, same parachute.
 
-One difference —
-this one works out the wind
+The only difference is
+this one figures out the wind
 on the way down.
 
-TWO POINT THREE METRES.
+Two point three metres.
 
-And there's no wind sensor on board.
+And it doesn't have a wind sensor.
 
     ( bar goes green: 21.6 m better )
 
 
-───────────────────────────────  0:46
+───────────────────────────────  0:42
           ** THE IMPORTANT BIT **
 [ SCROLL to 05 · NO WIND SENSOR ON BOARD ]
 [ CLICK "force it straight" ]
 
 So how does it know the wind?
 
-GPS tells it how fast
-it's crossing the ground.
+The GPS knows how fast
+it's crossing the ground. /
+The maths tells me how fast
+it should be moving through the air.
 
-The maths tells it how fast
-it moves through the air.
+Take one from the other
+and that's the wind.
 
-Subtract, and that's the wind.
+Except that falls apart
+in a straight line.
 
-Except in a straight line that fails.
+A headwind, and just flying slower,
+look identical.
 
-A headwind — and simply flying slower —
-look EXACTLY THE SAME.
-There's no way to tell them apart.
-
-Forced to fly straight,
-it's nearly three metres a second wrong.
+Forced straight, it's three metres
+a second out. Useless.
 
 [ CLICK "let it turn" ]
 
 Now let it turn.
 
-FOUR CENTIMETRES.
+Four centimetres.
 
-Turning breaks the tie,
-because the wind keeps pointing one way
-while you swing round.
+Because when you turn, /
+the wind keeps pointing the same way
+and you don't.
 
 
-───────────────────────────────  1:20
+───────────────────────────────  1:14
 [ SCROLL BACK UP to the first drop ]
 
-Look again at that first flight.
-It wandered the whole way down.
+And this is the bit I like.
 
-That wasn't waste —
-it was burning off spare height.
+Go back to that first drop — /
+it was wandering the whole way down.
 
-THE MOVE IT ALREADY HAD TO MAKE
-IS THE MOVE THAT FINDS THE WIND.
+That's not it being lost. /
+That's it burning off height
+it doesn't need.
+
+So it was already turning — /
+already doing the thing
+that finds the wind.
 
 
-───────────────────────────────  1:33
+───────────────────────────────  1:32
 [ PRESS "50 drops at once" ]
 
-One drop is luck.
+One drop could be luck. /
+So here's fifty, everything randomised.
 
-So — fifty. Wind, height and compass
-error randomised every time.
-
-Around ten metres out knowing nothing.
-Under four working it out.
+Ten metres out without the wind,
+under four with it.
 
 
-───────────────────────────────  1:45
+───────────────────────────────  1:42
 [ SCROLL to 07 · THE FINDING ]
 
-And there's a rule underneath it.
+And what I found is this. /
+Build it for twice the wind, /
+and your landing gets four times worse.
+Even on a still day.
 
-Build for twice the wind,
-and the landing gets FOUR TIMES worse.
+I'm not the first to build
+a steerable parachute. /
+But that bit is mine.
 
-Every drop. Even on a still day.
-
-I'm not the first to build one of these.
-The rule is mine.
-
-Fly it yourself:
+Go play with it —
 1101-hub dot github dot io
 slash guided-airdrop.
 
@@ -163,19 +164,29 @@ slash guided-airdrop.
      overlap — it is NOT separated)
    · "nobody has done this before"  (they have — say so first)
 
+ WHY IT'S IN THIS ORDER
+   · You open on the failure. Nobody needs briefing to
+     understand a box landing in the wrong place.
+   · The wandering is planted at 0:00 and paid off at 1:14.
+     That is the moment it stops being a simulation.
+   · Only three numbers are said out loud. Everything else
+     is on screen — reading it aloud just slows you down.
+   · Never describe what is visible. If a picture needs
+     narrating, fix the picture.
+
  IF YOU RUN LONG
-   cut the 50 drops at 1:33.
-   NEVER cut 0:46 or the callback at 1:20.
+   cut the 50 drops at 1:32.
+   NEVER cut 0:42 or the callback at 1:14.
 
  IF ASKED: isn't the one that's TOLD the wind better?
-   On the median, slightly — but the error bars overlap,
-   so at 150 drops those two aren't separated.
-   What I can defend: drop for drop it cuts the miss by
-   4.26 metres and wins 112 times out of 150.
+   On the median, a bit — but the error bars overlap,
+   so at 150 drops those two aren't actually separated.
+   What I can back up: drop for drop it cuts the miss
+   by 4.26 metres, and it wins 112 times out of 150.
 
  IF ASKED: has nobody done this?
    They have. Naval Postgraduate School lands one within
    3 metres. ParaDrone flies these paths on a hobby
-   microcontroller. What neither publishes is how wing
-   loading and wind set the floor on accuracy.
-   That part is mine.
+   microcontroller. What neither of them publishes is how
+   the weight and the wind together set the limit on
+   accuracy. That part is mine.
