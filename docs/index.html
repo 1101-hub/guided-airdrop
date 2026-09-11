@@ -199,67 +199,36 @@
   </div>
 </section>
 
-<!-- ===================================================== WING LOADING -->
+<!-- ===================================================== HOW IT STEERS -->
 <section>
-  <p class="tag">02 · the one number that decides everything</p>
-  <span class="badge b-blue">try dragging it</span>
-  <h2>How heavy you make it.</h2>
+  <p class="tag">02 · how a falling box can steer at all</p>
+  <span class="badge b-grn">watch both</span>
+  <h2>It isn't a normal parachute.</h2>
   <div class="grid flip">
+    <div><canvas id="cGlide" width="1000" height="820"></canvas></div>
     <div>
-      <p class="lead">Too light and the wind blows it away. Too heavy and its turns get too wide
-        to fix anything at the end.</p>
-      <div class="eq">v = &radic;(2mg / &rho;SC<sub>L</sub>)
-        <small>Weight over canopy area is the only thing that sets how fast it flies.</small></div>
-      <p>Left of the pink line it cannot fly into the wind <em>at all</em>. No amount of clever
-        steering fixes that &mdash; it is simply slower than the air.</p>
+      <p class="lead">A round parachute just falls. Wherever the air goes, it goes.</p>
+      <p>This is a <strong>parafoil</strong> &mdash; the kind skydivers land. It's a wing, so it
+        glides <em>forward</em> while it comes down, and pulling one side makes it turn. That is
+        the only reason steering it is possible at all.</p>
+      <p>But it can't hover and it can't stop. From the moment it leaves the helicopter it has a
+        <strong>fixed amount of flying in it</strong>: a set time in the air, so a set distance it
+        will cover. It can spend that going straight at the target, or it can wander. It cannot
+        save it for later.</p>
+      <button class="btn" id="bGlide">&#9660; drop both</button>
       <div class="readout">
-        <div><div class="ro-num sm" id="roL2">&mdash;</div><div class="ro-lab">weight per m&sup2;</div></div>
-        <div><div class="ro-num sm blue" id="roV2">&mdash;</div><div class="ro-lab">flying speed</div></div>
-        <div><div class="ro-num sm pink" id="roR2">&mdash;</div><div class="ro-lab">tightest turn</div></div>
+        <div><div class="ro-num sm" id="roRound">&mdash;</div><div class="ro-lab">round parachute</div></div>
+        <div><div class="ro-num sm blue" id="roFoil">&mdash;</div><div class="ro-lab">parafoil</div></div>
       </div>
-    </div>
-    <div><canvas id="cLoad" width="760" height="520"></canvas></div>
-  </div>
-</section>
-
-<!-- ===================================================== DESIGN CHART -->
-<section>
-  <p class="tag">03 · every combination, tested</p>
-  <span class="badge b-yel">click the chart</span>
-  <h2>3,432 drops on one picture.</h2>
-  <div class="grid flip">
-    <div><canvas id="cChart" width="820" height="560"></canvas></div>
-    <div>
-      <p class="lead">Darker means it lands further away. Grey means it cannot fly at all.</p>
-      <p><strong>Click anywhere</strong> and the toy above will fly that design for you.</p>
-      <div class="readout">
-        <div><div class="ro-num sm" id="roPick">&mdash;</div><div class="ro-lab">typical miss here</div></div>
-      </div>
-      <div class="note" id="notePick">Hover the chart to read a square.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================================================== DUBINS -->
-<section>
-  <p class="tag">04 · the shortest way round</p>
-  <span class="badge b-grn">drag the arrow</span>
-  <h2>Only six shapes exist.</h2>
-  <div class="grid flip">
-    <div><canvas id="cDub" width="780" height="560"></canvas></div>
-    <div>
-      <p class="lead">It cannot turn on the spot, so it can rarely fly straight at the target.</p>
-      <p>In 1957 Lester Dubins proved the shortest path is <strong>always</strong> one of six
-        shapes. An infinite question becomes picking the smallest of six numbers.</p>
-      <table id="tDub"><thead><tr><th>shape</th><th>length</th></tr></thead><tbody></tbody></table>
-      <div class="note">Grey = the losers. Pink = the one being flown.</div>
+      <div class="note">Same height, same wind, and the round one is given the same sink rate &mdash;
+        a real round canopy drops faster still, so this flatters it.</div>
     </div>
   </div>
 </section>
 
 <!-- ===================================================== EKF -->
 <section>
-  <p class="tag">05 · no wind sensor on board</p>
+  <p class="tag">03 · no wind sensor on board</p>
   <span class="badge b-pink">press the buttons</span>
   <h2>It works out the wind by turning.</h2>
   <div class="grid flip">
@@ -283,7 +252,7 @@
 
 <!-- ===================================================== RESULTS -->
 <section>
-  <p class="tag">06 · the result</p>
+  <p class="tag">04 · the result</p>
   <h2>150 drops, three ways.</h2>
   <p class="lead">Same conditions every time. Only the wind knowledge changes.</p>
   <table>
@@ -309,9 +278,32 @@
     new here is the design analysis they do not publish.</p>
 </section>
 
+<!-- ===================================================== WING LOADING -->
+<section>
+  <p class="tag">05 · the one number that decides everything</p>
+  <span class="badge b-blue">try dragging it</span>
+  <h2>How heavy you make it.</h2>
+  <div class="grid flip">
+    <div>
+      <p class="lead">Too light and the wind blows it away. Too heavy and its turns get too wide
+        to fix anything at the end.</p>
+      <div class="eq">v = &radic;(2mg / &rho;SC<sub>L</sub>)
+        <small>Weight over canopy area is the only thing that sets how fast it flies.</small></div>
+      <p>Left of the pink line it cannot fly into the wind <em>at all</em>. No amount of clever
+        steering fixes that &mdash; it is simply slower than the air.</p>
+      <div class="readout">
+        <div><div class="ro-num sm" id="roL2">&mdash;</div><div class="ro-lab">weight per m&sup2;</div></div>
+        <div><div class="ro-num sm blue" id="roV2">&mdash;</div><div class="ro-lab">flying speed</div></div>
+        <div><div class="ro-num sm pink" id="roR2">&mdash;</div><div class="ro-lab">tightest turn</div></div>
+      </div>
+    </div>
+    <div><canvas id="cLoad" width="760" height="520"></canvas></div>
+  </div>
+</section>
+
 <!-- ===================================================== SCALING -->
 <section>
-  <p class="tag">07 · the finding</p>
+  <p class="tag">06 · the finding</p>
   <h2>Double the wind, four times the error.</h2>
   <div class="grid flip">
     <div><canvas id="cScale" width="760" height="520"></canvas></div>
@@ -326,8 +318,44 @@
   </div>
 </section>
 
+<!-- ===================================================== DESIGN CHART -->
 <section>
-  <p class="tag">08 · the write-up</p>
+  <p class="tag">07 · every combination, tested</p>
+  <span class="badge b-yel">click the chart</span>
+  <h2>3,432 drops on one picture.</h2>
+  <div class="grid flip">
+    <div><canvas id="cChart" width="820" height="560"></canvas></div>
+    <div>
+      <p class="lead">Darker means it lands further away. Grey means it cannot fly at all.</p>
+      <p><strong>Click anywhere</strong> and the toy above will fly that design for you.</p>
+      <div class="readout">
+        <div><div class="ro-num sm" id="roPick">&mdash;</div><div class="ro-lab">typical miss here</div></div>
+      </div>
+      <div class="note" id="notePick">Hover the chart to read a square.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== DUBINS -->
+<section>
+  <p class="tag">08 · the shortest way round</p>
+  <span class="badge b-grn">drag the arrow</span>
+  <h2>Only six shapes exist.</h2>
+  <div class="grid flip">
+    <div><canvas id="cDub" width="780" height="560"></canvas></div>
+    <div>
+      <p class="lead">It cannot turn on the spot, so it can rarely fly straight at the target.</p>
+      <p>In 1957 Lester Dubins proved the shortest path is <strong>always</strong> one of six
+        shapes. An infinite question becomes picking the smallest of six numbers.</p>
+      <table id="tDub"><thead><tr><th>shape</th><th>length</th></tr></thead><tbody></tbody></table>
+      <div class="note">Grey = the losers. Pink = the one being flown.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== WRITEUP -->
+<section>
+  <p class="tag">09 · the write-up</p>
   <h2>The paper behind the toy.</h2>
   <p class="lead">1,000 words, full method, statistics and references.</p>
   <p>
@@ -342,6 +370,6 @@
 <p class="foot">Amulya D · Atomic Energy Central School, Mysuru</p>
 </div>
 
-<script type="module" src="app.js?v=8"></script>
+<script type="module" src="app.js?v=9"></script>
 </body>
 </html>

@@ -142,6 +142,25 @@ export function parafoilTop(g, x, y, heading, s = 1, color = PINK) {
   g.restore();
 }
 
+/* A round canopy: a dome and lines, no wing. It has no airspeed of its own, so
+   it goes wherever the air goes. */
+export function roundCanopy(g, x, y, s = 1, color = INK3) {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  g.strokeStyle = color; g.fillStyle = color;
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  g.lineWidth = 4.5;
+  g.beginPath(); g.arc(0, 0, 13, Math.PI, 0); g.stroke();
+  g.lineWidth = 1.4;
+  g.beginPath();
+  g.moveTo(-13, 0); g.lineTo(-2.6, 10);
+  g.moveTo(13, 0); g.lineTo(2.6, 10);
+  g.moveTo(-5, -0.4); g.lineTo(-1.6, 10);
+  g.moveTo(5, -0.4); g.lineTo(1.6, 10);
+  g.stroke();
+  g.fillRect(-4.5, 10, 9, 7);
+  g.restore();
+}
+
 /* The crate, in the moment after release before the canopy catches. */
 export function crate(g, x, y, s = 1, color = INK) {
   g.save(); g.translate(x, y); g.scale(s, s);
@@ -272,6 +291,8 @@ export function drawDrop(g, { runs, prev = null, frac = 1, wind = [0, 0],
           'center', MONO_B);
       } else if (pf < CANOPY_AT) {
         crate(g, X(along(p)), Y(p[3]), 1.2);
+      } else if (r.kind === 'round') {
+        roundCanopy(g, X(along(p)), Y(p[3]) - 10, 1.25, r.color);
       } else {
         parafoilSide(g, X(along(p)), Y(p[3]) - 10, 1.25, r.color);
       }
@@ -331,7 +352,8 @@ export function drawDrop(g, { runs, prev = null, frac = 1, wind = [0, 0],
       if (runs.length === 1)
         label(g, `${r.res.miss.toFixed(1)} m out`, (lx + tx) / 2 + 8,
           (ly + ty) / 2 - 7, r.color, 'left', MONO_B);
-    } else parafoilTop(g, m.x(p[1]), m.y(p[2]), p[4], 1, r.color);
+    } else if (r.kind === 'round') dot(g, m.x(p[1]), m.y(p[2]), 5, r.color);
+    else parafoilTop(g, m.x(p[1]), m.y(p[2]), p[4], 1, r.color);
   }
   dot(g, m.x(0), m.y(0), 4, INK, null);
   label(g, 'DROPPED', m.x(0), m.y(0) + 18, INK3, 'center');

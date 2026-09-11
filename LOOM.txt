@@ -51,7 +51,9 @@ that steers itself to the target.
 
 ───────────────────────────────  0:24
         ** HOW IT CAN STEER AT ALL **
-[ point at the top half of the picture ]
+[ SCROLL to 02 · IT ISN'T A NORMAL PARACHUTE ]
+[ the grey line vs the blue one is already drawn ]
+[ optional: press "drop both" to watch it move ]
 
 It's not a round parachute.
 It's a parafoil — /
@@ -81,7 +83,7 @@ And no wind sensor on board.
 
 ───────────────────────────────  1:00
           ** THE IMPORTANT BIT **
-[ SCROLL to 05 · NO WIND SENSOR ON BOARD ]
+[ SCROLL to 03 · NO WIND SENSOR ON BOARD ]
 [ CLICK "force it straight" ]
 
 So how does it know the wind?
@@ -131,7 +133,7 @@ under four with it.
 
 
 ───────────────────────────────  1:47
-[ SCROLL to 07 · THE FINDING ]
+[ SCROLL to 06 · THE FINDING ]
 
 Now — a heavier one flies faster,
 so it beats the wind. /
@@ -188,6 +190,13 @@ That rule is mine.
    cut the 50 drops at 1:38.
    NEVER cut 0:24 — it is the setup for both
    the callback and the finding.
+
+ PAGE ORDER NOW MATCHES THE SCRIPT
+   01 the toy · 02 how it steers · 03 the wind
+   04 the result · 05 how heavy · 06 the finding
+   07 design chart · 08 six shapes · 09 write-up
+   You only ever scroll DOWN, except the one
+   deliberate jump back at 1:26.
 
  IF ASKED: isn't the one that's TOLD the wind better?
    On the median, a bit — but the error bars overlap,

@@ -7,11 +7,11 @@
 import {
   glideState, turnRadius, minLoading, dubinsSolve, dubinsAll, dubinsSample,
   simulate, median, rng,
-} from './physics.js?v=8';
+} from './physics.js?v=9';
 import {
   ctx2d, clear, mapper, line, dot, cross, label, arrow,
   drawDrop, INK, INK3, LINE, PINK, BLUE, GRN, YEL,
-} from './draw.js?v=8';
+} from './draw.js?v=9';
 
 const CL = 0.80, CD = 0.27, BANK = 20, TARGET = [20, 10];
 const $ = id => document.getElementById(id);
@@ -193,7 +193,49 @@ function checkPenetration(d) {
     `physically cannot fly upwind — no guidance law fixes this. Add ballast, or wait.`;
 }
 
-/* ====================================================== 02 · WING LOADING = */
+/* =============================== 02 · WHY NOT AN ORDINARY ROUND PARACHUTE = */
+const gGlide = ctx2d($('cGlide'));
+let animG = null;
+
+/* A round canopy has no airspeed of its own: it goes exactly where the air
+   goes. Given the SAME sink rate as the parafoil, which flatters it — a real
+   round canopy of this size drops faster and drifts less. */
+function roundChuteRun() {
+  const d = design(), w = windVec(), dt = 0.05;
+  const hd = Math.atan2(w[1], w[0]);
+  let x = 0, y = 0, z = S.height, t = 0;
+  const track = [];
+  while (z > 0 && track.length < 40000) {
+    x += w[0] * dt; y += w[1] * dt; z -= d.vz * dt; t += dt;
+    track.push([t, x, y, Math.max(z, 0), hd, 'drift']);
+  }
+  return { track, landing: [x, y], tTotal: t,
+           miss: Math.hypot(x - TARGET[0], y - TARGET[1]) };
+}
+
+function paintGlide(frac) {
+  const round = roundChuteRun(), foil = runDrop('ekf');
+  drawDrop(gGlide, {
+    runs: [{ kind: 'round', color: INK3, res: round },
+           { kind: 'foil', color: BLUE, res: foil }],
+    frac, wind: windVec(), windSpeed: S.wind, height: S.height, target: TARGET,
+  });
+  $('roRound').textContent = `${fmt(round.miss, 1)} m`;
+  $('roFoil').textContent = `${fmt(foil.miss, 1)} m`;
+}
+
+function animateGlide() {
+  if (animG) cancelAnimationFrame(animG);
+  const t0 = performance.now(), dur = 3000;
+  const step = now => {
+    const f = Math.min(1, (now - t0) / dur);
+    paintGlide(f);
+    animG = f < 1 ? requestAnimationFrame(step) : null;
+  };
+  animG = requestAnimationFrame(step);
+}
+
+/* ====================================================== 05 · WING LOADING = */
 const gLoad = ctx2d($('cLoad'));
 function drawLoad() {
   const g = gLoad; clear(g);
@@ -475,7 +517,7 @@ function syncLabels() {
   $('vL').textContent = `${fmt(S.load, 2)} kg/m²`;
   $('vB').textContent = `${S.bias > 0 ? '+' : ''}${S.bias}°`;
 }
-function redrawAll() { drawLoad(); drawChart(); drawEkf(); drawScale(); }
+function redrawAll() { drawLoad(); drawChart(); drawEkf(); drawScale(); paintGlide(1); }
 
 const bind = (id, key) => $(id).addEventListener('input', e => {
   S[key] = parseFloat(e.target.value);
@@ -500,6 +542,7 @@ $('obsSeg').addEventListener('click', e => {
 $('bDrop').addEventListener('click', () => refreshDrop({ animate: true, record: true }));
 $('bRace').addEventListener('click', () => refreshDrop({ animate: true, race: true }));
 $('b50').addEventListener('click', doMany);
+$('bGlide').addEventListener('click', animateGlide);
 $('bReset').addEventListener('click', () => {
   S.attempts = []; S.prev = null; S.current = null; S.lastDrop = null;
   renderAttempts(); refreshDrop();
