@@ -1,6 +1,6 @@
-# Airdrop Trajectory Optimisation for Disaster Relief
+# Trajectory Optimisation for a Steerable Airdrop in Unknown Wind
 
-### Guiding Supply Packages to a Target in Unknown Wind
+### Guiding Packages to a Target for Relief Distribution, with No Wind Sensor on Board
 
 ## ▶ [**Try it: 1101-hub.github.io/guided-airdrop**](https://1101-hub.github.io/guided-airdrop/)
 
@@ -180,8 +180,8 @@ list, and this project makes no claim to be first.
 | **[NPS Snowflake](https://nps.edu/web/adsc/snowflake)** | Naval Postgraduate School research platform for miniature precision airdrop. Landed within 3 m of target from 3,000 ft. |
 | **JPADS** | The military systems, at tens of thousands of dollars per unit. |
 
-The mechanical architecture (two servos on the brake lines), Dubins path planning, and the disaster
-relief application are all established. What this project adds is the **design analysis** — the map of
+The mechanical architecture (two servos on the brake lines), Dubins path planning, and the relief
+application are all established. What this project adds is the **design analysis** — the map of
 how accuracy depends on wing loading and wind speed, and the resulting scaling law. That is a
 statement about the class of systems rather than another instance of one.
 

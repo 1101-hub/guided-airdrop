@@ -1,7 +1,7 @@
 # 2-minute video script
 
-**Airdrop Trajectory Optimisation for Disaster Relief**
-*Guiding Supply Packages to a Target in Unknown Wind*
+**Trajectory Optimisation for a Steerable Airdrop in Unknown Wind**
+*Guiding Packages to a Target for Relief Distribution, with No Wind Sensor on Board*
 
 ~330 words. Read at a normal pace, don't rush. Silence during both animations.
 

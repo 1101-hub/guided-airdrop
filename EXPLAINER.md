@@ -1,6 +1,6 @@
-# Airdrop Trajectory Optimisation for Disaster Relief
+# Trajectory Optimisation for a Steerable Airdrop in Unknown Wind
 
-### Guiding Supply Packages to a Target in Unknown Wind
+### Guiding Packages to a Target for Relief Distribution, with No Wind Sensor on Board
 
 ---
 
