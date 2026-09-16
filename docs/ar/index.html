@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#141414">
-<title>AR test · Airdrop</title>
+<title>Watch it land · Airdrop in AR</title>
+<meta name="description" content="Point your phone at the floor and watch a relief drop land in your room — the real trajectory, at 1:13 scale.">
 <style>
   :root{
     --paper:#F7F3E6; --ink:#141414; --ink2:#4E4A42; --ink3:#8C877C; --line:#E2DCCB;
@@ -20,19 +21,19 @@
 
   #cam,#gl{position:fixed;inset:0;width:100%;height:100%}
   #cam{object-fit:cover;background:#111}
-  #gl{touch-action:none}
   body.nocam #cam{display:none}
-  body.nocam{background:linear-gradient(#DCE4F2,#F7F3E6)}
+  body.nocam #gl{background:linear-gradient(#C9D4EA 0%,#E6ECF7 55%,#F7F3E6 100%)}
 
   /* ---------------------------------------------------------- start card */
-  #start{position:fixed;inset:0;display:grid;place-items:center;padding:22px;
-    background:#E4E9F2;z-index:30}
+  #start{position:fixed;inset:0;display:grid;place-items:center;padding:20px;
+    background:#E4E9F2;z-index:30;overflow:auto}
   .card{background:var(--paper);border-radius:22px;box-shadow:0 14px 50px rgba(20,20,30,.22);
-    padding:30px 26px;max-width:460px;width:100%}
+    padding:28px 24px;max-width:470px;width:100%}
   .tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
     color:var(--ink3);margin:0 0 10px}
-  h1{font-size:clamp(34px,10vw,52px);line-height:.9;letter-spacing:-.045em;margin:0 0 14px;font-weight:800}
-  p{font-size:16.5px;line-height:1.5;color:var(--ink2);margin:0 0 14px}
+  h1{font-size:clamp(34px,10vw,52px);line-height:.9;letter-spacing:-.045em;margin:0 0 12px;font-weight:800}
+  .lead{font-size:clamp(17px,4.6vw,20px);line-height:1.32;color:var(--ink);font-weight:700;margin:0 0 16px}
+  p{font-size:16px;line-height:1.5;color:var(--ink2);margin:0 0 14px}
   .steps{margin:0 0 18px;padding:0;list-style:none}
   .steps li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px;color:var(--ink2);
     line-height:1.45;margin:0 0 8px}
@@ -40,10 +41,12 @@
     font-family:var(--mono);font-size:11px;display:grid;place-items:center;margin-top:1px}
   .go{display:block;width:100%;font-family:var(--sans);font-size:19px;font-weight:800;
     border:3px solid var(--ink);background:var(--blue);color:#fff;border-radius:999px;
-    padding:.72em 1em;cursor:pointer;letter-spacing:.01em}
+    padding:.72em 1em;cursor:pointer}
   .go:active{transform:translateY(1px)}
-  .note{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink3);
+  .go[disabled]{opacity:.65}
+  .note{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--ink3);
     margin:14px 0 0;line-height:1.6}
+  .note a{color:var(--blue)}
 
   /* ----------------------------------------------------------------- HUD */
   #hud{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:14px;
@@ -52,23 +55,26 @@
   #hud button{pointer-events:auto;font-family:var(--sans);font-size:14px;font-weight:800;
     border:2.5px solid var(--ink);background:var(--paper);color:var(--ink);
     border-radius:999px;padding:.55em 1.15em;cursor:pointer;
-    box-shadow:0 4px 14px rgba(0,0,0,.25)}
+    box-shadow:0 4px 14px rgba(0,0,0,.28)}
   #hud button.p{background:var(--pink);color:#fff}
+  #hud a{pointer-events:auto;text-decoration:none;font-size:14px;font-weight:800;
+    border:2.5px solid var(--ink);background:var(--grn);color:#fff;
+    border-radius:999px;padding:.55em 1.15em;box-shadow:0 4px 14px rgba(0,0,0,.28)}
 
   #banner{position:fixed;top:0;left:0;right:0;z-index:20;
     padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
     display:flex;justify-content:center;pointer-events:none}
-  #banner span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  #banner span{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
     background:var(--paper);border:2.5px solid var(--ink);border-radius:999px;
-    padding:.45em 1em;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+    padding:.45em 1em;box-shadow:0 4px 14px rgba(0,0,0,.28);text-align:center}
 
   /* --------------------------------------------------------- diagnostics */
   #diag{position:fixed;top:calc(52px + env(safe-area-inset-top));left:10px;right:10px;
-    z-index:21;background:rgba(20,20,20,.86);color:#EDEAE0;border-radius:14px;
+    z-index:21;background:rgba(20,20,20,.88);color:#EDEAE0;border-radius:14px;
     padding:12px 14px;font-family:var(--mono);font-size:11.5px;line-height:1.65;
-    display:none;max-height:56vh;overflow:auto;-webkit-overflow-scrolling:touch}
+    display:none;max-height:54vh;overflow:auto}
   #diag.on{display:block}
-  #diag b{color:var(--yellow);font-weight:700}
+  #diag b{color:var(--yellow)}
   #diag .k{color:#9A958A;display:inline-block;min-width:104px}
   #diag .bad{color:#FF6B9D}
   #diag .ok{color:#8BE04F}
@@ -85,134 +91,95 @@
 <div id="hud">
   <button id="bReplay" class="p">&#9660; replay</button>
   <button id="bRecentre">recentre</button>
-  <button id="bDiag">diagnostics</button>
+  <a id="aOther" href="?s=hit">next &rarr;</a>
+  <button id="bDiag">?</button>
 </div>
 
-<!-- ------------------------------------------------------------- start -->
 <div id="start">
   <div class="card">
-    <p class="tag">Airdrop · AR test build</p>
-    <h1>Drop it in<br>your room.</h1>
-    <p>This is a test of the AR before the real scenes are built. A supply crate
-      falls from ceiling height and lands on the floor in front of you.</p>
-    <ul class="steps">
-      <li><b>1</b><span>Stand where you have about <strong>two metres of clear floor</strong> ahead of you.</span></li>
-      <li><b>2</b><span>Tap start, then <strong>allow the camera</strong> — and on an iPhone, <strong>allow motion</strong> as well.</span></li>
-      <li><b>3</b><span>Hold the phone up and <strong>look down at the floor</strong> ahead of you.</span></li>
-    </ul>
+    <p class="tag" id="sTag">Scene one</p>
+    <h1 id="sTitle">Watch it miss.</h1>
+    <p class="lead" id="sLead"></p>
+    <ul class="steps" id="sSteps"></ul>
     <button class="go" id="bGo">Start the camera</button>
-    <p class="note" id="startNote">Needs camera access. Nothing is recorded or uploaded —
-      the video never leaves your phone.</p>
+    <p class="note">Nothing is recorded or uploaded — the video never leaves your phone.
+      <br>Part of <a href="../">Trajectory Optimisation for a Steerable Airdrop</a>.</p>
   </div>
 </div>
 
 <script type="module">
 import * as THREE from './vendor/three.module.min.js';
-import { ARView, MODE } from './arview.js?v=1';
-import {
-  C, crate, contactShadow, targetRing, floorGrid, card, heightRuler,
-  pathLine, dashedPathLine,
-} from './models.js?v=1';
+import { ARView, MODE } from './arview.js?v=2';
+import { buildScene } from './scene.js?v=2';
 
 const $ = id => document.getElementById(id);
+const which = (new URLSearchParams(location.search).get('s') === 'hit') ? 'hit' : 'miss';
 
-/* The compression that makes a 40 m drop fit indoors: 1 real metre = 7.5 cm,
-   so the release point sits at ceiling height and the target at your feet. */
-const REAL_H = 40;
-const ROOM_H = 3.0;
-const SCALE  = ROOM_H / REAL_H;
+/* ----------------------------------------------------------- copy per scene */
+const COPY = {
+  miss: {
+    tag: 'Scene one of two',
+    title: 'Watch it miss.',
+    lead: 'A relief drop with no idea what the wind is doing.',
+    steps: [
+      'Stand where you can see about <strong>three metres of floor</strong> in front of you.',
+      'Tap start and <strong>allow the camera</strong> — on an iPhone, allow motion too.',
+      'Hold the phone up and <strong>look at the floor ahead</strong>. It falls from ceiling height.',
+    ],
+    banner: 'it is falling — watch where it ends up',
+    done: 'missed by 23.9 m · into the water',
+    other: 'scene 2 →', otherHref: '?s=hit',
+  },
+  hit: {
+    tag: 'Scene two of two',
+    title: 'Now watch it land.',
+    lead: 'Same drop, same wind — but this one works the wind out on the way down.',
+    steps: [
+      'Stand where you have <strong>clear floor at your feet</strong> and a few metres ahead.',
+      'Tap start and <strong>allow the camera</strong> — on an iPhone, allow motion too.',
+      'The <strong>dotted pink line is last time</strong>. Watch the blue one instead.',
+    ],
+    banner: 'dotted = last time · blue = with the wind worked out',
+    done: 'landed 2.35 m from target · at your feet',
+    other: '← scene 1', otherHref: '?s=miss',
+  },
+}[which];
 
+$('sTag').textContent = COPY.tag;
+$('sTitle').textContent = COPY.title;
+$('sLead').textContent = COPY.lead;
+$('sSteps').innerHTML = COPY.steps
+  .map((s, i) => `<li><b>${i + 1}</b><span>${s}</span></li>`).join('');
+$('aOther').textContent = COPY.other;
+$('aOther').href = COPY.otherHref;
+document.title = `${COPY.title} · Airdrop in AR`;
+
+/* ------------------------------------------------------------------ scene */
 const view = new ARView({ canvas: $('gl'), video: $('cam'), eyeHeight: 1.5 });
-
-/* ------------------------------------------------------------ the scene */
-const W = view.world;
-view.scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 2.2));
-const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+view.scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 2.3));
+const sun = new THREE.DirectionalLight(0xffffff, 1.45);
 sun.position.set(2, 6, 3);
 view.scene.add(sun);
 
-// everything sits 1.6 m in front of where you were pointing at start
-const anchor = new THREE.Group();
-anchor.position.set(0, 0, -1.6);
-W.add(anchor);
+const scene = buildScene(which);
+view.world.add(scene.group);
 
-anchor.add(floorGrid(6, 0.5));
-anchor.add(targetRing(0.34, C.pink));
-
-const ruler = heightRuler(REAL_H, SCALE, { every: 10 });
-ruler.position.set(-0.55, 0, 0);
-anchor.add(ruler);
-
-// a sample of each line style, so their legibility on a phone can be judged
-const sample = [];
-for (let i = 0; i <= 40; i++) {
-  const t = i / 40;
-  sample.push(new THREE.Vector3(
-    Math.sin(t * Math.PI * 1.6) * 0.75,
-    ROOM_H * (1 - t),
-    Math.cos(t * Math.PI * 1.6) * 0.45 - 0.45));
-}
-anchor.add(pathLine(sample, C.blue, 0.011));
-const ghost = sample.map(p => new THREE.Vector3(p.x + 0.55, p.y, p.z + 0.3));
-anchor.add(dashedPathLine(ghost, C.pink, { width: 0.010, dashes: 70 }));
-
-const box = crate(0.30);
-anchor.add(box);
-const shadow = contactShadow(0.42);
-anchor.add(shadow);
-
-const alt = card('ALTITUDE', '40 m', { accent: '#3B54E8', height: 0.17 });
-anchor.add(alt);
-const hint = card('SAMPLE PATHS', 'solid = new  ·  dotted = old', { accent: '#FF2E93', height: 0.11 });
-hint.position.set(0.1, ROOM_H + 0.28, 0);
-anchor.add(hint);
-
-/* --------------------------------------------------------- the animation */
-const FALL = 4.2;                     // seconds; short, because it is a test
-let t = 0, playing = true;
-function reset() { t = 0; playing = true; }
-
+let settled = false;
 view.onFrame(dt => {
-  if (playing) { t += dt; if (t > FALL + 1.2) playing = false; }
-  const f = Math.min(t / FALL, 1);
-  const y = ROOM_H * (1 - f);
-
-  box.position.set(0, y + 0.16, 0);
-  box.rotation.y = f * 2.4;
-
-  // shadow tightens and darkens as it approaches, which is most of what
-  // makes a floating object look like it is really touching the floor.
-  // It has to track the crate horizontally too, or the illusion dies the
-  // moment the real trajectory starts curving.
-  shadow.position.set(box.position.x, 0.002, box.position.z);
-  const k = 1 - y / ROOM_H;
-  shadow.scale.setScalar(0.5 + 0.5 * k);
-  shadow.material.opacity = 0.25 + 0.75 * k;
-
-  alt.position.set(0.42, y + 0.3, 0);
-  const metres = Math.round(REAL_H * (1 - f));
-  if (alt.userData.m !== metres) {
-    alt.userData.m = metres;
-    replaceCard(alt, 'ALTITUDE', `${metres} m`, '#3B54E8');
+  scene.tick(dt, view.camera);
+  if (!settled && scene.phase === 'land') {
+    settled = true;
+    $('bannerTxt').textContent = COPY.done;
   }
 });
 
-// Re-rendering a card's texture in place, rather than rebuilding the sprite,
-// keeps its position and scale and avoids churning the scene graph each frame.
-function replaceCard(spr, title, value, accent) {
-  const fresh = card(title, value, { accent, height: spr.scale.y });
-  spr.material.map.dispose();
-  spr.material.map = fresh.material.map;
-  spr.material.needsUpdate = true;
-  spr.scale.copy(fresh.scale);
-}
-
-/* -------------------------------------------------------------- controls */
-$('bReplay').onclick = reset;
+/* --------------------------------------------------------------- controls */
+const play = () => { settled = false; $('bannerTxt').textContent = COPY.banner; scene.start(); };
+$('bReplay').onclick = play;
 $('bRecentre').onclick = () => view.recentre();
 $('bDiag').onclick = () => $('diag').classList.toggle('on');
 
-/* ----------------------------------------------------------- diagnostics */
+/* ------------------------------------------------------------ diagnostics */
 let frames = 0, fps = 0, last = performance.now(), raw = {};
 addEventListener('deviceorientation', e => { raw = e; }, true);
 view.onFrame(() => {
@@ -228,32 +195,25 @@ const row = (k, v, cls = '') =>
   `<div><span class="k">${k}</span><span class="${cls}">${v}</span></div>`;
 function paintDiag() {
   const v = $('cam');
-  const s = view.stream?.getVideoTracks?.()[0]?.getSettings?.() || {};
   $('diag').innerHTML =
+    row('<b>scene</b>', which) +
     row('<b>mode</b>', view.mode, view.mode === MODE.FULL ? 'ok' : 'bad') +
+    row('phase', scene.phase) +
     row('fps', fps, fps >= 30 ? 'ok' : 'bad') +
-    row('camera', view.cameraError ? view.cameraError : 'ok',
-        view.cameraError ? 'bad' : 'ok') +
-    row('sensors', view.orientError ? view.orientError : 'ok',
-        view.orientError ? 'bad' : 'ok') +
+    row('camera', view.cameraError || 'ok', view.cameraError ? 'bad' : 'ok') +
+    row('sensors', view.orientError || 'ok', view.orientError ? 'bad' : 'ok') +
     row('video', `${v.videoWidth}x${v.videoHeight}`) +
-    row('facing', s.facingMode || '—') +
     row('screen', `${innerWidth}x${innerHeight} @${(devicePixelRatio || 1).toFixed(1)}`) +
     row('screen ang', (screen.orientation?.angle ?? window.orientation ?? 0) + '°') +
     row('alpha', raw.alpha == null ? '—' : raw.alpha.toFixed(1)) +
-    row('beta',  raw.beta  == null ? '—' : raw.beta.toFixed(1)) +
+    row('beta', raw.beta == null ? '—' : raw.beta.toFixed(1)) +
     row('gamma', raw.gamma == null ? '—' : raw.gamma.toFixed(1)) +
-    row('absolute', String(raw.absolute)) +
-    row('scale', `1 m = ${(SCALE * 100).toFixed(1)} cm`) +
-    row('ua', navigator.userAgent.slice(0, 60));
+    row('model miss', `${scene.miss.toFixed(2)} m`) +
+    row('flight', `${scene.flight.toFixed(1)} s`) +
+    row('ua', navigator.userAgent.slice(0, 58));
 }
 
 /* --------------------------------------------------------------- startup */
-const BANNER = {
-  [MODE.FULL]:  'look down at the floor ahead of you',
-  [MODE.NOCAM]: 'no camera — sensors only',
-  [MODE.DRAG]:  'no sensors — drag to look around',
-};
 $('bGo').onclick = async () => {
   $('bGo').disabled = true;
   $('bGo').textContent = 'starting…';
@@ -261,15 +221,14 @@ $('bGo').onclick = async () => {
   try {
     mode = await view.start();
   } catch (e) {
-    $('startNote').innerHTML = `<span style="color:#C0392B">Could not start: ${e}</span>`;
     $('bGo').disabled = false;
     $('bGo').textContent = 'Try again';
     return;
   }
   if (mode !== MODE.FULL) document.body.classList.add('nocam');
   $('start').style.display = 'none';
-  $('bannerTxt').textContent = BANNER[mode];
-  reset();
+  play();
+  if (mode === MODE.DRAG) $('bannerTxt').textContent = 'no sensors — drag to look around';
 };
 </script>
 </body>

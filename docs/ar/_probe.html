@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <title>AR probe</title>
 <style>
-  html,body{margin:0;background:#DCE4F2;height:100%}
+  html,body{margin:0;background:linear-gradient(#C9D4EA,#F7F3E6);height:100%}
   #gl{display:block;width:100vw;height:100vh}
-  #err{position:fixed;inset:16px;font:14px/1.5 ui-monospace,Consolas,monospace;
+  #err{position:fixed;inset:16px;font:13px/1.5 ui-monospace,Consolas,monospace;
        color:#fff;background:#B0223F;padding:16px;border-radius:12px;white-space:pre-wrap;
        display:none;z-index:9;overflow:auto}
   #ok{position:fixed;left:12px;top:12px;font:12px ui-monospace,Consolas,monospace;
@@ -18,76 +18,73 @@
 <div id="err"></div>
 <div id="ok">booting…</div>
 <script type="module">
+/* Dev harness. Builds a real scene, fast-forwards it to ?t seconds and renders
+   one frame from either the judge's eye or an outside overview, so both scenes
+   can be checked headlessly without a phone. Not linked from anywhere. */
 const err = m => { const e = document.getElementById('err');
                    e.style.display = 'block'; e.textContent += m + '\n'; };
 addEventListener('error', e => err('ERROR ' + e.message));
-addEventListener('unhandledrejection', e => err('REJECT ' + e.reason));
+addEventListener('unhandledrejection', e => err('REJECT ' + (e.reason?.stack || e.reason)));
+
+const Q = new URLSearchParams(location.search);
+const which = Q.get('s') === 'hit' ? 'hit' : 'miss';
+const at = parseFloat(Q.get('t') ?? '6');
+const viewName = Q.get('view') || 'judge';
 
 try {
   const THREE = await import('./vendor/three.module.min.js');
-  const { ARView } = await import('./arview.js?v=1');
-  const M = await import('./models.js?v=1');
-
-  // constructing ARView exercises the module without touching any sensor
-  const probe = new ARView({ canvas: document.createElement('canvas'),
-                             video: document.createElement('video') });
+  const { buildScene } = await import('./scene.js?v=2');
 
   const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gl'),
-                                             antialias: true });
+                                             antialias: true, alpha: true });
   renderer.setPixelRatio(2);
   renderer.setSize(innerWidth, innerHeight, false);
-  renderer.setClearColor(0xDCE4F2, 1);
 
   const scene = new THREE.Scene();
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 2.2));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 2.3));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.45);
   sun.position.set(2, 6, 3); scene.add(sun);
 
-  const REAL_H = 40, ROOM_H = 3.0, SCALE = ROOM_H / REAL_H;
-  const anchor = new THREE.Group();
-  scene.add(anchor);
+  const built = buildScene(which);
+  scene.add(built.group);
+  built.start();
 
-  anchor.add(M.floorGrid(6, 0.5));
-  anchor.add(M.targetRing(0.34, M.C.pink));
-  const ruler = M.heightRuler(REAL_H, SCALE, { every: 10 });
-  ruler.position.set(-0.55, 0, 0);
-  anchor.add(ruler);
-
-  const sample = [];
-  for (let i = 0; i <= 40; i++) {
-    const t = i / 40;
-    sample.push(new THREE.Vector3(
-      Math.sin(t * Math.PI * 1.6) * 0.75, ROOM_H * (1 - t),
-      Math.cos(t * Math.PI * 1.6) * 0.45 - 0.45));
+  // the camera has to exist before ticking: label sizes depend on it
+  const cam = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.01, 100);
+  if (viewName === 'over') {
+    cam.position.set(2.8, 3.4, 2.6);
+    cam.lookAt(0, 1.0, -1.6);
+  } else {
+    cam.position.set(0, 1.5, 0);              // where the phone actually is
+    cam.lookAt(built.landing.x * 0.55, 0.55, built.landing.z * 1.25 - 0.55);
   }
-  anchor.add(M.pathLine(sample, M.C.blue, 0.011));
-  anchor.add(M.dashedPathLine(sample.map(p =>
-    new THREE.Vector3(p.x + 0.55, p.y, p.z + 0.3)), M.C.pink,
-    { width: 0.010, dashes: 70 }));
+  cam.updateMatrixWorld(true);
 
-  const box = M.crate(0.30);
-  box.position.set(0, 1.2, 0);
-  anchor.add(box);
-  const sh = M.contactShadow(0.42);
-  anchor.add(sh);
-
-  const alt = M.card('ALTITUDE', '24 m', { accent: '#3B54E8', height: 0.17 });
-  alt.position.set(0.42, 1.5, 0);
-  anchor.add(alt);
-  const hint = M.card('SAMPLE PATHS', 'solid = new  ·  dotted = old',
-                      { accent: '#FF2E93', height: 0.11 });
-  hint.position.set(0.1, ROOM_H + 0.28, 0);
-  anchor.add(hint);
-
-  const cam = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.01, 100);
-  cam.position.set(2.4, 2.3, 3.7);
-  cam.lookAt(0, 1.7, 0);
+  // fast-forward in fixed steps so the choreography runs exactly as it would
+  const STEP = 1 / 60;
+  for (let t = 0; t < at; t += STEP) built.tick(STEP, cam);
 
   renderer.render(scene, cam);
 
   let n = 0; scene.traverse(() => n++);
-  document.getElementById('ok').textContent =
-    `ok · ${n} objects · three r${THREE.REVISION} · ARView ${probe ? 'built' : 'failed'}`;
+  const d = built._debug;
+  const f = Math.min(d.t / d.FLIGHT, 1);
+  const idx = Math.min(d.pts.length - 1, Math.floor(f * (d.pts.length - 1)));
+  const got = d.flyer.position;
+  // Where the drawn part of the tube actually stops. TubeGeometry samples the
+  // curve with getPointAt (arc length), so the check must use that too.
+  const g = d.trail.geometry;
+  const drawnFrac = g.drawRange.count / g.index.count;
+  const tubeEnd = g.parameters.path.getPointAt(Math.min(drawnFrac, 1));
+  const byIndex = d.pts[idx];
+  const P = v => `(${v.x.toFixed(2)},${v.y.toFixed(2)},${v.z.toFixed(2)})`;
+  const gap = tubeEnd.distanceTo(got);
+  document.getElementById('ok').innerHTML =
+    `${which} · t=${at}s · phase ${built.phase} · f=${f.toFixed(3)} · ${n} objects<br>` +
+    `flyer ${P(got)} &nbsp; trail ends ${P(tubeEnd)} &nbsp; ` +
+    `<span style="color:${gap < 0.05 ? '#8BE04F' : '#FF6B9D'}">gap ${gap.toFixed(3)} m</span><br>` +
+    `naive pts[${idx}] would have been ${P(byIndex)} ` +
+    `(off by ${byIndex.distanceTo(tubeEnd).toFixed(3)} m)`;
 } catch (e) {
   err('THREW ' + (e && e.stack || e));
   document.getElementById('ok').textContent = 'FAILED';

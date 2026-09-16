@@ -60,6 +60,173 @@ export function crate(size = 0.42) {
   return g;
 }
 
+/* ----------------------------------------------------------- rigging lines
+   `rim` are points on the canopy edge and `hang` the point on the payload they
+   all converge to, both as [x, y, z]. The canopy is above the payload, so rim
+   y must exceed hang y — getting that the wrong way round builds an upturned
+   cone, which is how this was first written. */
+function rigging(rim, hang, color = C.ink) {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshBasicMaterial({ color });
+  const b = new THREE.Vector3(...hang);
+  for (const p of rim) {
+    const a = new THREE.Vector3(...p);
+    const len = a.distanceTo(b);
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, len, 4), mat);
+    m.position.copy(a).add(b).multiplyScalar(0.5);
+    m.quaternion.setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+    g.add(m);
+  }
+  return g;
+}
+
+/* --------------------------------------------------------------- parafoil
+   A wing, not a dome: an arched rectangular canopy. Built from an open
+   cylinder segment, which gives the span-wise arch for free. */
+export function parafoil(span = 0.46, colour = C.blue) {
+  const g = new THREE.Group();
+  const r = span * 0.62, chord = span * 0.42, CY = 0.32;
+  const HALF = Math.PI * 0.38;          // half the arc the canopy spans
+
+  /* Rotate about X, not Z. A cylinder's axis starts along Y; about X it ends
+     up along Z, which puts the arc in the XY plane — an arch ACROSS the span
+     with the chord running fore and aft. About Z instead lays the arch along
+     the line of flight, which renders as a slab, not a wing. */
+  const canopy = new THREE.Mesh(
+    new THREE.CylinderGeometry(r, r, chord, 22, 1, true, Math.PI - HALF, 2 * HALF),
+    new THREE.MeshLambertMaterial({ color: colour, side: THREE.DoubleSide }),
+  );
+  canopy.rotation.x = Math.PI / 2;
+  canopy.position.y = CY;
+  /* Canopy, ribs and lines all live in one group so they can settle together.
+     Collapsing the canopy alone leaves the rigging hanging in the air where
+     the wing used to be, which reads as a black star over the crate. */
+  const wing = new THREE.Group();
+  wing.add(canopy);
+  g.add(wing);
+
+  // after that rotation a point at angle u across the arc lands here
+  const ax = u => -r * Math.sin(u * HALF);
+  const ay = u => CY + r * Math.cos(u * HALF);
+
+  // cell divisions, so it reads as a ram-air wing rather than a tube
+  const rib = new THREE.MeshBasicMaterial({ color: C.ink });
+  for (const u of [-1, -0.5, 0, 0.5, 1]) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.007, 0.007, chord * 1.01), rib);
+    m.position.set(ax(u), ay(u), 0);
+    m.rotation.z = -u * HALF;
+    wing.add(m);
+  }
+
+  // the payload hangs from the wing tips on four lines
+  const d = chord * 0.38;
+  wing.add(rigging([[ax(-1), ay(-1), -d], [ax(1), ay(1), -d],
+                    [ax(-1), ay(-1), d], [ax(1), ay(1), d]], [0, 0.085, 0]));
+  g.add(crate(0.17));
+
+  g.userData.collapse = f => {           // wing settling onto the payload
+    wing.scale.set(1 + f * 0.22, Math.max(0.07, 1 - f * 0.93), 1 + f * 0.12);
+    wing.rotation.z = f * 0.30;
+  };
+  return g;
+}
+
+/* ----------------------------------------------------------- round canopy
+   The thing a parafoil is not. No forward speed, nothing to steer with. */
+export function roundCanopy(radius = 0.28, colour = C.pink) {
+  const g = new THREE.Group();
+  const dome = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.52),
+    new THREE.MeshLambertMaterial({ color: colour, side: THREE.DoubleSide }),
+  );
+  dome.position.y = 0.30;
+  // canopy and lines settle as one — see the note in parafoil()
+  const wing = new THREE.Group();
+  wing.add(dome);
+  // the rim of an almost-hemisphere sits just below its centre height
+  const k = radius * Math.sin(Math.PI * 0.52);
+  const rimY = 0.30 + radius * Math.cos(Math.PI * 0.52);
+  wing.add(rigging([[-k, rimY, 0], [k, rimY, 0], [0, rimY, -k], [0, rimY, k]],
+                   [0, 0.085, 0]));
+  g.add(wing);
+  g.add(crate(0.17));
+  g.userData.collapse = f => {           // f 0..1, canopy going limp on landing
+    wing.scale.set(1 + f * 0.30, Math.max(0.05, 1 - f * 0.95), 1 + f * 0.30);
+  };
+  return g;
+}
+
+/* ------------------------------------------------------------------ water
+   Scenery. Nothing about the water is modelled; the model computes the
+   trajectory and stops at the ground. */
+export function riverSurface(corners, { colour = C.water } = {}) {
+  const c = document.createElement('canvas');
+  c.width = 128; c.height = 128;
+  const x = c.getContext('2d');
+  x.fillStyle = '#4F86C6'; x.fillRect(0, 0, 128, 128);
+  x.strokeStyle = 'rgba(255,255,255,.34)';
+  x.lineWidth = 3;
+  for (let i = 0; i < 7; i++) {          // lazy wave lines, flat and graphic
+    const y = 10 + i * 18;
+    x.beginPath();
+    for (let px = 0; px <= 128; px += 8) x.lineTo(px, y + Math.sin(px / 14 + i) * 3.2);
+    x.stroke();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(6, 3);
+  tex.colorSpace = THREE.SRGBColorSpace;
+
+  const geo = new THREE.BufferGeometry();
+  const p = corners;
+  geo.setAttribute('position', new THREE.Float32BufferAttribute([
+    p[0].x, 0, p[0].z, p[1].x, 0, p[1].z, p[2].x, 0, p[2].z, p[3].x, 0, p[3].z,
+  ], 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1], 2));
+  geo.setIndex([0, 1, 2, 0, 2, 3]);
+  geo.computeVertexNormals();
+
+  const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+    map: tex, transparent: true, opacity: 0.88, side: THREE.DoubleSide,
+  }));
+  mesh.position.y = 0.006;
+  mesh.userData.tick = dt => { tex.offset.x -= dt * 0.035; };
+  return mesh;
+}
+
+/* ----------------------------------------------------------------- splash */
+export function splash(colour = 0xffffff) {
+  const g = new THREE.Group();
+  const rings = [];
+  for (let i = 0; i < 3; i++) {
+    const m = new THREE.Mesh(
+      new THREE.RingGeometry(0.16, 0.20, 40),
+      new THREE.MeshBasicMaterial({ color: colour, transparent: true,
+                                    side: THREE.DoubleSide, depthWrite: false }),
+    );
+    m.rotation.x = -Math.PI / 2;
+    m.position.y = 0.012;
+    m.visible = false;
+    rings.push(m); g.add(m);
+  }
+  let t = null;
+  g.userData.play = () => { t = 0; };
+  g.userData.tick = dt => {
+    if (t === null) return;
+    t += dt;
+    rings.forEach((m, i) => {
+      const u = t - i * 0.26;
+      m.visible = u > 0 && u < 1.5;
+      if (!m.visible) return;
+      m.scale.setScalar(1 + u * 3.4);
+      m.material.opacity = Math.max(0, 0.8 * (1 - u / 1.5));
+    });
+    if (t > 2.4) t = null;
+  };
+  return g;
+}
+
 /* ------------------------------------------------- shadow cast on the floor */
 export function contactShadow(radius = 0.5) {
   const n = 64, c = document.createElement('canvas');
@@ -170,6 +337,24 @@ export function card(title, value, { accent = CSS.blue, height = 0.22, pad = 26 
   return spr;
 }
 
+/** Re-draw a card's texture in place. Cheaper than rebuilding the sprite, and
+    it keeps whatever position the caller has already given it. */
+export function setCard(spr, title, value, accent = CSS.blue) {
+  // Once billboards() owns a sprite, scale.y is its distance-scaled size, not
+  // its base size — rebuild from the base and let the billboard pass rescale.
+  const base = spr.userData.baseH ?? spr.scale.y;
+  const fresh = card(title, value, { accent, height: base });
+  spr.material.map.dispose();
+  spr.material.map = fresh.material.map;
+  spr.material.needsUpdate = true;
+  if (spr.userData.baseH != null) {
+    spr.userData.aspect = fresh.scale.x / fresh.scale.y;
+  } else {
+    spr.scale.copy(fresh.scale);
+  }
+  return spr;
+}
+
 /* ------------------------------------------------- vertical height ruler
    The whole point of the ruler: the drop is compressed to fit a room, so the
    compression has to be visible rather than hidden. Ticks are labelled in
@@ -193,10 +378,10 @@ export function heightRuler(realHeight, scale, { every = 10, color = C.ink } = {
     );
     tick.position.set(0.065, y, 0);
     g.add(tick);
-    // Read at arm's length on a phone, so it has to be a good deal larger
-    // than it looks reasonable at desk distance.
-    const lab = card(`${m} M`, null, { height: 0.135, pad: 20 });
-    lab.position.set(0.135 + lab.scale.x / 2, y, 0);
+    // Heights are given as apparent size at one metre; billboard() rescales
+    // every card by its distance so labels stay legible near and far.
+    const lab = card(`${m} M`, null, { height: 0.040, pad: 20 });
+    lab.position.set(0.14, y, 0);
     g.add(lab);
   }
 
@@ -204,10 +389,38 @@ export function heightRuler(realHeight, scale, { every = 10, color = C.ink } = {
   // "40 m -> 3 m" lands faster than a centimetres-per-metre ratio does.
   const trim = v => v.toFixed(1).replace(/\.0$/, '');
   const cap = card('SCALE', `${trim(realHeight)} m → ${trim(top)} m`,
-                   { accent: CSS.ink3, height: 0.17 });
-  cap.position.set(0.135 + cap.scale.x / 2, top + 0.16, 0);
+                   { accent: CSS.ink3, height: 0.058 });
+  cap.position.set(0.14, top + 0.16, 0);
   g.add(cap);
   return g;
+}
+
+/* ---------------------------------------------------------------- billboard
+   Sprites are fixed in world units, so a card is overwhelming at arm's length
+   and illegible across a room — and in this scene the same label can be both,
+   since the package starts at the ceiling and finishes at the viewer's feet.
+   Scaling by distance holds a card at a constant apparent size instead.
+
+   Clamped at both ends: closer than the near limit it would keep shrinking
+   into the floor, and beyond the far limit a card grows large enough to cover
+   the thing it is labelling. */
+export function billboards(root, { near = 0.75, far = 3.4 } = {}) {
+  const list = [];
+  root.traverse(o => {
+    if (!o.isSprite) return;
+    o.userData.baseH = o.scale.y;                       // apparent size at 1 m
+    o.userData.aspect = o.scale.x / o.scale.y;
+    list.push(o);
+  });
+  const v = new THREE.Vector3();
+  return function update(camera) {
+    for (const s of list) {
+      s.getWorldPosition(v);
+      const d = Math.min(Math.max(v.distanceTo(camera.position), near), far);
+      const h = s.userData.baseH * d;
+      s.scale.set(h * s.userData.aspect, h, 1);
+    }
+  };
 }
 
 /* ------------------------------------------------------------ path ribbon */
