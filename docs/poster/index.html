@@ -110,6 +110,17 @@
   ol{font-size:10pt;line-height:1.5;color:var(--ink2);padding-left:5mm;margin:0 0 4mm}
   ol li{margin:0 0 2mm}
 
+
+  /* ------------------------------------------- hand-off between panels
+     Each panel ends by asking what the next one answers. This is what makes
+     the six sheets a chain rather than six posters about the same project. */
+  .handoff{margin-top:auto;border-top:.9mm solid var(--ink);padding-top:3mm;
+           display:flex;gap:3mm;align-items:flex-start}
+  .handoff .a{font-family:var(--mono);font-size:8.5pt;font-weight:700;
+              letter-spacing:.1em;color:var(--pink);flex:0 0 auto;padding-top:.6mm}
+  .handoff .b{font-size:11pt;font-weight:800;line-height:1.22;color:var(--ink)}
+  .handoff.end .a{color:var(--grn)}
+
   @media print{
     body{background:#fff}
     .board{display:block;padding:0;gap:0}
@@ -123,7 +134,7 @@
 <body>
 <div class="board">
 
-<!-- ═══════════════════════════════════════════════════ 01 · THE PROBLEM -->
+<!-- ═════════════════════════════════════════════════ 01 · IT MISSES -->
 <section class="sheet shot">
   <div class="num">01 / 06</div>
   <div class="panel">
@@ -140,36 +151,38 @@
         <div class="l">people still unreached, Assam floods, July 2026</div>
       </div>
       <p>A cloudburst on 19 July 2026 flooded four districts of Upper Assam.
-        <strong>705,000 people were affected</strong> and air was the only way in.</p>
-      <p>A payload released without guidance is carried by the air mass for the
-        whole descent. It does not aim. It drifts.</p>
+        <strong>705,000 people were affected</strong>, roads were gone, and air
+        was the only way in.</p>
+      <p>So supplies were pushed out of helicopters. A payload released without
+        guidance is carried by the air mass for the whole way down — it does not
+        aim, it drifts. <strong>In this model it lands 23.9&nbsp;m off.</strong>
+        In a flood, 23.9&nbsp;m is the wrong side of the water.</p>
     </div>
 
-    <div class="push">
-      <div class="scan pinkbg">
-        <img src="qr_miss.svg" alt="QR code linking to the first AR scene">
-        <div>
-          <p class="t">Scan 1 of 2</p>
-          <p class="h">Watch it miss.</p>
-          <p class="s">A drop with no idea what the wind is doing, falling in
-            your own room. Point your phone at the floor.</p>
-        </div>
+    <div class="scan pinkbg" style="margin:0 0 4mm">
+      <img src="qr_miss.svg" alt="QR code linking to the first AR scene">
+      <div>
+        <p class="t">Scan 1 of 2 &nbsp;·&nbsp; start here</p>
+        <p class="h">Watch it miss.</p>
+        <p class="s">The drop above, falling in your own room. Point your phone
+          at the floor and watch where it ends up.</p>
       </div>
     </div>
+    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">Can you steer a falling box at all?</span></div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════ 02 · A WING, NOT A DOME -->
+<!-- ══════════════════════════════════════════ 02 · YES, IF IT IS A WING -->
 <section class="sheet shot">
   <div class="num">02 / 06</div>
   <div class="panel">
-    <p class="kicker">How a falling box can steer at all</p>
-    <h2>A wing,<br>not a dome.</h2>
+    <p class="kicker">Answer: yes, if it is a wing</p>
+    <h2>You can steer it.<br>You cannot<br>stop it.</h2>
     <div class="rule"></div>
 
     <p>A round parachute only falls. A <strong>parafoil</strong> is a ram-air
       canopy that <strong>glides forward</strong> as it descends, so pulling one
-      side turns it. That is the only reason steering is possible.</p>
+      side turns it. That forward travel is the only thing there is to aim.</p>
     <svg viewBox="0 0 440 186" style="width:100%;height:auto;margin:1mm 0 3mm">
       <g font-family="ui-monospace,Consolas,monospace" font-size="12">
         <line x1="8" y1="162" x2="432" y2="162" stroke="#141414" stroke-width="2.5"/>
@@ -196,52 +209,91 @@
 
     <div class="eq">
       v = &radic;( 2mg / &rho;S C<sub>L</sub> )
-      <small>Only the wing loading m/S appears — mass and canopy area
-        never act separately.</small>
+      <small>How fast it flies. Only the wing loading m/S appears — mass and
+        canopy area never act separately.</small>
     </div>
 
-    <p>But it cannot hover and it cannot stop. Sink rate is constant, so the
-      moment it is released <strong>the time aloft is fixed</strong> — and with
-      it the total distance it will ever fly.</p>
+    <p>But it has no engine and no brakes. It sinks at a steady rate, so
+      <strong>the moment it leaves the helicopter its time in the air is
+      fixed</strong> — and with it, the total distance it will ever cover.</p>
 
-    <h3>So the path is prescribed, not minimised</h3>
-    <p>The guidance does not fly the shortest route. It flies a route of
-      <strong>exactly the right length</strong>, holding a track angle &alpha;
-      off the bearing to stretch the remaining path by 1/cos&nbsp;&alpha;.</p>
-
-    <div class="eq">
-      cos &alpha; = d / s
-      <small>d = distance still to go &nbsp;·&nbsp; s = path budget left.
-        As altitude falls, d/s &rarr; 1 and &alpha; &rarr; 0 — a straight final
-        approach, with no change of mode.</small>
-    </div>
-
-    <p class="push"><span class="chip p">that is why it weaves</span>
-      <span class="chip">spare height is spent, not saved</span></p>
+    <p>That distance is almost always <em>more</em> than the distance to the
+      target. It cannot slow down and it cannot circle forever.
+      <strong>It has to get rid of the surplus.</strong></p>
+    <svg viewBox="0 0 440 128" style="width:100%;height:auto;margin:1mm 0 2mm">
+      <defs>
+        <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)"
+                 patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="9" stroke="#FF2E93" stroke-width="5"/>
+        </pattern>
+      </defs>
+      <g font-family="ui-monospace,Consolas,monospace" font-size="12.5" font-weight="700">
+        <text x="20" y="16" fill="#7C776C" font-size="11">WHAT IT WILL FLY BEFORE IT LANDS</text>
+        <rect x="20" y="24" width="400" height="26" rx="4" fill="#3B54E8"/>
+        <text x="20" y="80" fill="#7C776C" font-size="11">DISTANCE TO THE TARGET</text>
+        <rect x="20" y="88" width="244" height="26" rx="4" fill="#fff"
+              stroke="#141414" stroke-width="2.6"/>
+        <rect x="264" y="88" width="156" height="26" rx="4" fill="url(#hatch)"
+              stroke="#141414" stroke-width="2.6"/>
+        <text x="342" y="106" fill="#141414" text-anchor="middle" font-size="12"
+              paint-order="stroke" stroke="#fff" stroke-width="4.5">SURPLUS</text>
+        <line x1="264" y1="50" x2="264" y2="88" stroke="#141414"
+              stroke-width="2" stroke-dasharray="4 4"/>
+      </g>
+    </svg>
+    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">It cannot fly straight at the target &mdash; it would arrive with height to spare.</span></div>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════ 03 · FINDING THE WIND -->
+<!-- ═══════════════════════════════════ 03 · SO IT SPENDS THE SURPLUS -->
 <section class="sheet shot">
   <div class="num">03 / 06</div>
   <div class="panel">
-    <p class="kicker">No wind sensor on board</p>
-    <h2>It works the<br>wind out on<br>the way down.</h2>
+    <p class="kicker">Getting rid of the surplus</p>
+    <h2>So it weaves<br>&mdash; on purpose.</h2>
     <div class="rule"></div>
 
-    <p>Nothing measures the wind and nothing is sent from the ground. An
-      <strong>Extended Kalman Filter</strong> carries four unknowns and updates
-      them from satellite velocity alone.</p>
+    <p>The guidance does not fly the shortest route. It flies a route of
+      <strong>exactly the right length</strong>, holding a track angle
+      &alpha; off the bearing to stretch the remaining path by 1/cos&nbsp;&alpha;
+      until the budget is spent.</p>
 
     <div class="eq">
-      [ w<sub>x</sub> , w<sub>y</sub> , v<sub>a</sub> , b ]
-      <small>wind east and north · airspeed · magnetometer bias.
-        The bias enters through the heading trigonometry, which is what makes
-        the problem non-linear.</small>
+      cos &alpha; = d / s
+      <small>d = distance still to go &nbsp;·&nbsp; s = flying left in the budget.
+        As height runs out, d/s &rarr; 1 and &alpha; &rarr; 0 — a straight final
+        approach, with no change of mode.</small>
     </div>
 
-    <p>Satellites give speed <em>over the ground</em>. The flight model gives
-      speed <em>through the air</em>. The wind is the difference.</p>
+    <p><strong>But <em>d</em> is not the straight line.</strong> It cannot turn
+      on the spot, so the real distance to the target is a curve with a minimum
+      radius. In <strong>1957 Lester Dubins proved</strong> the shortest such
+      curve is always one of just six shapes.</p>
+
+    <img src="dubins_six.svg" alt="The six Dubins path types between the same
+      two oriented positions" style="width:100%;height:auto;margin:1mm 0 1.5mm">
+    <p class="cap" style="margin:0 0 3mm">Same start (dot) and target (cross),
+      same heading at each end, solved six ways at one shared scale — computed by
+      the model, not drawn. All six closed forms agree with step-wise integration
+      to 9.0&nbsp;&times;&nbsp;10<sup>&minus;12</sup>&nbsp;m over 3,514 solutions.</p>
+
+    <p>So it checks all six, takes the shortest, and measures its budget against
+      <em>that</em>. <strong>Dubins measures; the weave spends.</strong></p>
+    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">From release to landing, it is almost always turning.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ 04 · AND THE TURNING PAYS FOR ITSELF -->
+<section class="sheet shot">
+  <div class="num">04 / 06</div>
+  <div class="panel">
+    <p class="kicker">The part that pays for itself</p>
+    <h2>And that is<br>how it finds<br>the wind.</h2>
+    <div class="rule"></div>
+
+    <p>Nothing on board measures the wind and nothing is sent from the ground.
+      An <strong>Extended Kalman Filter</strong> works it out from satellite
+      velocity alone — because the wind is a subtraction:</p>
     <svg viewBox="0 0 440 196" style="width:100%;height:auto;margin:2mm 0 3mm">
       <defs>
         <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5"
@@ -276,75 +328,49 @@
               text-anchor="middle">measured by satellite</text>
       </g>
     </svg>
+    <p class="cap" style="margin:-1mm 0 3mm">State carried:
+      [&thinsp;w<sub>x</sub>, w<sub>y</sub>, v<sub>a</sub>, b&thinsp;] — wind east
+      and north, airspeed, and magnetometer bias. The bias enters through the
+      heading trigonometry, which is what makes the problem non-linear.</p>
 
-    <h3 class="pink">Why it has to be turning</h3>
-    <p>On a fixed heading, <strong>a headwind and an airspeed that is simply too
-      low look identical</strong>. No amount of data separates them — the state
-      is unobservable. Turning changes the geometry and pulls them apart.</p>
+    <h3 class="pink">Except it should be impossible</h3>
+    <p>On a <strong>fixed heading</strong>, a headwind and an airspeed that is
+      simply too low produce <em>exactly the same</em> track. No amount of data
+      separates them — the state is unobservable. Flying straight, this cannot
+      work at all.</p>
 
-    <p><strong>And it is turning anyway.</strong> Spending the path budget means
-      weaving, so the manoeuvre that makes the wind observable is one the
-      guidance was already committed to. It costs nothing.</p>
 
-    <div class="stat push">
+    <div style="display:flex;gap:3mm;margin:1mm 0 3mm">
+      <div style="flex:1;border:.8mm solid var(--ink);border-radius:3mm;padding:3mm">
+        <p class="cap" style="margin:0 0 1.5mm;color:var(--pink)">FLYING STRAIGHT</p>
+        <p style="font-size:9pt;margin:0;line-height:1.35">Headwind, or an
+          airspeed that is too low? <strong>Same track.</strong> Unsolvable.</p>
+      </div>
+      <div style="flex:1;border:.8mm solid var(--blue);border-radius:3mm;padding:3mm;background:#EEF1FE">
+        <p class="cap" style="margin:0 0 1.5mm;color:var(--blue)">TURNING</p>
+        <p style="font-size:9pt;margin:0;line-height:1.35">The two predict
+          <strong>different tracks.</strong> The filter can tell them apart.</p>
+      </div>
+    </div>
+    <p><strong>And by panel 03 it is <em>already turning</em></strong>, for
+      reasons that had nothing whatever to do with the wind. The manoeuvre that
+      makes the wind measurable is one it was committed to anyway.
+      <strong>The measurement is free.</strong></p>
+
+    <div class="stat" style="margin-bottom:4mm">
       <div class="v blue">0.104 m s<sup>&minus;1</sup></div>
       <div class="l">median wind error recovered &nbsp;·&nbsp; 95% CI 0.096–0.112</div>
     </div>
+    <div class="handoff "><span class="a">BUT &rarr;</span><span class="b">Does any of it actually land closer?</span></div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════ 04 · THE SHORTEST WAY ROUND -->
-<section class="sheet shot">
-  <div class="num">04 / 06</div>
-  <div class="panel">
-    <p class="kicker">How far it really has to fly</p>
-    <h2>Six shapes,<br>and no more.</h2>
-    <div class="rule"></div>
-
-    <p>It cannot turn on the spot, so the true distance to the target is never
-      the straight line. It is a curve — and the curve has a
-      <strong>minimum radius</strong> set by the design.</p>
-
-    <p>In <strong>1957 Lester Dubins proved</strong> that under exactly that
-      constraint, the shortest path between two oriented positions is always at
-      most three segments, in one of six orderings.</p>
-
-    <img src="dubins_six.svg" alt="The six Dubins path types between the same
-      two oriented positions" style="width:100%;height:auto;margin:1mm 0 1.5mm">
-    <p class="cap" style="margin:0 0 3mm">The same start (dot) and target (cross),
-      with the same heading at each end, solved six ways at one shared scale.
-      Computed by the model, not drawn.</p>
-
-    <p><strong>Six. Not a curve you go searching for</strong> — six you can write
-      down in closed form, evaluate all of them, and take the shortest. The model
-      does that at every step of the descent.</p>
-
-    <div class="stat">
-      <div class="v gr">9.0 &times; 10<sup>&minus;12</sup> m</div>
-      <div class="l">largest disagreement, closed form vs step-wise
-        integration, over 3,514 solutions</div>
-    </div>
-
-    <p>That length — not the straight line — is what the path budget on panel 02
-      is measured against. <strong>Dubins measures; the weave spends.</strong></p>
-
-    <h3>Where the radius comes from</h3>
-    <p>R is not free. It falls out of the same wing loading that sets the flying
-      speed — heavier flies faster, and faster turns wider. <strong>That is the
-      trade panel 06 is about.</strong></p>
-
-    <p class="sm push">Replanned every 0.05 s of the descent, so the budget is
-      always compared against the real remaining distance, not the straight-line
-      distance it would be tempting to use.</p>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════ 05 · THE RESULT -->
+<!-- ═════════════════════════════════════════════════ 05 · THE EVIDENCE -->
 <section class="sheet shot">
   <div class="num">05 / 06</div>
   <div class="panel">
     <p class="kicker">150 randomised drops</p>
-    <h2>Does knowing<br>the wind help?</h2>
+    <h2>Yes &mdash; less<br>than half<br>the miss.</h2>
     <div class="rule"></div>
 
     <p>Identical conditions across rows. <strong>Only the wind information
@@ -369,57 +395,61 @@
       </div>
     </div>
 
-    <p>Compared trial by trial, the EKF cuts the miss by a median
+    <p>Compared drop by drop, the EKF cuts the miss by a median
       <strong>4.26 m</strong> (95% CI 3.08–6.57) and wins in
-      <strong>112 of 150</strong> drops.</p>
+      <strong>112 of 150</strong>.</p>
 
-    <p class="sm push"><strong>What this does not show.</strong> The EKF and
+    <p class="sm"><strong>What this does not show.</strong> The EKF and
       true-wind intervals overlap across most of their range, so those two are
-      <em>not</em> separated at this sample size. Estimating the wind on board is
-      not shown to beat being handed it — only to beat not knowing it.</p>
+      <em>not</em> separated at this sample size. Working the wind out on board
+      is not shown to beat being handed it — only to beat not knowing it.</p>
+    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">Build the most capable canopy you can afford?</span></div>
   </div>
 </section>
 
-<!-- ═════════════════════════════════════════════════ 06 · THE FINDING -->
+<!-- ══════════════════════════════════════════════════ 06 · THE TWIST -->
 <section class="sheet shot">
   <div class="num">06 / 06</div>
   <div class="panel">
     <p class="kicker">The one number that decides everything</p>
-    <h2>How heavy<br>should it be?</h2>
+    <h2>No. A heavier<br>one is worse.</h2>
     <div class="rule"></div>
 
-    <p>To make headway against wind of speed <em>W</em> the canopy must fly
-      faster than it, which forces wing loading up as <em>W</em><sup>2</sup>. But
-      turn radius rises <em>linearly</em> with loading — and turn radius bounds
-      the smallest correction possible in the last seconds.</p>
+    <p>To make headway against wind of speed <em>W</em> it must fly faster than
+      <em>W</em>, which forces wing loading up as <em>W</em><sup>2</sup>. But turn
+      radius rises <em>linearly</em> with loading — and turn radius is the
+      smallest correction it can still make in the final seconds.</p>
 
     <div class="eq">
       R<sub>min</sub> &prop; W<sup>2</sup>
-      <small>The two requirements fight. The error floor follows the wind
-        you designed for, not the wind you meet.</small>
+      <small>The two requirements fight each other. The error floor follows the
+        wind you <em>designed for</em>, not the wind you actually meet.</small>
     </div>
 
-    <p><strong>So building for wind you never encounter degrades accuracy in
-      every condition, including dead calm.</strong> The right choice is the
-      lowest loading that still penetrates, with margin.</p>
+    <p><strong>So building for a gale you never encounter makes you less
+      accurate on a calm day.</strong> The right choice is the lowest loading
+      that still penetrates, with margin — not the most capable one.</p>
 
-    <p>And loading is set by <strong>ballast</strong> — so unlike canopy area, it
-      can be matched to the forecast on the morning of the drop.</p>
+    <p>And loading is set by <strong>ballast</strong>. Unlike canopy area, it can
+      be matched to the forecast on the morning of the drop.</p>
 
     <div class="figbox" style="margin:0 0 1.5mm">
       <img src="img/design_chart.png" alt="Design chart of miss distance against wing loading and wind speed">
     </div>
-    <p class="cap">Every combination of wing loading and wind speed, 24 drops each.</p>
+    <p class="cap" style="margin:1.5mm 0 3mm">Every combination of wing loading
+      and wind speed, 24 drops each. The dark valley is the right answer, and it
+      moves as the wind does.</p>
 
-    <div class="scan bluebg push">
+    <div class="scan bluebg" style="margin:0 0 4mm">
       <img src="qr_hit.svg" alt="QR code linking to the second AR scene">
       <div>
-        <p class="t">Scan 2 of 2</p>
+        <p class="t">Scan 2 of 2 &nbsp;·&nbsp; finish here</p>
         <p class="h">Now watch it land.</p>
-        <p class="s">Same drop, same wind — this one works the wind out on the
-          way down and lands at your feet. The old route is the dotted line.</p>
+        <p class="s">The same drop as scan 1 — same wind, same seed — flown with
+          everything on this poster. The dotted line is where it went before.</p>
       </div>
     </div>
+    <div class="handoff end"><span class="a">&#10003;</span><span class="b">23.9 m off, down to 2.35 m &mdash; at your feet.</span></div>
   </div>
 </section>
 
