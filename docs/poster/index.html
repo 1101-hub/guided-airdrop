@@ -35,27 +35,27 @@
   .sheet{width:210mm;height:297mm;background:#fff;padding:12mm;
          position:relative;overflow:hidden}
   .panel{width:100%;height:100%;border:1.6mm solid var(--ink);border-radius:4mm;
-         padding:7mm 7.5mm;display:flex;flex-direction:column;overflow:hidden}
+         padding:6mm 6.5mm;display:flex;flex-direction:column;overflow:hidden}
 
   /* ---------------------------------------------------------- type scale */
   .num{position:absolute;right:13mm;top:13mm;font-family:var(--mono);
-       font-size:8.5pt;font-weight:700;letter-spacing:.18em;color:var(--ink3)}
-  .kicker{font-family:var(--mono);font-size:8pt;letter-spacing:.22em;
+       font-size:11pt;font-weight:700;letter-spacing:.18em;color:var(--ink3)}
+  .kicker{font-family:var(--mono);font-size:10.5pt;letter-spacing:.22em;
           text-transform:uppercase;color:var(--ink3);margin:0 0 2.5mm}
-  h1{font-size:33pt;line-height:.93;letter-spacing:-.025em;margin:0 0 3mm;font-weight:800}
-  h2{font-size:21pt;line-height:1.0;letter-spacing:-.02em;margin:0 0 3mm;font-weight:800}
-  h3{font-size:10.5pt;line-height:1.2;margin:0 0 1.5mm;font-weight:800}
-  p{font-size:10pt;line-height:1.42;color:var(--ink2);margin:0 0 2.6mm}
-  p.lead{font-size:12.5pt;line-height:1.28;color:var(--ink);font-weight:700}
+  h1{font-size:38pt;line-height:.93;letter-spacing:-.025em;margin:0 0 3mm;font-weight:800}
+  h2{font-size:34pt;line-height:1.0;letter-spacing:-.02em;margin:0 0 3mm;font-weight:800}
+  h3{font-size:15pt;line-height:1.2;margin:0 0 1.5mm;font-weight:800}
+  p{font-size:16pt;line-height:1.34;color:var(--ink2);margin:0 0 2.6mm}
+  p.lead{font-size:19pt;line-height:1.28;color:var(--ink);font-weight:700}
   strong{font-weight:800;color:var(--ink)}
-  .sm{font-size:8.5pt;line-height:1.35;color:var(--ink3)}
+  .sm{font-size:12.5pt;line-height:1.3;color:var(--ink3)}
   .blue{color:var(--blue)} .pink{color:var(--pink)} .gr{color:var(--grn)}
   .grow{flex:1 1 auto;min-height:0}
   .push{margin-top:auto}
 
   /* ------------------------------------------------------------- devices */
   .rule{height:1.1mm;background:var(--ink);border-radius:1mm;margin:0 0 4mm}
-  .chip{display:inline-block;font-family:var(--mono);font-size:7.5pt;font-weight:700;
+  .chip{display:inline-block;font-family:var(--mono);font-size:10pt;font-weight:700;
         letter-spacing:.14em;text-transform:uppercase;border:.6mm solid var(--ink);
         border-radius:99mm;padding:.9mm 2.6mm;margin:0 1.5mm 1.5mm 0}
   .chip.b{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -63,18 +63,18 @@
   .chip.g{background:var(--green);color:#16330a;border-color:var(--grn)}
 
   .stat{border:.8mm solid var(--ink);border-radius:3mm;padding:3mm 3.5mm;margin:0 0 3mm}
-  .stat .v{font-size:26pt;font-weight:800;line-height:.95;letter-spacing:-.03em}
-  .stat .l{font-family:var(--mono);font-size:7.5pt;letter-spacing:.14em;
+  .stat .v{font-size:42pt;font-weight:800;line-height:.95;letter-spacing:-.03em}
+  .stat .l{font-family:var(--mono);font-size:10.5pt;letter-spacing:.14em;
            text-transform:uppercase;color:var(--ink3);margin-top:1mm}
 
-  .eq{font-family:var(--mono);font-size:11.5pt;font-weight:700;text-align:center;
+  .eq{font-family:var(--mono);font-size:18pt;font-weight:700;text-align:center;
       border:.6mm dashed var(--ink);border-radius:2.5mm;padding:3mm 2mm;margin:0 0 3mm;
       background:var(--paper)}
-  .eq small{display:block;font-family:var(--sans);font-size:8pt;font-weight:600;
+  .eq small{display:block;font-family:var(--sans);font-size:11.5pt;font-weight:600;
             color:var(--ink3);margin-top:1.5mm;letter-spacing:0}
 
-  table{width:100%;border-collapse:collapse;font-size:9.5pt;margin:0 0 2.5mm}
-  th{font-family:var(--mono);font-size:7.5pt;letter-spacing:.1em;text-transform:uppercase;
+  table{width:100%;border-collapse:collapse;font-size:15pt;margin:0 0 2.5mm}
+  th{font-family:var(--mono);font-size:10.5pt;letter-spacing:.1em;text-transform:uppercase;
      color:var(--ink3);text-align:right;padding:0 0 1.5mm;font-weight:700}
   th:first-child{text-align:left}
   td{padding:1.8mm 0;border-top:.35mm solid var(--line);text-align:right}
@@ -82,7 +82,7 @@
   tr.hi td{background:#EEF1FE}
   .figbox{border:.8mm solid var(--ink);border-radius:3mm;overflow:hidden;background:#fff}
   .figbox img{width:100%;display:block}
-  .cap{font-family:var(--mono);font-size:7pt;letter-spacing:.06em;color:var(--ink3);
+  .cap{font-family:var(--mono);font-size:10.5pt;letter-spacing:.06em;color:var(--ink3);
        margin:1.5mm 0 0;line-height:1.3}
 
   /* ------------------------------------------------------------ QR block */
@@ -90,12 +90,12 @@
         display:flex;gap:4.5mm;align-items:center}
   .scan.pinkbg{background:var(--pink);color:#fff;border-color:var(--ink)}
   .scan.bluebg{background:var(--blue);color:#fff;border-color:var(--ink)}
-  .scan img{width:38mm;height:38mm;display:block;background:#fff;
+  .scan img{width:44mm;height:44mm;display:block;background:#fff;
             border:1.6mm solid #fff;border-radius:1.5mm;flex:0 0 auto}
-  .scan .t{font-size:8pt;font-family:var(--mono);letter-spacing:.16em;
+  .scan .t{font-size:10.5pt;font-family:var(--mono);letter-spacing:.16em;
            text-transform:uppercase;opacity:.85;margin:0 0 1.5mm}
-  .scan .h{font-size:15pt;font-weight:800;line-height:1.05;margin:0 0 1.5mm}
-  .scan .s{font-size:8.5pt;line-height:1.3;opacity:.92;margin:0}
+  .scan .h{font-size:23pt;font-weight:800;line-height:1.05;margin:0 0 1.5mm}
+  .scan .s{font-size:12.5pt;line-height:1.3;opacity:.92;margin:0}
 
   /* ------------------------------------------------- screen-only preview */
   .board{display:grid;grid-template-columns:repeat(3,210mm);gap:9mm;
@@ -116,9 +116,9 @@
      the six sheets a chain rather than six posters about the same project. */
   .handoff{margin-top:auto;border-top:.9mm solid var(--ink);padding-top:3mm;
            display:flex;gap:3mm;align-items:flex-start}
-  .handoff .a{font-family:var(--mono);font-size:8.5pt;font-weight:700;
+  .handoff .a{font-family:var(--mono);font-size:11pt;font-weight:700;
               letter-spacing:.1em;color:var(--pink);flex:0 0 auto;padding-top:.6mm}
-  .handoff .b{font-size:11pt;font-weight:800;line-height:1.22;color:var(--ink)}
+  .handoff .b{font-size:17pt;font-weight:800;line-height:1.22;color:var(--ink)}
   .handoff.end .a{color:var(--grn)}
 
   @media print{
@@ -148,23 +148,20 @@
     <div class="grow" style="display:flex;flex-direction:column;justify-content:center">
       <div class="stat">
         <div class="v pink">80,000</div>
-        <div class="l">people still unreached, Assam floods, July 2026</div>
+        <div class="l">unreached · Assam floods · July 2026</div>
       </div>
-      <p>A cloudburst on 19 July 2026 flooded four districts of Upper Assam.
-        <strong>705,000 people were affected</strong>, roads were gone, and air
-        was the only way in.</p>
-      <p>Supplies go out by helicopter. Unguided, a payload rides the air mass
-        down: it does not aim, it drifts. <strong>Here it lands 23.9&nbsp;m
-        off</strong> — in a flood, the wrong side of the water.</p>
+      <div class="stat">
+        <div class="v">23.9 m</div>
+        <div class="l">how far an unguided drop lands from the target</div>
+      </div>
     </div>
 
     <div class="scan pinkbg" style="margin:0 0 4mm">
       <img src="qr_miss.svg" alt="QR code linking to the first AR scene">
       <div>
-        <p class="t">Scan 1 of 2 &nbsp;·&nbsp; start here</p>
+        <p class="t">Scan 1 of 2</p>
         <p class="h">Watch it miss.</p>
-        <p class="s">The drop above, in your own room. Point your phone at
-          the floor.</p>
+        <p class="s">In your own room. Point your phone at the floor.</p>
       </div>
     </div>
     <div class="handoff "><span class="a">SO &rarr;</span><span class="b">Can a falling box be steered?</span></div>
@@ -178,10 +175,6 @@
     <p class="kicker">Answer: yes, if it is a wing</p>
     <h2>You can steer it.<br>You cannot<br>stop it.</h2>
     <div class="rule"></div>
-
-    <p>A round parachute only falls. A <strong>parafoil</strong> is a ram-air
-      canopy: it <strong>glides forward</strong> as it descends, so pulling one
-      side turns it. Forward travel is the only thing to aim.</p>
     <svg viewBox="0 0 440 186" style="width:100%;height:auto;margin:1mm 0 3mm">
       <g font-family="ui-monospace,Consolas,monospace" font-size="12">
         <line x1="8" y1="162" x2="432" y2="162" stroke="#141414" stroke-width="2.5"/>
@@ -205,19 +198,13 @@
         <text x="300" y="118" fill="#7C776C">= something to aim</text>
       </g>
     </svg>
-
     <div class="eq">
       v = &radic;( 2mg / &rho;S C<sub>L</sub> )
-      <small>How fast it flies. Only the wing loading m/S appears — mass and
-        canopy area never act separately.</small>
+      <small>Only the wing loading m/S appears.</small>
     </div>
 
-    <p>It has no engine and no brakes. Sink rate is constant, so
-      <strong>the moment it is released its time in the air is fixed</strong>
-      — and with it, the distance it can cover.</p>
-
-    <p>That is usually <em>more</em> than the distance to the target, and it
-      cannot slow down. <strong>It has to spend the surplus.</strong></p>
+    <p>No engine, no brakes, constant sink rate. <strong>Time in the air is
+      fixed at release</strong> — so the distance it will fly is too.</p>
     <svg viewBox="0 0 440 128" style="width:100%;height:auto;margin:1mm 0 2mm">
       <defs>
         <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)"
@@ -239,6 +226,7 @@
               stroke-width="2" stroke-dasharray="4 4"/>
       </g>
     </svg>
+    <p><strong>It has to spend the surplus.</strong></p>
     <div class="handoff "><span class="a">SO &rarr;</span><span class="b">Fly straight at the target and it arrives with height to spare.</span></div>
   </div>
 </section>
@@ -251,33 +239,22 @@
     <h2>So it weaves<br>&mdash; on purpose.</h2>
     <div class="rule"></div>
 
-    <p>The guidance does not fly the shortest route. It flies one of
-      <strong>the right length</strong>, holding a track angle &alpha; off the
-      bearing to stretch the path by 1/cos&nbsp;&alpha; until the budget is
-      gone.</p>
-
     <div class="eq">
       cos &alpha; = d / s
       <small>d = distance to go &nbsp;·&nbsp; s = flying left.
-        As height runs out, d/s &rarr; 1 and &alpha; &rarr; 0: a straight final
-        approach, no change of mode.</small>
+        Stretches the path until the budget is gone.</small>
     </div>
 
-    <p><strong>But <em>d</em> is not the straight line.</strong> It cannot turn
-      on the spot, so the real distance is a curve with a minimum radius. In
-      <strong>1957 Lester Dubins proved</strong> the shortest such curve is one
-      of six shapes.</p>
+    <p>And <em>d</em> is a curve, not a line — it cannot turn on the spot.
+      <strong>Dubins, 1957: the shortest such curve is one of six.</strong></p>
 
     <img src="dubins_six.svg" alt="The six Dubins path types between the same
-      two oriented positions" style="width:100%;height:auto;margin:1mm 0 1.5mm">
+      two oriented positions" style="width:100%;height:auto;margin:1mm 0 2mm">
     <p class="cap" style="margin:0 0 3mm">Same start, target and headings,
-      solved six ways at one scale. Computed by the model, not drawn. The six
-      closed forms match step-wise integration to
-      9.0&nbsp;&times;&nbsp;10<sup>&minus;12</sup>&nbsp;m over 3,514 solutions.</p>
+      solved six ways at one scale. Computed by the model, not drawn.</p>
 
-    <p>It checks all six, takes the shortest, and measures the budget against
-      <em>that</em>. <strong>Dubins measures; the weave spends.</strong></p>
-    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">So it is turning most of the way down.</span></div>
+    <p><strong>Dubins measures; the weave spends.</strong></p>
+    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">It is turning most of the way down.</span></div>
   </div>
 </section>
 
@@ -289,9 +266,7 @@
     <h2>And that is<br>how it finds<br>the wind.</h2>
     <div class="rule"></div>
 
-    <p>No sensor measures the wind, and nothing is sent from the ground. An
-      <strong>Extended Kalman Filter</strong> works it out from satellite
-      velocity alone, because the wind is a subtraction:</p>
+    <p>No wind sensor. The wind is a <strong>subtraction</strong>:</p>
     <svg viewBox="0 0 440 196" style="width:100%;height:auto;margin:2mm 0 3mm">
       <defs>
         <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5"
@@ -326,36 +301,27 @@
               text-anchor="middle">measured by satellite</text>
       </g>
     </svg>
-    <p class="cap" style="margin:-1mm 0 3mm">State:
-      [&thinsp;w<sub>x</sub>, w<sub>y</sub>, v<sub>a</sub>, b&thinsp;] — wind east
-      and north, airspeed, magnetometer bias. The bias enters through the heading
-      trigonometry, making the problem non-linear.</p>
-
     <h3 class="pink">Except it should be impossible</h3>
-    <p>On a <strong>fixed heading</strong>, a headwind and a too-low airspeed
-      produce <em>the same</em> track. No amount of data separates them — the
-      state is unobservable. Flying straight, this cannot work.</p>
 
-
-    <div style="display:flex;gap:3mm;margin:1mm 0 3mm">
+    <div style="display:flex;gap:3mm;margin:2mm 0 3mm">
       <div style="flex:1;border:.8mm solid var(--ink);border-radius:3mm;padding:3mm">
         <p class="cap" style="margin:0 0 1.5mm;color:var(--pink)">FLYING STRAIGHT</p>
-        <p style="font-size:9pt;margin:0;line-height:1.35">Headwind, or an
-          airspeed that is too low? <strong>Same track.</strong> Unsolvable.</p>
+        <p style="font-size:13.5pt;margin:0;line-height:1.28">Headwind, or too
+          slow? <strong>Same track.</strong></p>
       </div>
       <div style="flex:1;border:.8mm solid var(--blue);border-radius:3mm;padding:3mm;background:#EEF1FE">
         <p class="cap" style="margin:0 0 1.5mm;color:var(--blue)">TURNING</p>
-        <p style="font-size:9pt;margin:0;line-height:1.35"><strong>Different
-          tracks.</strong> The filter can separate them.</p>
+        <p style="font-size:13.5pt;margin:0;line-height:1.28"><strong>Different
+          tracks.</strong> Solvable.</p>
       </div>
     </div>
-    <p><strong>And by panel 03 it is <em>already turning</em></strong>, for
-      reasons that had nothing to do with the wind.
+
+    <p>And by panel 03 it is <em>already turning</em>.
       <strong>The measurement is free.</strong></p>
 
     <div class="stat" style="margin-bottom:4mm">
       <div class="v blue">0.104 m s<sup>&minus;1</sup></div>
-      <div class="l">median wind error recovered &nbsp;·&nbsp; 95% CI 0.096–0.112</div>
+      <div class="l">median wind error recovered</div>
     </div>
     <div class="handoff "><span class="a">BUT &rarr;</span><span class="b">Does it land closer?</span></div>
   </div>
@@ -369,36 +335,30 @@
     <h2>Yes &mdash; less<br>than half<br>the miss.</h2>
     <div class="rule"></div>
 
-    <p>Identical conditions across rows. <strong>Only the wind information
-      available to the guidance differs.</strong></p>
-
     <table>
-      <tr><th>Configuration</th><th>Median miss</th><th>90th pct</th></tr>
-      <tr><td>No estimate</td><td>8.57 m <span class="sm">(6.49–12.46)</span></td><td>24.27 m</td></tr>
-      <tr class="hi"><td class="blue">EKF onboard</td><td><strong>3.89 m</strong> <span class="sm">(2.85–5.28)</span></td><td>10.75 m</td></tr>
-      <tr><td>Told the true wind</td><td>4.62 m <span class="sm">(3.37–5.44)</span></td><td>10.93 m</td></tr>
+      <tr><th>What it knows</th><th>Median miss</th></tr>
+      <tr><td>Nothing</td><td>8.57 m</td></tr>
+      <tr class="hi"><td class="blue">Works it out</td><td><strong>3.89 m</strong></td></tr>
+      <tr><td>Told the truth</td><td>4.62 m</td></tr>
     </table>
-    <p class="cap">Intervals are 95% bootstrap percentile intervals on the median.</p>
 
-    <div style="display:flex;gap:3mm;margin:3mm 0">
+    <div style="display:flex;gap:3mm;margin:3mm 0 1.5mm">
       <div style="flex:1">
         <div class="figbox"><img src="img/fig1a_no_estimate.png" alt="Ground tracks without a wind estimate"></div>
-        <p class="cap">No estimate — touchdowns scattered.</p>
+        <p class="cap">No estimate — scattered.</p>
       </div>
       <div style="flex:1">
         <div class="figbox"><img src="img/fig1b_ekf_estimate.png" alt="Ground tracks with the EKF"></div>
-        <p class="cap">EKF — touchdowns clustered on target.</p>
+        <p class="cap">EKF — on target.</p>
       </div>
     </div>
 
-    <p>Drop by drop, the EKF cuts the miss by a median <strong>4.26 m</strong>
-      (95% CI 3.08–6.57) and wins <strong>112 of 150</strong>.</p>
+    <p style="margin:2mm 0 2mm"><strong class="gr">Closer in 112 of 150
+      drops.</strong></p>
 
-    <p class="sm"><strong>What this does not show.</strong> The EKF and
-      true-wind intervals overlap, so at this sample size those two are
-      <em>not</em> separated. Onboard estimation beats not knowing the wind; it
-      is not shown to beat being told it.</p>
-    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">So build the most capable canopy you can afford?</span></div>
+    <p class="sm"><strong>What it does not show.</strong> The EKF and true-wind
+      intervals overlap, so at this sample size those two are not separated.</p>
+    <div class="handoff "><span class="a">SO &rarr;</span><span class="b">Build the most capable canopy you can afford?</span></div>
   </div>
 </section>
 
@@ -410,41 +370,34 @@
     <h2>No. A heavier<br>one is worse.</h2>
     <div class="rule"></div>
 
-    <p>To make headway against wind <em>W</em> it must fly faster than
-      <em>W</em>, forcing wing loading up as <em>W</em><sup>2</sup>. But turn
-      radius rises <em>linearly</em> with loading — and turn radius is the
-      smallest correction it can make in the final seconds.</p>
+    <p>Beating wind <em>W</em> forces loading up as <em>W</em><sup>2</sup>.
+      But turn radius rises with loading — and that is the smallest correction
+      left at the end.</p>
 
     <div class="eq">
       R<sub>min</sub> &prop; W<sup>2</sup>
-      <small>The two requirements fight. The error floor follows the wind you
-        <em>designed for</em>, not the wind you meet.</small>
+      <small>The error floor follows the wind you designed for,
+        not the wind you meet.</small>
     </div>
-
-    <p><strong>Building for a gale you never meet makes you less accurate on a
-      calm day.</strong> The right choice is the lowest loading that still
-      penetrates, with margin — not the most capable one.</p>
-
-    <p>Loading is set by <strong>ballast</strong>. Unlike canopy area, it can be
-      matched to the forecast on the morning of the drop.</p>
 
     <div class="figbox" style="margin:0 0 1.5mm">
       <img src="img/design_chart.png" alt="Design chart of miss distance against wing loading and wind speed">
     </div>
-    <p class="cap" style="margin:1.5mm 0 3mm">Every combination of loading and
-      wind speed, 24 drops each. The dark valley is the best choice — and it
-      moves with the wind.</p>
+    <p class="cap" style="margin:1.5mm 0 3mm">Loading against wind speed,
+      24 drops each. <strong>The dark valley moves with the wind.</strong></p>
+
+    <p>Loading is set by <strong>ballast</strong> — matched to the forecast on
+      the morning of the drop.</p>
 
     <div class="scan bluebg" style="margin:0 0 4mm">
       <img src="qr_hit.svg" alt="QR code linking to the second AR scene">
       <div>
-        <p class="t">Scan 2 of 2 &nbsp;·&nbsp; finish here</p>
+        <p class="t">Scan 2 of 2</p>
         <p class="h">Now watch it land.</p>
-        <p class="s">Same drop, same wind, flown with everything on this
-          poster. The dotted line is where it went before.</p>
+        <p class="s">Same drop, same wind. Dotted line is where it went before.</p>
       </div>
     </div>
-    <div class="handoff end"><span class="a">&#10003;</span><span class="b">23.9 m off, down to 2.35 m &mdash; at your feet.</span></div>
+    <div class="handoff end"><span class="a">&#10003;</span><span class="b">23.9 m off &rarr; 2.35 m, at your feet.</span></div>
   </div>
 </section>
 
