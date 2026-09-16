@@ -171,8 +171,14 @@ export class ARView {
                    (e.beta || 0) * RAD, (e.gamma || 0) * RAD, this._screenAngle);
   }
 
-  /** Re-anchor the scene to wherever the phone is pointing right now. */
-  recentre() { this._alphaOffset = null; }
+  /** Re-anchor the scene to wherever the phone is pointing right now. The
+      sensor path re-zeroes on the next orientation event; the drag fallback
+      has no heading to re-zero, so its accumulated angles are cleared. */
+  recentre() {
+    this._alphaOffset = null;
+    this._drag.yaw = 0;
+    this._drag.pitch = 0;
+  }
 
   /* ---- finger-drag fallback --------------------------------------------- */
 
@@ -226,6 +232,13 @@ export class ARView {
       this.camera.quaternion.copy(this._q);
     }
     this.camera.position.set(0, this.eyeHeight, 0);
+
+    /* Bring the camera matrices up to date before the callbacks rather than
+       leaving it to render(). Anything that projects a world point to the
+       screen during a callback would otherwise be working from last frame's
+       pose, which shows up as an on-screen marker lagging the view. */
+    this.camera.updateMatrixWorld(true);
+    this.camera.matrixWorldInverse.copy(this.camera.matrixWorld).invert();
 
     for (const cb of this._frameCbs) cb(dt, this);
     this.renderer.render(this.scene, this.camera);

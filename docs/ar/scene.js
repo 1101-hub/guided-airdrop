@@ -16,7 +16,7 @@
    =========================================================================== */
 import * as THREE from './vendor/three.module.min.js';
 import {
-  C, crate, parafoil, roundCanopy, riverSurface, splash, contactShadow,
+  C, crate, parafoil, roundCanopy, riverSurface, splash, contactShadow, helicopter,
   targetRing, floorGrid, card, setCard, heightRuler, pathLine, dashedPathLine,
   billboards,
 } from './models.js?v=2';
@@ -78,6 +78,13 @@ export function buildScene(which) {
   const trail = pathLine(pts, isHit ? C.blue : C.pink, 0.011);
   group.add(trail);
 
+  /* ------------------------------------------------------- the helicopter
+     Sits at the release point and hovers there. It is what the viewer looks
+     for before anything happens, and what `aim` points them at. */
+  const heli = helicopter(0.70);
+  heli.position.set(run.release.x, run.release.y, run.release.z);
+  group.add(heli);
+
   /* ------------------------------------------------------------ the flyer */
   const flyer = isHit ? parafoil(0.44, C.blue) : roundCanopy(0.26, C.pink);
   group.add(flyer);
@@ -127,17 +134,39 @@ export function buildScene(which) {
 
   /* ------------------------------------------------------- the choreography */
   const FLIGHT = run.duration / SPEED;
-  let t = 0, phase = 'idle';
+  let t = 0, phase = 'idle', hoverT = 0;
 
-  function restart() {
+  /* Back to the helicopter hovering with nothing dropped yet. The scene
+     waits here instead of playing on load, so the viewer can find the
+     helicopter first and start the drop when they are actually looking. */
+  function reset() {
+    t = 0;
+    phase = 'ready';
+    result.visible = note.visible = false;
+    ghostLab.visible = false;
+    alt.visible = false;
+    trail.visible = false;
+    flyer.visible = false;
+    shadow.visible = false;
+    drawFraction(trail, 0);
+    if (ghost) { ghost.visible = false; drawFraction(ghost, 0); }
+    if (flyer.userData.collapse) flyer.userData.collapse(0);
+    place(0);                 // park the package under the helicopter
+  }
+
+  function drop() {
     t = 0;
     phase = isHit ? 'ghost' : 'fly';
     result.visible = note.visible = false;
     ghostLab.visible = false;
-    if (ghost) { ghost.visible = true; drawFraction(ghost, 0); }
-    drawFraction(trail, 0);
+    trail.visible = true;
     flyer.visible = true;
+    shadow.visible = true;
+    alt.visible = true;
+    drawFraction(trail, 0);
+    if (ghost) { ghost.visible = true; drawFraction(ghost, 0); }
     if (flyer.userData.collapse) flyer.userData.collapse(0);
+    place(0);
   }
 
   /* Position the flyer off the SAME curve the tube is built from, using
@@ -173,7 +202,11 @@ export function buildScene(which) {
     if (camera) updateCards(camera);
     water.userData.tick(dt);
     spl.userData.tick(dt);
-    if (phase === 'idle') return;
+    heli.userData.spin(dt);
+    hoverT += dt;
+    heli.position.y = run.release.y + Math.sin(hoverT * 1.3) * 0.012;
+
+    if (phase === 'ready' || phase === 'idle') return;
     t += dt;
 
     if (phase === 'ghost') {
@@ -222,16 +255,24 @@ export function buildScene(which) {
     }
   }
 
-  restart();
-  phase = 'idle';
+  reset();
 
   return {
-    group, tick, restart,
-    start: () => restart(),
+    group, tick, reset, drop,
     get phase() { return phase; },
+    get ready() { return phase === 'ready'; },
+    get done() { return phase === 'land'; },
     miss: run.miss,
     flight: run.duration,
     landing: run.landing,
+    release: run.release,
+    /* What the on-screen pointer should aim at: the helicopter while waiting,
+       the package once it is falling, the wreck or delivery once it is down. */
+    focus: () => (phase === 'ready' ? heli : flyer),
+    /* Yaw that puts the helicopter straight ahead of someone standing at the
+       origin. A rotation about the viewer keeps every distance from them
+       unchanged, so the landing stays exactly as close to their feet. */
+    aim: Math.atan2(run.release.x, -run.release.z),
     // exposed for the dev harness only
     _debug: { flyer, trail, ghost, pts, FLIGHT, get t() { return t; } },
   };

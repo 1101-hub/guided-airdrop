@@ -132,6 +132,83 @@ export function parafoil(span = 0.46, colour = C.blue) {
   return g;
 }
 
+/* ------------------------------------------------------------- helicopter
+   Mostly a landmark. Without something recognisable at the release point the
+   viewer has nowhere to look while the scene waits, and hunting for an empty
+   patch of air is how this reads as broken. Roughly to scale — about 9 m,
+   which is 0.7 m at 1:13. */
+export function helicopter(len = 0.70, colour = C.ink) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(
+    new THREE.CapsuleGeometry(len * 0.20, len * 0.34, 6, 14),
+    new THREE.MeshLambertMaterial({ color: colour }),
+  );
+  body.rotation.z = Math.PI / 2;
+  g.add(body);
+
+  const glass = new THREE.Mesh(
+    new THREE.SphereGeometry(len * 0.155, 16, 12),
+    new THREE.MeshLambertMaterial({ color: C.blue }),
+  );
+  glass.position.set(len * 0.30, len * 0.02, 0);
+  g.add(glass);
+
+  const boom = new THREE.Mesh(
+    new THREE.CylinderGeometry(len * 0.035, len * 0.022, len * 0.52, 8),
+    new THREE.MeshLambertMaterial({ color: colour }),
+  );
+  boom.rotation.z = Math.PI / 2;
+  boom.position.set(-len * 0.50, len * 0.06, 0);
+  g.add(boom);
+
+  const fin = new THREE.Mesh(
+    new THREE.BoxGeometry(len * 0.10, len * 0.17, len * 0.02),
+    new THREE.MeshLambertMaterial({ color: C.pink }),
+  );
+  fin.position.set(-len * 0.73, len * 0.15, 0);
+  g.add(fin);
+
+  // skids
+  const skidMat = new THREE.MeshBasicMaterial({ color: colour });
+  for (const dz of [-len * 0.13, len * 0.13]) {
+    const s = new THREE.Mesh(
+      new THREE.CylinderGeometry(len * 0.014, len * 0.014, len * 0.46, 6), skidMat);
+    s.rotation.z = Math.PI / 2;
+    s.position.set(len * 0.02, -len * 0.23, dz);
+    g.add(s);
+  }
+
+  const rotor = new THREE.Group();
+  for (let i = 0; i < 4; i++) {
+    const blade = new THREE.Mesh(
+      new THREE.BoxGeometry(len * 0.92, len * 0.012, len * 0.055),
+      new THREE.MeshLambertMaterial({ color: colour }),
+    );
+    blade.rotation.y = i * Math.PI / 4;
+    rotor.add(blade);
+  }
+  rotor.position.set(0, len * 0.26, 0);
+  g.add(rotor);
+
+  const tailRotor = new THREE.Group();
+  for (let i = 0; i < 2; i++) {
+    const b = new THREE.Mesh(
+      new THREE.BoxGeometry(len * 0.012, len * 0.26, len * 0.035),
+      new THREE.MeshLambertMaterial({ color: colour }),
+    );
+    b.rotation.z = i * Math.PI / 2;
+    tailRotor.add(b);
+  }
+  tailRotor.position.set(-len * 0.76, len * 0.15, len * 0.035);
+  g.add(tailRotor);
+
+  g.userData.spin = dt => {
+    rotor.rotation.y += dt * 22;
+    tailRotor.rotation.x += dt * 30;
+  };
+  return g;
+}
+
 /* ----------------------------------------------------------- round canopy
    The thing a parafoil is not. No forward speed, nothing to steer with. */
 export function roundCanopy(radius = 0.28, colour = C.pink) {
@@ -390,7 +467,9 @@ export function heightRuler(realHeight, scale, { every = 10, color = C.ink } = {
   const trim = v => v.toFixed(1).replace(/\.0$/, '');
   const cap = card('SCALE', `${trim(realHeight)} m → ${trim(top)} m`,
                    { accent: CSS.ink3, height: 0.058 });
-  cap.position.set(0.14, top + 0.16, 0);
+  // Low, not at the top: the release point is the top of the ruler and the
+  // helicopter hovers exactly there, so a card up there is behind it.
+  cap.position.set(0.14, 0.30, 0);
   g.add(cap);
   return g;
 }

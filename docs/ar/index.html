@@ -68,6 +68,20 @@
     background:var(--paper);border:2.5px solid var(--ink);border-radius:999px;
     padding:.45em 1em;box-shadow:0 4px 14px rgba(0,0,0,.28);text-align:center}
 
+  /* ------------------------------------------- off-screen target pointer */
+  #point{position:fixed;z-index:19;pointer-events:none;display:none;
+    left:0;top:0;width:0;height:0}
+  #point.on{display:block}
+  #point .ring{position:absolute;left:-26px;top:-26px;width:52px;height:52px;
+    border-radius:50%;background:var(--paper);border:3px solid var(--ink);
+    box-shadow:0 4px 16px rgba(0,0,0,.35);display:grid;place-items:center}
+  #point .arw{font-size:23px;line-height:1;color:var(--ink);
+    transform-origin:50% 50%;margin-left:2px}
+  #point .lbl{position:absolute;left:-70px;top:30px;width:140px;text-align:center;
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink);background:var(--paper);border:2px solid var(--ink);
+    border-radius:999px;padding:.28em 0;box-shadow:0 3px 10px rgba(0,0,0,.3)}
+
   /* --------------------------------------------------------- diagnostics */
   #diag{position:fixed;top:calc(52px + env(safe-area-inset-top));left:10px;right:10px;
     z-index:21;background:rgba(20,20,20,.88);color:#EDEAE0;border-radius:14px;
@@ -85,12 +99,15 @@
 <video id="cam" playsinline muted autoplay></video>
 <canvas id="gl"></canvas>
 
+<div id="point"><div class="ring"><span class="arw" id="pointArw">&#10148;</span></div>
+  <div class="lbl" id="pointLbl">helicopter</div></div>
+
 <div id="banner"><span id="bannerTxt">starting…</span></div>
 <div id="diag"></div>
 
 <div id="hud">
-  <button id="bReplay" class="p">&#9660; replay</button>
-  <button id="bRecentre">recentre</button>
+  <button id="bDrop" class="p">&#9660; drop it</button>
+  <button id="bFind">find the helicopter</button>
   <a id="aOther" href="?s=hit">next &rarr;</a>
   <button id="bDiag">?</button>
 </div>
@@ -124,8 +141,9 @@ const COPY = {
     steps: [
       'Stand where you can see about <strong>three metres of floor</strong> in front of you.',
       'Tap start and <strong>allow the camera</strong> — on an iPhone, allow motion too.',
-      'Hold the phone up and <strong>look at the floor ahead</strong>. It falls from ceiling height.',
+      'Look for the <strong>helicopter</strong> ahead of you, then press <strong>drop it</strong>.',
     ],
+    ready: 'find the helicopter, then press drop it',
     banner: 'it is falling — watch where it ends up',
     done: 'missed by 23.9 m · into the water',
     other: 'scene 2 →', otherHref: '?s=hit',
@@ -137,8 +155,9 @@ const COPY = {
     steps: [
       'Stand where you have <strong>clear floor at your feet</strong> and a few metres ahead.',
       'Tap start and <strong>allow the camera</strong> — on an iPhone, allow motion too.',
-      'The <strong>dotted pink line is last time</strong>. Watch the blue one instead.',
+      'Press <strong>drop it</strong>. The <strong>dotted pink line is last time</strong> — watch the blue one.',
     ],
+    ready: 'find the helicopter, then press drop it',
     banner: 'dotted = last time · blue = with the wind worked out',
     done: 'landed 2.35 m from target · at your feet',
     other: '← scene 1', otherHref: '?s=miss',
@@ -164,19 +183,86 @@ view.scene.add(sun);
 const scene = buildScene(which);
 view.world.add(scene.group);
 
+/* ------------------------------------------------------------- the pointer
+   Aiming the scene only helps until the viewer turns away, and in the second
+   scene the helicopter hovers 60 degrees up, off the top of the screen no
+   matter which way they face. So rather than rely on staging, point at the
+   thing that currently matters and let them follow it.
+
+   Hidden whenever the target is comfortably in view: an arrow that never goes
+   away stops meaning anything. */
+const _wp = new THREE.Vector3();
+const EDGE = 0.80;                      // NDC beyond which it counts as lost
+
+function updatePointer() {
+  const o = scene.focus();
+  if (!o || !o.visible) { $('point').classList.remove('on'); return; }
+
+  o.getWorldPosition(_wp);
+  // camera space first: a point behind the camera projects to a mirrored
+  // position, which would send the arrow the wrong way
+  const behind = _wp.clone().applyMatrix4(view.camera.matrixWorldInverse).z > 0;
+  const ndc = _wp.clone().project(view.camera);
+  let x = ndc.x, y = ndc.y;
+  if (behind) { x = -x; y = -y; }
+
+  if (!behind && Math.abs(x) < EDGE && Math.abs(y) < EDGE) {
+    $('point').classList.remove('on');
+    return;
+  }
+  // push out to the edge of the frame, keeping the bearing
+  const m = Math.max(Math.abs(x), Math.abs(y)) || 1;
+  const k = EDGE / m;
+  const px = (x * k * 0.5 + 0.5) * innerWidth;
+  const py = (-y * k * 0.5 + 0.5) * innerHeight;
+  const el = $('point');
+  el.style.transform = `translate(${px}px,${py}px)`;
+  el.classList.add('on');
+  // screen y grows downward, so the vertical component flips
+  $('pointArw').style.transform =
+    `rotate(${Math.atan2(-y, x) * 180 / Math.PI}deg)`;
+  $('pointLbl').textContent =
+    scene.ready ? 'helicopter' : scene.done ? 'where it landed' : 'the package';
+}
+
 let settled = false;
 view.onFrame(dt => {
   scene.tick(dt, view.camera);
-  if (!settled && scene.phase === 'land') {
+  updatePointer();
+  if (!settled && scene.done) {
     settled = true;
     $('bannerTxt').textContent = COPY.done;
+    $('bDrop').innerHTML = '&#8635; again';
   }
 });
 
 /* --------------------------------------------------------------- controls */
-const play = () => { settled = false; $('bannerTxt').textContent = COPY.banner; scene.start(); };
-$('bReplay').onclick = play;
-$('bRecentre').onclick = () => view.recentre();
+function drop() {
+  settled = false;
+  $('bannerTxt').textContent = COPY.banner;
+  $('bDrop').innerHTML = '&#9660; drop it';
+  scene.drop();
+}
+
+/* Put the helicopter straight ahead and go back to waiting.
+
+   Re-zeroing the phone's heading alone was not enough: it makes "forward"
+   whatever you are facing, but the release point is off to one side of the
+   scene, so there was still nothing in front of you to look at. Rotating the
+   world by scene.aim as well puts the helicopter where you are already
+   pointing. It is a rotation about the viewer, so nothing gets closer or
+   further away — the landing stays exactly as near your feet as before. */
+function findHelicopter() {
+  view.recentre();
+  view.world.rotation.y = scene.aim;
+  scene.reset();
+  settled = false;
+  $('bDrop').innerHTML = '&#9660; drop it';
+  $('bannerTxt').textContent = COPY.ready;
+}
+
+$('bDrop').onclick = () => (scene.ready ? drop() : findHelicopter());
+$('bFind').onclick = findHelicopter;
 $('bDiag').onclick = () => $('diag').classList.toggle('on');
 
 /* ------------------------------------------------------------ diagnostics */
@@ -227,7 +313,7 @@ $('bGo').onclick = async () => {
   }
   if (mode !== MODE.FULL) document.body.classList.add('nocam');
   $('start').style.display = 'none';
-  play();
+  findHelicopter();
   if (mode === MODE.DRAG) $('bannerTxt').textContent = 'no sensors — drag to look around';
 };
 </script>

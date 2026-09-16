@@ -46,14 +46,22 @@ try {
   sun.position.set(2, 6, 3); scene.add(sun);
 
   const built = buildScene(which);
-  scene.add(built.group);
-  built.start();
+  // mirror the page: the scene hangs off a world group that carries the aim
+  const world = new THREE.Group();
+  world.add(built.group);
+  world.rotation.y = built.aim;          // as pressing "find the helicopter"
+  scene.add(world);
+  if (at > 0) built.drop();
 
   // the camera has to exist before ticking: label sizes depend on it
   const cam = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.01, 100);
   if (viewName === 'over') {
     cam.position.set(2.8, 3.4, 2.6);
     cam.lookAt(0, 1.0, -1.6);
+  } else if (viewName === 'aim') {
+    // exactly what the viewer sees straight after aiming: level, facing -Z
+    cam.position.set(0, 1.5, 0);
+    cam.lookAt(0, 1.9, -3);
   } else {
     cam.position.set(0, 1.5, 0);              // where the phone actually is
     cam.lookAt(built.landing.x * 0.55, 0.55, built.landing.z * 1.25 - 0.55);
@@ -79,8 +87,15 @@ try {
   const byIndex = d.pts[idx];
   const P = v => `(${v.x.toFixed(2)},${v.y.toFixed(2)},${v.z.toFixed(2)})`;
   const gap = tubeEnd.distanceTo(got);
+  // where the helicopter ended up relative to straight ahead
+  const hw = new THREE.Vector3(built.release.x, 0, built.release.z)
+    .applyAxisAngle(new THREE.Vector3(0, 1, 0), built.aim);
+  const offAxis = Math.atan2(hw.x, -hw.z) * 180 / Math.PI;
   document.getElementById('ok').innerHTML =
     `${which} · t=${at}s · phase ${built.phase} · f=${f.toFixed(3)} · ${n} objects<br>` +
+    `aim ${(built.aim * 180 / Math.PI).toFixed(1)}&deg; &rarr; helicopter ` +
+    `<span style="color:${Math.abs(offAxis) < 0.5 ? '#8BE04F' : '#FF6B9D'}">` +
+    `${offAxis.toFixed(2)}&deg; off centre</span><br>` +
     `flyer ${P(got)} &nbsp; trail ends ${P(tubeEnd)} &nbsp; ` +
     `<span style="color:${gap < 0.05 ? '#8BE04F' : '#FF6B9D'}">gap ${gap.toFixed(3)} m</span><br>` +
     `naive pts[${idx}] would have been ${P(byIndex)} ` +
