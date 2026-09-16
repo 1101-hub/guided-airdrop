@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poster · Trajectory Optimisation for a Steerable Airdrop</title>
+<style>
+/* ===========================================================================
+   Six A4 panels, printed one per sheet and pasted onto a backing board.
+
+   Deliberately NOT one big image sliced into tiles. Tiling needs every sheet
+   trimmed and aligned to the millimetre, and a seam through a heading — or
+   through a QR code — ruins it. Each panel here is self-contained, so nothing
+   crosses a join and a couple of millimetres out reads as a gutter rather
+   than a mistake. No trimming required at all: the white A4 border becomes
+   the gutter.
+
+   White ground, not the site's cream. Six sheets of near-full-coverage cream
+   on a home inkjet is slow, expensive and buckles the paper. Line work and
+   spot colour carry the identity instead.
+
+   Content is inset 12 mm because consumer printers cannot reach the edge of
+   the sheet; anything outside that is silently cropped.
+   =========================================================================== */
+  :root{
+    --paper:#F7F3E6; --ink:#141414; --ink2:#44403A; --ink3:#7C776C; --line:#DCD6C6;
+    --blue:#3B54E8; --pink:#FF2E93; --green:#79D64B; --grn:#3F8C1F; --yellow:#FFD12E;
+    --sans:"Segoe UI",Inter,system-ui,-apple-system,Roboto,sans-serif;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#8E97A8;font-family:var(--sans);color:var(--ink);
+       -webkit-font-smoothing:antialiased}
+
+  .sheet{width:210mm;height:297mm;background:#fff;padding:12mm;
+         position:relative;overflow:hidden}
+  .panel{width:100%;height:100%;border:1.6mm solid var(--ink);border-radius:4mm;
+         padding:7mm 7.5mm;display:flex;flex-direction:column;overflow:hidden}
+
+  /* ---------------------------------------------------------- type scale */
+  .num{position:absolute;right:13mm;top:13mm;font-family:var(--mono);
+       font-size:8.5pt;font-weight:700;letter-spacing:.18em;color:var(--ink3)}
+  .kicker{font-family:var(--mono);font-size:8pt;letter-spacing:.22em;
+          text-transform:uppercase;color:var(--ink3);margin:0 0 2.5mm}
+  h1{font-size:33pt;line-height:.93;letter-spacing:-.025em;margin:0 0 3mm;font-weight:800}
+  h2{font-size:21pt;line-height:1.0;letter-spacing:-.02em;margin:0 0 3mm;font-weight:800}
+  h3{font-size:10.5pt;line-height:1.2;margin:0 0 1.5mm;font-weight:800}
+  p{font-size:10pt;line-height:1.42;color:var(--ink2);margin:0 0 2.6mm}
+  p.lead{font-size:12.5pt;line-height:1.28;color:var(--ink);font-weight:700}
+  strong{font-weight:800;color:var(--ink)}
+  .sm{font-size:8.5pt;line-height:1.35;color:var(--ink3)}
+  .blue{color:var(--blue)} .pink{color:var(--pink)} .gr{color:var(--grn)}
+  .grow{flex:1 1 auto;min-height:0}
+  .push{margin-top:auto}
+
+  /* ------------------------------------------------------------- devices */
+  .rule{height:1.1mm;background:var(--ink);border-radius:1mm;margin:0 0 4mm}
+  .chip{display:inline-block;font-family:var(--mono);font-size:7.5pt;font-weight:700;
+        letter-spacing:.14em;text-transform:uppercase;border:.6mm solid var(--ink);
+        border-radius:99mm;padding:.9mm 2.6mm;margin:0 1.5mm 1.5mm 0}
+  .chip.b{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .chip.p{background:var(--pink);color:#fff;border-color:var(--pink)}
+  .chip.g{background:var(--green);color:#16330a;border-color:var(--grn)}
+
+  .stat{border:.8mm solid var(--ink);border-radius:3mm;padding:3mm 3.5mm;margin:0 0 3mm}
+  .stat .v{font-size:26pt;font-weight:800;line-height:.95;letter-spacing:-.03em}
+  .stat .l{font-family:var(--mono);font-size:7.5pt;letter-spacing:.14em;
+           text-transform:uppercase;color:var(--ink3);margin-top:1mm}
+
+  .eq{font-family:var(--mono);font-size:11.5pt;font-weight:700;text-align:center;
+      border:.6mm dashed var(--ink);border-radius:2.5mm;padding:3mm 2mm;margin:0 0 3mm;
+      background:var(--paper)}
+  .eq small{display:block;font-family:var(--sans);font-size:8pt;font-weight:600;
+            color:var(--ink3);margin-top:1.5mm;letter-spacing:0}
+
+  table{width:100%;border-collapse:collapse;font-size:9.5pt;margin:0 0 2.5mm}
+  th{font-family:var(--mono);font-size:7.5pt;letter-spacing:.1em;text-transform:uppercase;
+     color:var(--ink3);text-align:right;padding:0 0 1.5mm;font-weight:700}
+  th:first-child{text-align:left}
+  td{padding:1.8mm 0;border-top:.35mm solid var(--line);text-align:right}
+  td:first-child{text-align:left;font-weight:700}
+  tr.hi td{background:#EEF1FE}
+  .figbox{border:.8mm solid var(--ink);border-radius:3mm;overflow:hidden;background:#fff}
+  .figbox img{width:100%;display:block}
+  .cap{font-family:var(--mono);font-size:7pt;letter-spacing:.06em;color:var(--ink3);
+       margin:1.5mm 0 0;line-height:1.3}
+
+  /* ------------------------------------------------------------ QR block */
+  .scan{border:1.2mm solid var(--ink);border-radius:3.5mm;padding:4mm;
+        display:flex;gap:4.5mm;align-items:center}
+  .scan.pinkbg{background:var(--pink);color:#fff;border-color:var(--ink)}
+  .scan.bluebg{background:var(--blue);color:#fff;border-color:var(--ink)}
+  .scan img{width:38mm;height:38mm;display:block;background:#fff;
+            border:1.6mm solid #fff;border-radius:1.5mm;flex:0 0 auto}
+  .scan .t{font-size:8pt;font-family:var(--mono);letter-spacing:.16em;
+           text-transform:uppercase;opacity:.85;margin:0 0 1.5mm}
+  .scan .h{font-size:15pt;font-weight:800;line-height:1.05;margin:0 0 1.5mm}
+  .scan .s{font-size:8.5pt;line-height:1.3;opacity:.92;margin:0}
+
+  /* ------------------------------------------------- screen-only preview */
+  .board{display:grid;grid-template-columns:repeat(3,210mm);gap:9mm;
+         padding:16mm;justify-content:center}
+  .shot{box-shadow:0 6px 26px rgba(0,0,0,.35)}
+  .guide{background:#fff;padding:12mm}
+  .guide h2{font-size:19pt}
+  .map{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin:0 0 6mm}
+  .map div{border:.8mm solid var(--ink);border-radius:2.5mm;padding:6mm 3mm;
+           text-align:center;font-family:var(--mono);font-size:9pt;font-weight:700}
+  .map .t{display:block;font-size:7pt;color:var(--ink3);letter-spacing:.12em;margin-top:1.5mm}
+  ol{font-size:10pt;line-height:1.5;color:var(--ink2);padding-left:5mm;margin:0 0 4mm}
+  ol li{margin:0 0 2mm}
+
+  @media print{
+    body{background:#fff}
+    .board{display:block;padding:0;gap:0}
+    .shot{box-shadow:none}
+    .sheet,.guide{page-break-after:always;break-after:page}
+    .sheet:last-of-type{page-break-after:auto}
+    @page{size:A4 portrait;margin:0}
+  }
+</style>
+</head>
+<body>
+<div class="board">
+
+<!-- ═══════════════════════════════════════════════════ 01 · THE PROBLEM -->
+<section class="sheet shot">
+  <div class="num">01 / 06</div>
+  <div class="panel">
+    <p class="kicker">Recreational Mathematical Modelling</p>
+    <h1>Trajectory<br>Optimisation<br>for a Steerable<br>Airdrop in<br>Unknown Wind</h1>
+    <div class="rule"></div>
+    <p class="lead">Guiding packages to a target for relief distribution,
+      with no wind sensor on board.</p>
+    <p class="sm"><strong>Amulya D</strong> &nbsp;·&nbsp; Atomic Energy Central School, Mysuru</p>
+
+    <div class="grow" style="display:flex;flex-direction:column;justify-content:center">
+      <div class="stat">
+        <div class="v pink">80,000</div>
+        <div class="l">people still unreached, Assam floods, July 2026</div>
+      </div>
+      <p>A cloudburst on 19 July 2026 flooded four districts of Upper Assam.
+        <strong>705,000 people were affected</strong> and air was the only way in.</p>
+      <p>A payload released without guidance is carried by the air mass for the
+        whole descent. It does not aim. It drifts.</p>
+    </div>
+
+    <div class="push">
+      <div class="scan pinkbg">
+        <img src="qr_miss.svg" alt="QR code linking to the first AR scene">
+        <div>
+          <p class="t">Scan 1 of 2</p>
+          <p class="h">Watch it miss.</p>
+          <p class="s">A drop with no idea what the wind is doing, falling in
+            your own room. Point your phone at the floor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ 02 · A WING, NOT A DOME -->
+<section class="sheet shot">
+  <div class="num">02 / 06</div>
+  <div class="panel">
+    <p class="kicker">How a falling box can steer at all</p>
+    <h2>A wing,<br>not a dome.</h2>
+    <div class="rule"></div>
+
+    <p>A round parachute only falls. A <strong>parafoil</strong> is a ram-air
+      canopy that <strong>glides forward</strong> as it descends, so pulling one
+      side turns it. That is the only reason steering is possible.</p>
+    <svg viewBox="0 0 440 186" style="width:100%;height:auto;margin:1mm 0 3mm">
+      <g font-family="ui-monospace,Consolas,monospace" font-size="12">
+        <line x1="8" y1="162" x2="432" y2="162" stroke="#141414" stroke-width="2.5"/>
+        <!-- round canopy: straight down, wherever the air takes it -->
+        <path d="M34 26a26 26 0 0 1 52 0z" fill="#FF2E93" stroke="#141414" stroke-width="2.5"/>
+        <path d="M34 26 56 46 86 26" fill="none" stroke="#141414" stroke-width="1.6"/>
+        <rect x="49" y="46" width="14" height="11" fill="#C9A227" stroke="#141414" stroke-width="2"/>
+        <path d="M56 62 V150" stroke="#FF2E93" stroke-width="3" stroke-dasharray="7 6"/>
+        <path d="M48 142 56 154 64 142" fill="none" stroke="#FF2E93" stroke-width="3"/>
+        <path d="M48 155 64 169 M48 169 64 155" stroke="#141414" stroke-width="2.6"/>
+        <text x="56" y="184" text-anchor="middle" fill="#7C776C" letter-spacing="1.4">ROUND · FALLS</text>
+        <!-- parafoil: trades height for distance, so it can be aimed -->
+        <path d="M196 30q30 -20 60 0" fill="none" stroke="#3B54E8" stroke-width="9" stroke-linecap="round"/>
+        <path d="M200 34 224 52 252 34" fill="none" stroke="#141414" stroke-width="1.6"/>
+        <rect x="217" y="52" width="14" height="11" fill="#C9A227" stroke="#141414" stroke-width="2"/>
+        <path d="M224 68q56 26 84 52t72 30" fill="none" stroke="#3B54E8" stroke-width="3.2"/>
+        <path d="M372 143 384 151 372 158" fill="none" stroke="#3B54E8" stroke-width="3"/>
+        <path d="M376 155 392 169 M376 169 392 155" stroke="#141414" stroke-width="2.6"/>
+        <text x="300" y="184" text-anchor="middle" fill="#7C776C" letter-spacing="1.4">PARAFOIL · GLIDES FORWARD</text>
+        <text x="300" y="104" fill="#3B54E8" font-weight="700">forward travel</text>
+        <text x="300" y="118" fill="#7C776C">= something to aim</text>
+      </g>
+    </svg>
+
+    <div class="eq">
+      v = &radic;( 2mg / &rho;S C<sub>L</sub> )
+      <small>Only the wing loading m/S appears — mass and canopy area
+        never act separately.</small>
+    </div>
+
+    <p>But it cannot hover and it cannot stop. Sink rate is constant, so the
+      moment it is released <strong>the time aloft is fixed</strong> — and with
+      it the total distance it will ever fly.</p>
+
+    <h3>So the path is prescribed, not minimised</h3>
+    <p>The guidance does not fly the shortest route. It flies a route of
+      <strong>exactly the right length</strong>, holding a track angle &alpha;
+      off the bearing to stretch the remaining path by 1/cos&nbsp;&alpha;.</p>
+
+    <div class="eq">
+      cos &alpha; = d / s
+      <small>d = distance still to go &nbsp;·&nbsp; s = path budget left.
+        As altitude falls, d/s &rarr; 1 and &alpha; &rarr; 0 — a straight final
+        approach, with no change of mode.</small>
+    </div>
+
+    <p class="push"><span class="chip p">that is why it weaves</span>
+      <span class="chip">spare height is spent, not saved</span></p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════ 03 · FINDING THE WIND -->
+<section class="sheet shot">
+  <div class="num">03 / 06</div>
+  <div class="panel">
+    <p class="kicker">No wind sensor on board</p>
+    <h2>It works the<br>wind out on<br>the way down.</h2>
+    <div class="rule"></div>
+
+    <p>Nothing measures the wind and nothing is sent from the ground. An
+      <strong>Extended Kalman Filter</strong> carries four unknowns and updates
+      them from satellite velocity alone.</p>
+
+    <div class="eq">
+      [ w<sub>x</sub> , w<sub>y</sub> , v<sub>a</sub> , b ]
+      <small>wind east and north · airspeed · magnetometer bias.
+        The bias enters through the heading trigonometry, which is what makes
+        the problem non-linear.</small>
+    </div>
+
+    <p>Satellites give speed <em>over the ground</em>. The flight model gives
+      speed <em>through the air</em>. The wind is the difference.</p>
+    <svg viewBox="0 0 440 196" style="width:100%;height:auto;margin:2mm 0 3mm">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5"
+                markerHeight="5" orient="auto-start-reverse">
+          <path d="M0 0 10 5 0 10z" fill="context-stroke"/>
+        </marker>
+      </defs>
+      <!-- Geometry chosen so every label has an empty zone to sit in: the
+           ground vector is horizontal, so its caption goes straight underneath,
+           and the other two labels sit outside the triangle entirely. Labels
+           are one word each; the sentence above the figure does the explaining,
+           so the diagram does not repeat it. -->
+      <g font-family="ui-monospace,Consolas,monospace" font-size="13"
+         font-weight="700" paint-order="stroke" stroke="#fff" stroke-width="5"
+         stroke-linejoin="round">
+        <line x1="60" y1="140" x2="248" y2="57" stroke="#3B54E8" stroke-width="4.5"
+              marker-end="url(#ah)"/>
+        <line x1="252" y1="55" x2="398" y2="138" stroke="#FF2E93" stroke-width="4.5"
+              marker-end="url(#ah)"/>
+        <line x1="60" y1="140" x2="400" y2="140" stroke="#141414" stroke-width="4.5"
+              marker-end="url(#ah)"/>
+        <circle cx="60" cy="140" r="5.5" fill="#141414" stroke="none"/>
+
+        <text x="72" y="66" fill="#3B54E8">THROUGH THE AIR</text>
+        <text x="72" y="82" fill="#7C776C" font-size="11" font-weight="400">the flight model</text>
+
+        <text x="286" y="44" fill="#FF2E93">THE WIND</text>
+        <text x="286" y="60" fill="#7C776C" font-size="11" font-weight="400">the unknown</text>
+
+        <text x="230" y="166" fill="#141414" text-anchor="middle">OVER THE GROUND</text>
+        <text x="230" y="182" fill="#7C776C" font-size="11" font-weight="400"
+              text-anchor="middle">measured by satellite</text>
+      </g>
+    </svg>
+
+    <h3 class="pink">Why it has to be turning</h3>
+    <p>On a fixed heading, <strong>a headwind and an airspeed that is simply too
+      low look identical</strong>. No amount of data separates them — the state
+      is unobservable. Turning changes the geometry and pulls them apart.</p>
+
+    <p><strong>And it is turning anyway.</strong> Spending the path budget means
+      weaving, so the manoeuvre that makes the wind observable is one the
+      guidance was already committed to. It costs nothing.</p>
+
+    <div class="stat push">
+      <div class="v blue">0.104 m s<sup>&minus;1</sup></div>
+      <div class="l">median wind error recovered &nbsp;·&nbsp; 95% CI 0.096–0.112</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ 04 · THE SHORTEST WAY ROUND -->
+<section class="sheet shot">
+  <div class="num">04 / 06</div>
+  <div class="panel">
+    <p class="kicker">How far it really has to fly</p>
+    <h2>Six shapes,<br>and no more.</h2>
+    <div class="rule"></div>
+
+    <p>It cannot turn on the spot, so the true distance to the target is never
+      the straight line. It is a curve — and the curve has a
+      <strong>minimum radius</strong> set by the design.</p>
+
+    <p>In <strong>1957 Lester Dubins proved</strong> that under exactly that
+      constraint, the shortest path between two oriented positions is always at
+      most three segments, in one of six orderings.</p>
+
+    <img src="dubins_six.svg" alt="The six Dubins path types between the same
+      two oriented positions" style="width:100%;height:auto;margin:1mm 0 1.5mm">
+    <p class="cap" style="margin:0 0 3mm">The same start (dot) and target (cross),
+      with the same heading at each end, solved six ways at one shared scale.
+      Computed by the model, not drawn.</p>
+
+    <p><strong>Six. Not a curve you go searching for</strong> — six you can write
+      down in closed form, evaluate all of them, and take the shortest. The model
+      does that at every step of the descent.</p>
+
+    <div class="stat">
+      <div class="v gr">9.0 &times; 10<sup>&minus;12</sup> m</div>
+      <div class="l">largest disagreement, closed form vs step-wise
+        integration, over 3,514 solutions</div>
+    </div>
+
+    <p>That length — not the straight line — is what the path budget on panel 02
+      is measured against. <strong>Dubins measures; the weave spends.</strong></p>
+
+    <h3>Where the radius comes from</h3>
+    <p>R is not free. It falls out of the same wing loading that sets the flying
+      speed — heavier flies faster, and faster turns wider. <strong>That is the
+      trade panel 06 is about.</strong></p>
+
+    <p class="sm push">Replanned every 0.05 s of the descent, so the budget is
+      always compared against the real remaining distance, not the straight-line
+      distance it would be tempting to use.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ 05 · THE RESULT -->
+<section class="sheet shot">
+  <div class="num">05 / 06</div>
+  <div class="panel">
+    <p class="kicker">150 randomised drops</p>
+    <h2>Does knowing<br>the wind help?</h2>
+    <div class="rule"></div>
+
+    <p>Identical conditions across rows. <strong>Only the wind information
+      available to the guidance differs.</strong></p>
+
+    <table>
+      <tr><th>Configuration</th><th>Median miss</th><th>90th pct</th></tr>
+      <tr><td>No estimate</td><td>8.57 m <span class="sm">(6.49–12.46)</span></td><td>24.27 m</td></tr>
+      <tr class="hi"><td class="blue">EKF onboard</td><td><strong>3.89 m</strong> <span class="sm">(2.85–5.28)</span></td><td>10.75 m</td></tr>
+      <tr><td>Told the true wind</td><td>4.62 m <span class="sm">(3.37–5.44)</span></td><td>10.93 m</td></tr>
+    </table>
+    <p class="cap">Intervals are 95% bootstrap percentile intervals on the median.</p>
+
+    <div style="display:flex;gap:3mm;margin:3mm 0">
+      <div style="flex:1">
+        <div class="figbox"><img src="img/fig1a_no_estimate.png" alt="Ground tracks without a wind estimate"></div>
+        <p class="cap">No estimate — touchdowns scattered.</p>
+      </div>
+      <div style="flex:1">
+        <div class="figbox"><img src="img/fig1b_ekf_estimate.png" alt="Ground tracks with the EKF"></div>
+        <p class="cap">EKF — touchdowns clustered on target.</p>
+      </div>
+    </div>
+
+    <p>Compared trial by trial, the EKF cuts the miss by a median
+      <strong>4.26 m</strong> (95% CI 3.08–6.57) and wins in
+      <strong>112 of 150</strong> drops.</p>
+
+    <p class="sm push"><strong>What this does not show.</strong> The EKF and
+      true-wind intervals overlap across most of their range, so those two are
+      <em>not</em> separated at this sample size. Estimating the wind on board is
+      not shown to beat being handed it — only to beat not knowing it.</p>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════ 06 · THE FINDING -->
+<section class="sheet shot">
+  <div class="num">06 / 06</div>
+  <div class="panel">
+    <p class="kicker">The one number that decides everything</p>
+    <h2>How heavy<br>should it be?</h2>
+    <div class="rule"></div>
+
+    <p>To make headway against wind of speed <em>W</em> the canopy must fly
+      faster than it, which forces wing loading up as <em>W</em><sup>2</sup>. But
+      turn radius rises <em>linearly</em> with loading — and turn radius bounds
+      the smallest correction possible in the last seconds.</p>
+
+    <div class="eq">
+      R<sub>min</sub> &prop; W<sup>2</sup>
+      <small>The two requirements fight. The error floor follows the wind
+        you designed for, not the wind you meet.</small>
+    </div>
+
+    <p><strong>So building for wind you never encounter degrades accuracy in
+      every condition, including dead calm.</strong> The right choice is the
+      lowest loading that still penetrates, with margin.</p>
+
+    <p>And loading is set by <strong>ballast</strong> — so unlike canopy area, it
+      can be matched to the forecast on the morning of the drop.</p>
+
+    <div class="figbox" style="margin:0 0 1.5mm">
+      <img src="img/design_chart.png" alt="Design chart of miss distance against wing loading and wind speed">
+    </div>
+    <p class="cap">Every combination of wing loading and wind speed, 24 drops each.</p>
+
+    <div class="scan bluebg push">
+      <img src="qr_hit.svg" alt="QR code linking to the second AR scene">
+      <div>
+        <p class="t">Scan 2 of 2</p>
+        <p class="h">Now watch it land.</p>
+        <p class="s">Same drop, same wind — this one works the wind out on the
+          way down and lands at your feet. The old route is the dotted line.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ ASSEMBLY GUIDE · do not paste -->
+<section class="sheet guide shot">
+  <p class="kicker">Not part of the poster — assembly guide</p>
+  <h2>Sticking it together</h2>
+  <div class="rule"></div>
+
+  <p>Six sheets, three across and two down. Each panel is complete in itself, so
+    <strong>nothing needs trimming and nothing crosses a join.</strong> The white
+    border of each sheet becomes the gutter between panels.</p>
+
+  <div class="map">
+    <div>01<span class="t">the problem<br>+ scan 1</span></div>
+    <div>02<span class="t">a wing,<br>not a dome</span></div>
+    <div>03<span class="t">finding<br>the wind</span></div>
+    <div>04<span class="t">six shapes</span></div>
+    <div>05<span class="t">the result</span></div>
+    <div>06<span class="t">the finding<br>+ scan 2</span></div>
+  </div>
+
+  <ol>
+    <li>Print pages 1–6 on A4 at <strong>&ldquo;Actual size&rdquo; / 100%</strong>,
+      so the panels come out the size the layout was built for and the margins
+      match. (The codes themselves were tested down to 70% and still scan — it
+      is the layout that wants full size, not them.)</li>
+    <li>Lay all six out on the backing sheet <em>before</em> gluing anything.
+      Line up the tops of panels 01–03, then 04–06.</li>
+    <li>Glue the middle sheet of the top row first and work outwards, so any
+      error is shared between both sides instead of accumulating at one edge.</li>
+    <li><strong>Scan both QR codes with your own phone once the poster is
+      up.</strong> Test under the lighting in the hall, not at home.</li>
+  </ol>
+
+  <h3>If a QR code will not scan</h3>
+  <p class="sm">Both codes were decoded from this very PDF at every resolution
+    from draft to 300&nbsp;dpi, so the artwork is not the problem. In practice it
+    is nearly always <strong>glare</strong> — a reflection off tape, glue or a
+    glossy sheet, sitting across the middle of the code. Move so the light is
+    behind you rather than behind the phone. Failing that, low ink leaves gaps
+    in the modules: reprint that one sheet. The codes carry the highest error
+    correction level, so a crease or a fingerprint will not stop them.</p>
+
+  <h3>Reading order</h3>
+  <p class="sm">01 sets up the problem and sends them to the first scan. 02–04
+    are the model: why it can steer, how it finds the wind, how far it really has
+    to fly. 05 is the evidence, including what it does <em>not</em> show. 06 is
+    the finding, and sends them to the second scan — so a judge who only reads
+    the top row still gets the problem, the mechanism and a demonstration.</p>
+
+  <p class="sm push">Full paper and the interactive model:
+    <strong>1101-hub.github.io/guided-airdrop</strong></p>
+</section>
+
+</div>
+</body>
+</html>
