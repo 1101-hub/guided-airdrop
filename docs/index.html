@@ -41,6 +41,24 @@
 
   canvas{width:100%;display:block;border-radius:14px;background:#fff;border:3px solid var(--ink)}
 
+
+  /* ---- diagrams carried over from the slide deck -----------------------
+     Scoped under .dgm: the deck names its SVG classes .t/.k/.kp, and .t is
+     already an option-card title on this page. */
+  .dgm{background:#fff;border:3px solid var(--ink);border-radius:14px;
+       padding:20px 20px 14px;margin:20px 0 0}
+  .dgm svg{width:100%;height:auto;display:block}
+  .dgm .k{fill:none;stroke:#141414;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+  .dgm .kp{fill:none;stroke:#FF2E93;stroke-width:4;stroke-linecap:round}
+  .dgm .kb{fill:none;stroke:#3B54E8;stroke-width:4;stroke-linecap:round}
+  .dgm .dash{fill:none;stroke:#B8B1A0;stroke-width:2.5;stroke-dasharray:7 7}
+  .dgm .t{font-family:var(--mono);font-size:15px;font-weight:700;fill:#8C877C}
+  .dgm .tp{font-family:var(--mono);font-size:15px;font-weight:700;fill:#FF2E93}
+  .dgm .tb{font-family:var(--mono);font-size:15px;font-weight:700;fill:#3B54E8}
+  .dgm .tk{font-family:var(--mono);font-size:16px;font-weight:800;fill:#141414}
+  .dgm .dcap{font-size:15.5px;line-height:1.45;color:var(--ink2);margin:16px 0 0;max-width:none}
+  .dgm .dcap strong{color:var(--ink)}
+
   label.ctl{display:block;margin:0 0 14px}
   label.ctl .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
                  color:var(--ink3);display:flex;justify-content:space-between;margin-bottom:4px}
@@ -244,6 +262,31 @@
         a real one drops faster, so this flatters it.</div>
     </div>
   </div>
+  <div class="dgm">
+    <svg viewBox="0 0 420 290">
+        <g stroke="#B8D0FF" stroke-width="5" stroke-linecap="round">
+          <path d="M20 22 L86 22"/><path d="M78 15 L86 22 L78 29"/>
+          <path d="M20 42 L86 42"/><path d="M78 35 L86 42 L78 49"/>
+        </g>
+        <text x="20" y="12" class="tb">WIND</text>
+        <path d="M36 78 a40 28 0 0 1 80 0" class="k"/>
+        <path d="M43 82 L76 116 M109 82 L76 116" class="k"/>
+        <rect x="67" y="116" width="18" height="15" fill="#141414"/>
+        <path d="M76 136 q28 60 96 108" class="dash"/>
+        <path d="M172 244 l-14 0 M172 244 l-2 -13" class="dash"/>
+        <text x="112" y="272" class="t">carried away</text>
+        <path d="M258 88 q42 -20 84 0 l-8 13 q-34 -15 -68 0 z" fill="#3B54E8"/>
+        <path d="M265 102 L300 134 M335 102 L300 134" class="k"/>
+        <rect x="291" y="134" width="18" height="15" fill="#141414"/>
+        <path d="M300 154 L396 244" class="kb"/>
+        <path d="M396 244 l-14 -2 M396 244 l2 -14" class="kb"/>
+        <path d="M300 154 L300 244 L396 244" class="dash"/>
+        <text x="304" y="206" class="t">1</text>
+        <text x="342" y="264" class="t">3</text>
+        <text x="248" y="286" class="tb">flies through the air</text>
+      </svg>
+    <p class="dcap">A round canopy is <strong>a leaf in a river</strong> &mdash; it only makes drag, so it goes wherever the water goes. Twenty seconds of falling in a light breeze puts it sixty metres downwind. A parafoil is a wing, and <strong>falling is its engine</strong>: it trades height for forward speed, like a bike rolling downhill. That is what lets it move <em>across</em> the river instead of just floating down it.</p>
+  </div>
 </section>
 
 <!-- ===================================================== EKF -->
@@ -269,6 +312,48 @@
       <div class="note">Dashed = the real wind. Solid = what it believes, second by second.</div>
     </div>
   </div>
+  <div class="dgm">
+    <svg viewBox="0 0 470 452">
+        <!-- key -->
+        <path d="M20 20 L74 20" class="dash"/>
+        <text x="80" y="25" class="t">where it's pointing</text>
+        <path d="M250 20 L296 20" class="k"/><path d="M289 14 L296 20 L289 26" class="k"/>
+        <text x="304" y="25" class="tk">what GPS shows</text>
+
+        <text x="20" y="60" class="t">FLYING EAST</text>
+
+        <rect x="20" y="72" width="196" height="104" rx="12" fill="#fff" stroke="#D8D2C2" stroke-width="2"/>
+        <path d="M46 132 L192 132" class="dash"/>
+        <path d="M46 132 L112 132" class="k"/><path d="M104 125 L112 132 L104 139" class="k"/>
+        <text x="46" y="164" class="t">cause: headwind</text>
+
+        <rect x="254" y="72" width="196" height="104" rx="12" fill="#fff" stroke="#D8D2C2" stroke-width="2"/>
+        <path d="M280 132 L426 132" class="dash"/>
+        <path d="M280 132 L346 132" class="k"/><path d="M338 125 L346 132 L338 139" class="k"/>
+        <text x="280" y="164" class="t">cause: flying slow</text>
+
+        <rect x="140" y="186" width="190" height="34" rx="17" fill="#141414"/>
+        <text x="235" y="208" text-anchor="middle" fill="#fff"
+              font-family="ui-monospace,monospace" font-size="13" font-weight="800">same picture — stuck</text>
+
+        <text x="20" y="256" class="tp">NOW IT TURNS — FLYING NORTH</text>
+
+        <rect x="20" y="268" width="196" height="104" rx="12" fill="#fff" stroke="#D8D2C2" stroke-width="2"/>
+        <path d="M118 358 L118 282" class="dash"/>
+        <path d="M118 358 L76 300" class="k"/><path d="M78 311 L76 300 L87 302" class="k"/>
+        <text x="34" y="392" class="tp">leans — that's the wind</text>
+
+        <rect x="254" y="268" width="196" height="104" rx="12" fill="#fff" stroke="#D8D2C2" stroke-width="2"/>
+        <path d="M352 358 L352 282" class="dash"/>
+        <path d="M352 358 L352 316" class="k"/><path d="M344 325 L352 316 L360 325" class="k"/>
+        <text x="286" y="392" class="t">short, but straight</text>
+
+        <rect x="140" y="412" width="190" height="34" rx="17" fill="#FF2E93"/>
+        <text x="235" y="434" text-anchor="middle" fill="#fff"
+              font-family="ui-monospace,monospace" font-size="13" font-weight="800">different — solved</text>
+      </svg>
+    <p class="dcap">Flying east, a <strong>headwind</strong> and <strong>simply flying slowly</strong> produce the same picture &mdash; the filter is stuck, because the information is not there. <strong>Turn, and they come apart.</strong> And it is already turning anyway, to burn off spare height.</p>
+  </div>
 </section>
 
 <!-- ===================================================== DUBINS -->
@@ -287,11 +372,133 @@
       <div class="note">Grey = the losers. Pink = the one being flown.</div>
     </div>
   </div>
+  <div class="dgm">
+    <svg viewBox="0 0 490 360">
+        <!-- blue route: left, straight, left -->
+        <path d="M74 178 Q74 132 118 136 L352 176 Q404 184 410 218" class="kb"/>
+        <!-- pink route: right, straight, right -->
+        <path d="M74 178 Q74 224 118 222 L356 256 Q404 252 410 218" class="kp"/>
+
+        <circle cx="74" cy="178" r="9" fill="#141414"/>
+        <text x="18" y="170" class="t">start</text>
+        <path d="M92 196 L128 196" class="k"/><path d="M121 189 L128 196 L121 203" class="k"/>
+        <text x="94" y="220" class="t">facing</text>
+
+        <circle cx="410" cy="218" r="10" fill="#FF2E93"/>
+        <text x="398" y="248" class="tp">target</text>
+
+        <text x="150" y="84" class="tb" style="font-size:25px">228 m</text>
+        <rect x="228" y="62" width="104" height="28" rx="14" fill="#3B54E8"/>
+        <text x="280" y="81" text-anchor="middle" fill="#fff"
+              font-family="ui-monospace,monospace" font-size="13" font-weight="800">shortest</text>
+        <text x="150" y="108" class="tb">left · straight · left</text>
+
+        <text x="150" y="312" class="tp" style="font-size:25px">265 m</text>
+        <text x="150" y="336" class="tp">right · straight · right</text>
+      </svg>
+    <p class="dcap">It can only do <strong>three things</strong>: turn left in a fixed circle, turn right in a fixed circle, or go straight. Nothing in between &mdash; it cannot turn gently. So every route is those pieces stacked, and a shortest route never wastes a turn, so it is never more than three. <strong>Three pieces, two turn directions &mdash; six routes.</strong></p>
+  </div>
+</section>
+
+<!-- ===================================================== THE LOOP -->
+<section>
+  <p class="tag">05 &middot; the loop it runs</p>
+  <span class="badge b-yel">every 0.05 s</span>
+  <h2>Nothing is planned in advance.</h2>
+  <p class="lead">Every twentieth of a second it throws away the old plan and works out a new
+    one from where it actually is.</p>
+  <p>So when the wind pushes it off course, <strong>there is nothing to recover</strong> &mdash;
+    the next answer already includes it. About 800 times on the way down.</p>
+  <div class="dgm">
+    <svg viewBox="0 0 440 330">
+        <circle cx="220" cy="158" r="118" fill="none" stroke="#E2DCCB" stroke-width="26"/>
+        <g fill="#3B54E8">
+          <path d="M338 152 l12 6 -12 6 z"/><path d="M292 268 l-2 13 -12 -6 z"/>
+          <path d="M148 274 l-12 -6 12 -6 z"/><path d="M104 108 l2 -13 12 6 z"/>
+          <path d="M226 34 l13 6 -13 6 z"/>
+        </g>
+        <g font-family="ui-monospace,monospace" font-size="13" font-weight="700">
+          <g transform="translate(220,40)"><rect x="-64" y="-22" width="128" height="44" rx="10" fill="#141414"/>
+            <text x="0" y="-2" text-anchor="middle" fill="#fff">1 · look</text>
+            <text x="0" y="14" text-anchor="middle" fill="#9FB0B8">compass + GPS</text></g>
+          <g transform="translate(332,122)"><rect x="-70" y="-22" width="140" height="44" rx="10" fill="#3B54E8"/>
+            <text x="0" y="-2" text-anchor="middle" fill="#fff">2 · guess</text>
+            <text x="0" y="14" text-anchor="middle" fill="#CBD5FF">what's the wind?</text></g>
+          <g transform="translate(289,253)"><rect x="-70" y="-22" width="140" height="44" rx="10" fill="#FF2E93"/>
+            <text x="0" y="-2" text-anchor="middle" fill="#fff">3 · decide</text>
+            <text x="0" y="14" text-anchor="middle" fill="#FFD5E9">turn which way?</text></g>
+          <g transform="translate(151,253)"><rect x="-66" y="-22" width="132" height="44" rx="10" fill="#141414"/>
+            <text x="0" y="-2" text-anchor="middle" fill="#fff">4 · move</text>
+            <text x="0" y="14" text-anchor="middle" fill="#9FB0B8">speed + wind</text></g>
+          <g transform="translate(108,122)"><rect x="-62" y="-22" width="124" height="44" rx="10" fill="#4FA828"/>
+            <text x="0" y="-2" text-anchor="middle" fill="#fff">5 · drop</text>
+            <text x="0" y="14" text-anchor="middle" fill="#D6F5C6">a bit of height</text></g>
+        </g>
+        <text x="220" y="152" text-anchor="middle" class="tk" style="font-size:19px">every 0.05 s</text>
+        <text x="220" y="176" text-anchor="middle" class="tp" style="font-size:19px">≈ 800 times</text>
+        <text x="220" y="322" text-anchor="middle" class="t">…until it hits the ground</text>
+      </svg>
+    <p class="dcap">Look, guess, decide, move, drop a little height &mdash; then do it again. The wind estimate from step 2 feeds the decision in step 3, and the result of step 4 is what step 1 sees next time round.</p>
+  </div>
+</section>
+
+<!-- ===================================================== THE EXAM -->
+<section>
+  <p class="tag">06 &middot; how i tested it</p>
+  <span class="badge b-pink">no cheating</span>
+  <h2>I'm setting it an exam.</h2>
+  <p class="lead">I make up a situation on the computer &mdash; a wind, a drop height, a target.
+    I know all of it, because I typed it in.</p>
+  <p>But the parachute's software is <strong>never shown any of it</strong>. It only gets what
+    real parts would give it: a GPS that wobbles, and a compass a few degrees off. Then I watch
+    where it lands.</p>
+  <p><strong>Give it the answer sheet and the exam means nothing.</strong></p>
+  <div class="dgm">
+    <svg viewBox="0 0 440 320">
+        <rect x="6" y="18" width="190" height="200" rx="12" fill="#fff" stroke="#141414" stroke-width="3"/>
+        <text x="101" y="44" text-anchor="middle" class="tk">what's really</text>
+        <text x="101" y="62" text-anchor="middle" class="tk">happening</text>
+        <g stroke="#3B54E8" stroke-width="4" stroke-linecap="round">
+          <path d="M30 92 L86 92"/><path d="M79 86 L86 92 L79 98"/>
+          <path d="M30 112 L86 112"/><path d="M79 106 L86 112 L79 118"/>
+        </g>
+        <text x="96" y="108" class="tb">wind 1.6</text>
+        <circle cx="101" cy="168" r="9" fill="#141414"/>
+        <text x="101" y="200" text-anchor="middle" class="t">exact position</text>
+        <path d="M206 118 L232 118" stroke="#FF2E93" stroke-width="4"/>
+        <path d="M225 111 L232 118 L225 125" stroke="#FF2E93" stroke-width="4" fill="none"/>
+        <text x="219" y="102" text-anchor="middle" class="tp">+shake</text>
+        <text x="219" y="146" text-anchor="middle" class="tp">+tilt</text>
+        <rect x="244" y="18" width="190" height="200" rx="12" fill="#fff" stroke="#FF2E93" stroke-width="3"/>
+        <text x="339" y="44" text-anchor="middle" class="tp">what it's</text>
+        <text x="339" y="62" text-anchor="middle" class="tp">allowed to see</text>
+        <g fill="#B8B1A0">
+          <circle cx="330" cy="160" r="5"/><circle cx="348" cy="172" r="5"/>
+          <circle cx="333" cy="180" r="5"/><circle cx="350" cy="155" r="5"/>
+          <circle cx="341" cy="168" r="5"/>
+        </g>
+        <text x="339" y="200" text-anchor="middle" class="t">shaky GPS</text>
+        <path d="M300 92 L300 130" stroke="#141414" stroke-width="4" stroke-linecap="round"
+              transform="rotate(14 300 111)"/>
+        <path d="M294 99 L300 92 L306 99" stroke="#141414" stroke-width="4" fill="none"
+              transform="rotate(14 300 111)"/>
+        <path d="M300 92 L300 130" class="dash"/>
+        <text x="318" y="116" class="t">off by 12°</text>
+        <rect x="6" y="240" width="428" height="66" rx="12" fill="#141414"/>
+        <text x="220" y="266" text-anchor="middle" fill="#fff"
+              font-family="ui-monospace,monospace" font-size="14" font-weight="700">
+          pick a random wind, height and compass error</text>
+        <text x="220" y="290" text-anchor="middle" fill="#FF6FAE"
+              font-family="ui-monospace,monospace" font-size="14" font-weight="700">
+          → drop it → do it 150 times</text>
+      </svg>
+    <p class="dcap">The true wind, the exact position and the real heading stay on my side of the wall. Across it go a shaky GPS reading and a tilted compass &mdash; and nothing else. Pick a random wind, height and compass error, drop it, and repeat 150 times.</p>
+  </div>
 </section>
 
 <!-- ===================================================== RESULTS -->
 <section>
-  <p class="tag">05 · the result</p>
+  <p class="tag">07 · the result</p>
   <h2>150 drops, three ways.</h2>
   <p class="lead">Same conditions every time. Only the wind knowledge changes.</p>
   <table>
@@ -318,7 +525,7 @@
 
 <!-- ===================================================== WING LOADING -->
 <section>
-  <p class="tag">06 · the one number that decides everything</p>
+  <p class="tag">08 · the one number that decides everything</p>
   <span class="badge b-blue">try dragging it</span>
   <h2>How heavy you make it.</h2>
   <div class="grid flip">
@@ -345,7 +552,7 @@
 
 <!-- ===================================================== SCALING -->
 <section>
-  <p class="tag">07 · the finding</p>
+  <p class="tag">09 · the finding</p>
   <h2>Double the wind, four times the error.</h2>
   <div class="grid flip">
     <div><canvas id="cScale" width="760" height="520"></canvas></div>
@@ -369,7 +576,7 @@
 
 <!-- ===================================================== DESIGN CHART -->
 <section>
-  <p class="tag">08 · every combination, tested</p>
+  <p class="tag">10 · every combination, tested</p>
   <span class="badge b-yel">click the chart</span>
   <h2>3,432 drops on one picture.</h2>
   <div class="grid flip">
@@ -388,7 +595,7 @@
 
 <!-- ===================================================== WRITEUP -->
 <section>
-  <p class="tag">09 · the write-up</p>
+  <p class="tag">11 · the write-up</p>
   <h2>The paper behind it.</h2>
   <p class="lead">1,000 words, full method, statistics and references.</p>
   <p>
