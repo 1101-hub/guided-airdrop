@@ -172,19 +172,19 @@
           <span class="sw"></span>
           <span class="t">Nothing at all</span>
           <span class="d">Steers as if the air were dead still. The wind pushes it off
-            course and nobody notices. This is roughly what an ordinary drop does.</span>
+            course and nobody notices. What an ordinary drop does.</span>
         </button>
         <button data-mode="ekf" aria-pressed="true" style="--c:#3B54E8">
           <span class="sw"></span>
           <span class="t">Works the wind out itself<span class="mine">this project</span></span>
-          <span class="d">Carries no wind sensor. It figures out the wind mid-flight from
+          <span class="d">Carries no wind sensor. Figures out the wind mid-flight from
             GPS and a compass, then aims off to allow for it.</span>
         </button>
         <button data-mode="true" aria-pressed="false" style="--c:#4FA828">
           <span class="sw"></span>
           <span class="t">Simply handed the answer</span>
           <span class="d">Told the real wind the moment it is released. Cheating &mdash;
-            it is here as the best case to measure the other two against.</span>
+            the best case, to measure the other two against.</span>
         </button>
       </div>
 
@@ -224,12 +224,11 @@
     <div>
       <p class="lead">A round parachute just falls. Wherever the air goes, it goes.</p>
       <p>This is a <strong>parafoil</strong> &mdash; the kind skydivers land. It's a wing, so it
-        glides <em>forward</em> while it comes down, and pulling one side makes it turn. That is
-        the only reason steering it is possible at all.</p>
-      <p>But it can't hover and it can't stop. Its sink rate is constant, so the moment it leaves
-        the helicopter its time in the air is fixed &mdash; and so is the distance it will fly.
-        Call that budget <em>s</em>. The target is only <em>d</em> away, and <em>d</em> is smaller,
-        so it has flying to waste.</p>
+        glides <em>forward</em> as it descends, and pulling one side makes it turn. That is
+        the only reason steering is possible.</p>
+      <p>It can't hover and it can't stop. Sink rate is constant, so the moment it is released
+        its time in the air is fixed &mdash; and so is the distance it will fly. Call that
+        budget <em>s</em>. The target is only <em>d</em> away, so it has flying to waste.</p>
       <div class="eq">cos&nbsp;&alpha; = d / s
         <small>Fly at angle &alpha; to the target and your path stretches by 1/cos&nbsp;&alpha;.
         Set &alpha; from that and the extra flying is spent exactly. As it descends <em>d/s</em>
@@ -241,8 +240,8 @@
         <div><div class="ro-num sm" id="roRound">&mdash;</div><div class="ro-lab">round parachute</div></div>
         <div><div class="ro-num sm blue" id="roFoil">&mdash;</div><div class="ro-lab">parafoil</div></div>
       </div>
-      <div class="note">Same height, same wind, and the round one is given the same sink rate &mdash;
-        a real round canopy drops faster still, so this flatters it.</div>
+      <div class="note">Same height, same wind, and the round one gets the same sink rate &mdash;
+        a real one drops faster, so this flatters it.</div>
     </div>
   </div>
 </section>
@@ -257,7 +256,7 @@
     <div>
       <p class="lead">GPS says how fast you cross the ground. The maths says how fast you move
         through the air. The difference is the wind.</p>
-      <p>But flying straight, <strong>a headwind and simply flying slower look identical</strong>.
+      <p>Flying straight, <strong>a headwind and flying slower look identical</strong>.
         Turning tells them apart &mdash; the wind keeps pointing one way while you swing round.</p>
       <div><span class="cue pink"><span class="a">&#9654;</span>click either one</span></div>
       <div class="seg" id="obsSeg">
@@ -305,7 +304,7 @@
   </table>
   <h3>Why the last row is not a win</h3>
   <p>Row 2 looks better than row 3, but the error bars overlap, so <strong>those two are not
-    really separated</strong> at 150 drops. The honest claim is the paired one: drop for drop,
+    separated</strong> at 150 drops. The honest claim is the paired one: drop for drop,
     working out the wind cuts the miss by <strong class="pink">4.26 m</strong>, and wins
     <strong>112 times out of 150</strong>.</p>
   <h3>What this leaves out</h3>
@@ -314,8 +313,7 @@
     flight can prove it wrong.</p>
   <h3>Not the first guided parafoil</h3>
   <p>The Naval Postgraduate School's <em>Snowflake</em> lands within 3 m, and ParaDrone already
-    flies Dubins paths on a hobby microcontroller. No priority is claimed over either. What is
-    new here is the design analysis they do not publish.</p>
+    flies Dubins paths on a hobby microcontroller. No priority is claimed over either. What is new is the design analysis they do not publish.</p>
 </section>
 
 <!-- ===================================================== WING LOADING -->
@@ -325,12 +323,12 @@
   <h2>How heavy you make it.</h2>
   <div class="grid flip">
     <div>
-      <p class="lead">Too light and the wind blows it away. Too heavy and its turns get too wide
-        to fix anything at the end.</p>
+      <p class="lead">Too light and the wind blows it away. Too heavy and it turns too wide to
+        fix anything at the end.</p>
       <div class="eq">v = &radic;(2mg / &rho;SC<sub>L</sub>)
         <small>Weight over canopy area is the only thing that sets how fast it flies.</small></div>
-      <p>Left of the pink line it cannot fly into the wind <em>at all</em>. No amount of clever
-        steering fixes that &mdash; it is simply slower than the air.</p>
+      <p>Left of the pink line it cannot fly into the wind <em>at all</em>. No steering fixes
+        that &mdash; it is slower than the air.</p>
       <div><span class="cue "><span class="a">&#9654;</span>drag this</span></div>
       <label class="ctl"><span class="lab">weight per m&sup2;
         <span class="val" id="vL2">1.20 kg/m&sup2;</span></span>
@@ -363,8 +361,8 @@
         which needs loading as W&sup2;. Compose them and the tightest turn available &mdash; the
         floor on landing error &mdash; grows as W&sup2;. Verified to 14 decimal places: an identity
         of the model, not a fitted curve.</small></div>
-      <p>So building for wind you never meet costs you accuracy <strong>all the time</strong>,
-        even on a still day.</p>
+      <p>So building for wind you never meet costs accuracy <strong>even on a
+        still day</strong>.</p>
     </div>
   </div>
 </section>
@@ -379,7 +377,7 @@
     <div>
       <p class="lead">Darker means it lands further away. Grey means it cannot fly at all.</p>
       <div><span class="cue "><span class="a">&#9654;</span>click any square</span></div>
-      <p>Click anywhere and the model above will fly that design for you.</p>
+      <p>Click anywhere and the model above flies that design.</p>
       <div class="readout">
         <div><div class="ro-num sm" id="roPick">&mdash;</div><div class="ro-lab">typical miss here</div></div>
       </div>
@@ -399,7 +397,7 @@
   </p>
   <div class="note" style="margin-top:18px">This page lives at
     <strong style="color:var(--ink)">1101-hub.github.io/guided-airdrop</strong>
-    &mdash; open it on your own phone and have a go.</div>
+    &mdash; open it on your phone and have a go.</div>
 </section>
 
 <p class="foot">Amulya D · Atomic Energy Central School, Mysuru</p>
