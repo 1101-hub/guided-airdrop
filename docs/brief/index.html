@@ -88,12 +88,13 @@
     <a href="#loading">7 · Wing loading</a><br>
     <a href="#turn">8 · The turn</a><br>
     <a href="#floor">9 · The floor — the best result you have</a><br>
-    <a href="#dubins">10 · Dubins paths</a><br>
-    <a href="#budget">11 · Spending the budget</a><br>
-    <a href="#ekf">12 · The filter</a><br>
-    <a href="#obs">13 · Observability</a><br>
-    <a href="#stats">14 · The statistics</a><br>
-    <a href="#limits">15 · What it cannot do</a>
+    <a href="#height">10 · Height, and the two regimes</a><br>
+    <a href="#dubins">11 · Dubins paths</a><br>
+    <a href="#budget">12 · Spending the budget</a><br>
+    <a href="#ekf">13 · The filter</a><br>
+    <a href="#obs">14 · Observability</a><br>
+    <a href="#stats">15 · The statistics</a><br>
+    <a href="#limits">16 · What it cannot do</a>
   </div>
 </section>
 
@@ -441,6 +442,84 @@
       1/tan&phi;, so a steeper bank tightens it. But bank costs lift, so it
       increases sink rate and shortens the flight. The model fixes &phi; = 20°;
       treating bank as a design variable is the obvious next piece of work.</p>
+  </div>
+</section>
+
+<section id="height">
+  <p class="tag">Part two · the maths</p>
+  <h2>Height, and the two regimes</h2>
+  <p>&ldquo;Can't you just drop it from higher, so it has more time to
+    correct?&rdquo; It is the first thing everyone asks, and the answer is no —
+    usually the opposite. Worth knowing cold.</p>
+
+  <h3>Where the miss actually comes from</h3>
+  <p>The obvious guess is that the miss is the wind-estimate error multiplied by
+    the time aloft. <strong>It is not.</strong> The filter recovers the wind to
+    about 0.06 m/s whatever the height, which over 30 seconds is under two
+    metres — far less than the misses being seen.</p>
+  <p>Measure the miss against the turn radius instead, across 36 combinations of
+    wind, weight and height:</p>
+  <div class="eq big">
+    miss &asymp; 0.9 R
+    <span class="why" style="color:var(--blue)">median 0.87, and between 0.25R
+      and 1.8R nearly everywhere.</span>
+  </div>
+  <p><strong>The wind estimation is essentially solved. What is left is
+    geometry.</strong> The vehicle knows where it is and where it should be; it
+    simply cannot turn tightly enough to close the last gap. That is why
+    R<sub>min</sub> is the interesting quantity, and why the finding is about
+    weight rather than about the filter.</p>
+
+  <h3>So does height help at all?</h3>
+  <p>A little, and downwards, not upwards. Taking the 21 m case — wind 3.7 m/s,
+    weight 2.40 — and moving only the helicopter:</p>
+  <table>
+    <tr><th>Release height</th><th>Time aloft</th><th>Median miss</th></tr>
+    <tr><td>60 m</td><td>27.8 s</td><td>20.4 m</td></tr>
+    <tr><td>40 m</td><td>18.5 s</td><td>18.8 m</td></tr>
+    <tr><td>20 m</td><td>9.3 s</td><td>8.8 m</td></tr>
+  </table>
+  <p>Dropping lower more than halves it. But it is still an 8.8 m miss, and you
+    have given up all your margin. Fixing the <em>weight</em> instead, from the
+    same 59 m: <strong>20.7 m becomes 3.3 m</strong>. Height is a weak lever;
+    weight is the strong one.</p>
+  <p>Why more height hurts: the extra seconds buy extra flying, but every
+    correction is still as coarse as the turn radius, and meanwhile the wind has
+    longer to push it about. More to undo, with the same blunt tool.</p>
+
+  <h3>Except in one regime, where height is everything</h3>
+  <p>If the canopy is <strong>too light to fly into the wind</strong>, none of
+    the above applies. It is being blown backwards, so the miss is pure drift
+    and grows with every second aloft. At wind 3.7 m/s with a 0.50 kg/m² canopy,
+    which flies at only 2.9 m/s:</p>
+  <table>
+    <tr><th>Release height</th><th>Median miss</th><th>miss / R</th></tr>
+    <tr><td>25 m</td><td>5.3 m</td><td>2.2</td></tr>
+    <tr><td>40 m</td><td>18.5 m</td><td>7.8</td></tr>
+    <tr><td>55 m</td><td>31.8 m</td><td>13.3</td></tr>
+  </table>
+  <p>The miss/R rule collapses completely, which is the signature of the
+    penetration wall: the turn radius is irrelevant when you cannot make headway
+    at all.</p>
+
+  <div class="say">
+    <b>The two regimes, and the trap in them</b>
+    <p><strong>It can penetrate:</strong> miss &asymp; 0.9R. Height barely
+      matters. The fix is <em>less</em> weight.<br><br>
+      <strong>It cannot penetrate:</strong> miss is drift, and doubles with
+      height. The fix is <em>more</em> weight.<br><br>
+      <strong>The correct direction to move the weight slider is opposite in the
+      two regimes.</strong> That is the whole shape of panel 06 — a cliff on one
+      side, a ramp on the other, and the best answer just past the cliff edge.</p>
+  </div>
+
+  <div class="say ask">
+    <b>Say this</b>
+    <p>&ldquo;Dropping from higher gives it more time, but the limit isn't time
+      — it's how tightly it can turn. Extra height just means more drift to undo
+      with the same blunt instrument. The one case where height matters is when
+      the canopy is too light to fly into the wind at all, and then the fix is
+      weight, not height.&rdquo;</p>
   </div>
 </section>
 
