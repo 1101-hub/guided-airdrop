@@ -81,18 +81,19 @@
   <div class="toc">
     <a href="#spine">1 · The spine</a><br>
     <a href="#table">2 · At the table, minute by minute</a><br>
-    <a href="#judges">3 · Three kinds of judge</a><br>
-    <a href="#wrong">4 · When something goes wrong</a><br>
-    <a href="#glide">5 · Steady glide</a><br>
-    <a href="#loading">6 · Wing loading</a><br>
-    <a href="#turn">7 · The turn</a><br>
-    <a href="#floor">8 · The floor — the best result you have</a><br>
-    <a href="#dubins">9 · Dubins paths</a><br>
-    <a href="#budget">10 · Spending the budget</a><br>
-    <a href="#ekf">11 · The filter</a><br>
-    <a href="#obs">12 · Observability</a><br>
-    <a href="#stats">13 · The statistics</a><br>
-    <a href="#limits">14 · What it cannot do</a>
+    <a href="#screens">3 · The page, screen by screen</a><br>
+    <a href="#judges">4 · Three kinds of judge</a><br>
+    <a href="#wrong">5 · When something goes wrong</a><br>
+    <a href="#glide">6 · Steady glide</a><br>
+    <a href="#loading">7 · Wing loading</a><br>
+    <a href="#turn">8 · The turn</a><br>
+    <a href="#floor">9 · The floor — the best result you have</a><br>
+    <a href="#dubins">10 · Dubins paths</a><br>
+    <a href="#budget">11 · Spending the budget</a><br>
+    <a href="#ekf">12 · The filter</a><br>
+    <a href="#obs">13 · Observability</a><br>
+    <a href="#stats">14 · The statistics</a><br>
+    <a href="#limits">15 · What it cannot do</a>
   </div>
 </section>
 
@@ -166,6 +167,111 @@
       <br><br><strong>Hand over the phone rather than showing them.</strong> A
       judge who presses the button remembers it. A judge who watches you press
       it does not.</p>
+  </div>
+</section>
+
+<section id="screens">
+  <p class="tag">Part one · presenting</p>
+  <h2>The page, screen by screen</h2>
+  <p>Nine sections. You will never show all nine. Each entry gives the one
+    thing to press and the one thing to say while it runs.</p>
+
+  <h3 class="blue">01 · try it yourself</h3>
+  <p><strong>Press:</strong> leave every slider alone and press <em>drop it</em>.
+    Then change <em>one</em> thing and drop again — the line under the readout
+    tells them whether it helped.</p>
+  <p><strong>Say:</strong> &ldquo;Every section on this page is the same model.
+    These sliders feed the same code the paper ran 150 times.&rdquo;</p>
+  <p><strong>Your best single move in the whole talk:</strong> set weight to
+    <strong>0.25</strong>, drop, then drag it to <strong>2.5</strong> and drop
+    again. Nothing else changes. That is the finding in ten seconds.</p>
+  <p>Two buttons worth knowing: <em>race all three</em> flies all three
+    wind-knowledge settings at once, and <em>50 drops at once</em> is your answer
+    to &ldquo;was that just luck?&rdquo;</p>
+  <div class="say ask">
+    <b>Trap</b>
+    <p>Never defend a single drop. One drop is one sample. If a judge lands a bad
+      one, press <em>50 drops at once</em> and talk about the spread instead.</p>
+  </div>
+
+  <h3 class="blue">02 · how a falling box can steer at all</h3>
+  <p><strong>Press:</strong> <em>drop both</em>. A round canopy and a parafoil
+    fall together.</p>
+  <p><strong>Say:</strong> &ldquo;The round one goes wherever the air goes. The
+    parafoil trades height for distance — and that forward travel is the only
+    thing there is to aim.&rdquo;</p>
+  <p><strong>Volunteer this:</strong> the round canopy is given the <em>same</em>
+    sink rate, which flatters it — a real one drops faster still. Saying that
+    before they spot it is worth more than the demo.</p>
+
+  <h3 class="blue">03 · no wind sensor on board</h3>
+  <p><strong>Press <em>force it straight</em> first.</strong> Let them watch the
+    wind estimate fail to settle. Then press <em>let it turn</em>.</p>
+  <p><strong>Say:</strong> &ldquo;Flying straight, a headwind and an airspeed
+    that is too low give exactly the same track. The filter cannot tell them
+    apart — not because it is bad, but because the information is not there.
+    Turning changes the geometry and separates them.&rdquo;</p>
+  <p>The number to quote if pushed: over 150 drops, forced straight the wind
+    error is <strong>3.39 m/s</strong>; free to turn it is <strong>0.07 m/s</strong>.</p>
+  <div class="say">
+    <b>Slow down here</b>
+    <p>This is the cleverest thing in the project. It is also the only part a
+      judge cannot get from the poster alone, because it needs the before and
+      after. Give it twice the time you give any other section.</p>
+  </div>
+
+  <h3 class="blue">04 · the shortest way round</h3>
+  <p><strong>Drag the blue arrow</strong> — it sets the heading you must arrive
+    on. Keep dragging until the winning shape changes.</p>
+  <p><strong>Say:</strong> &ldquo;Six shapes, and which one wins keeps changing
+    as I drag. That is why it evaluates all six every step rather than guessing
+    one.&rdquo;</p>
+  <p>If they ask why the end heading matters: it is landing, not stopping.
+    Arriving over the target pointing the wrong way is not an arrival.</p>
+
+  <h3 class="blue">05 · the result</h3>
+  <p><strong>Press:</strong> nothing. It is a table — let them read it.</p>
+  <p><strong>Say:</strong> &ldquo;Same conditions in every row. The only thing
+    that changes is what the guidance knows about the wind.&rdquo;</p>
+  <div class="say ask">
+    <b>Trap</b>
+    <p>Row 2 looks better than row 3. <strong>Do not claim it.</strong> Point at
+      the overlap note yourself: &ldquo;those two intervals overlap, so I can't
+      separate them at 150 drops. What I can defend is row 1 against row 2.&rdquo;
+      Saying this first is the single most credible thing you can do.</p>
+  </div>
+
+  <h3 class="blue">06 · the one number that decides everything</h3>
+  <p><strong>Drag the weight slider</strong> slowly, end to end.</p>
+  <p><strong>Say:</strong> &ldquo;Too light and it cannot fly into the wind at
+    all. Too heavy and its turns get too wide to fix anything at the end. The
+    best answer is somewhere in between, and it moves when the wind does.&rdquo;</p>
+
+  <h3 class="blue">07 · the finding</h3>
+  <p><strong>Press:</strong> nothing. This is the one to talk over.</p>
+  <p><strong>Say:</strong> &ldquo;Double the wind and you need four times the
+    weight to fly in it — and the turn radius follows. Double the wind, four
+    times the error floor.&rdquo;</p>
+  <p>If they want the exact statement, this is where you give it:
+    <strong>R<sub>min</sub> = W²/(g tan&phi;)</strong> — and note that every
+    canopy parameter cancels, so the floor is the same whatever wing you pick.
+    See <a href="#floor">the floor</a>.</p>
+
+  <h3 class="blue">08 · every combination, tested</h3>
+  <p><strong>Click a square inside the dark valley</strong>, and watch section 01
+    fly that design. Then click one far outside it and let it fly that.</p>
+  <p><strong>Say:</strong> &ldquo;3,432 drops on one picture. Dark is close,
+    grey cannot fly at all. The valley is the right answer, and it drifts as the
+    wind rises — that drift is the W² law.&rdquo;</p>
+
+  <h3 class="blue">09 · the write-up</h3>
+  <p>Links to the paper. Use it only if a judge asks for the write-up, or if you
+    want to end on &ldquo;it is all there, with the limitations listed.&rdquo;</p>
+
+  <div class="say">
+    <b>If you only get one screen</b>
+    <p>Section 01, weight slider, two drops. It contains the model, the demo and
+      the finding, and it takes ten seconds.</p>
   </div>
 </section>
 
